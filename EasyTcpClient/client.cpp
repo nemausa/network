@@ -1,8 +1,18 @@
 #define WIN32_LEAN_AND_MEAN
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 
+#ifdef _WIN32
+    #include <winsock2.h>
+#else
+    #include <unistd.h>
+    #include <arpa/inet.h>
+    #include <string.h>
+    #define SOCKET int
+    #define INVALID_SOCKET  (SOCKET)(~0)
+    #define SOCKET_ERROR    (SOCKET)(-1)
+#endif
+
 #include <iostream>
-#include <winsock2.h>
 #include <stdio.h>
 #include <thread>
 
@@ -71,7 +81,7 @@ int processor(SOCKET sock) {
     int header_len  = sizeof(data_header);
     int len = recv(sock, sz_recv, header_len, 0);
     data_header *header = (data_header*)sz_recv;
-    if (len < 0) {
+    if (len <= 0) {
         printf("task end\n");
         return -1;
     }
@@ -79,19 +89,19 @@ int processor(SOCKET sock) {
     case CMD_LOGIN_RESULT: {
         recv(sock, sz_recv + header_len, header->length - header_len, 0);
         login_result *result = (login_result*)sz_recv;
-        printf("receiver cmd: CMD_LOGIN_RESULT, data length=%d\n", sock, result->length);
+        printf("receiver cmd: CMD_LOGIN_RESULT, data length=%d\n", result->length);
     }
     break;
     case CMD_LOGOUT_RESULT: {
         recv(sock, sz_recv + header_len, header->length - header_len, 0);
         logout_result *result = (logout_result*)sz_recv;
-        printf("receiver cmd: CMD_LOGIN_RESULT, data length=%d\n", sock, result->length);
+        printf("receiver cmd: CMD_LOGOUT_RESULT, data length=%d\n", result->length);
     }
     break;
     case CMD_NEW_JOIN: {
         recv(sock, sz_recv + header_len, header->length - header_len, 0);
         new_join *result = (new_join*)sz_recv;
-        printf("receiver cmd: CMD_LOGIN_RESULT, data length=%d\n", sock, result->length);
+        printf("receiver cmd: CMD_NEW_JOIN, data length=%d\n", result->length);
     }
     break;
     }
@@ -124,10 +134,11 @@ void cmd_thread(SOCKET sock) {
 
 
 int main() {
+#ifdef _WIN32
     WORD ver = MAKEWORD(2, 2);
     WSADATA dat;
     WSAStartup(ver, &dat);
-
+#endif
     // create socket
     SOCKET sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (INVALID_SOCKET == sock) {
@@ -140,7 +151,11 @@ int main() {
     sockaddr_in sin = {};
     sin.sin_family = AF_INET;
     sin.sin_port = htons(4567); 
+#ifdef _WIN32
     sin.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
+#else
+    sin.sin_addr.s_addr = inet_addr("127.0.0.1");
+#endif
     if (SOCKET_ERROR ==connect(sock,(sockaddr*)&sin, sizeof(sockaddr_in))) {
         printf("error connect\n");
     } else {
@@ -155,7 +170,7 @@ int main() {
         FD_ZERO(&fd_read);
         FD_SET(sock, &fd_read);
         timeval t = {0, 0};
-        int ret = select(sock, &fd_read, 0, 0, &t);
+        int ret = select(sock + 1, &fd_read, 0, 0, &t);
         if (ret < 0) {
             printf("task end\n");
             break;
@@ -171,10 +186,12 @@ int main() {
     }
     
     // close socket
+#ifdef _WIN32
     closesocket(sock);
-    
     WSACleanup();
+#else
+    close(sock);
+#endif
     getchar();
-
     return 0;
 }

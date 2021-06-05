@@ -6,7 +6,10 @@ PROJECT(${CURRENT_FOLDER})
 
 AUX_SOURCE_DIRECTORY(. SRC_LIST_CPP)
 ADD_EXECUTABLE(${PROJECT_NAME} ${SRC_LIST_CPP})
+
+if (WIN32)
 target_link_libraries(${PROJECT_NAME} ws2_32)
+endif()
 
 install(TARGETS ${PROJECT_NAME}
         EXPORT MyLibTargets 
