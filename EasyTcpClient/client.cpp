@@ -101,7 +101,7 @@ int processor(SOCKET sock) {
     case CMD_NEW_JOIN: {
         recv(sock, sz_recv + header_len, header->length - header_len, 0);
         new_join *result = (new_join*)sz_recv;
-        printf("receiver cmd: CMD_NEW_JOIN, data length=%d\n", result->length);
+        printf("receiver cmd: CMD_NEW_JOIN, socket=<%d> data length=%d\n",result->sock, result->length);
     }
     break;
     }
@@ -152,9 +152,9 @@ int main() {
     sin.sin_family = AF_INET;
     sin.sin_port = htons(4567); 
 #ifdef _WIN32
-    sin.sin_addr.S_un.S_addr = inet_addr("192.168.213.136");
+    sin.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
 #else
-    sin.sin_addr.s_addr = inet_addr("192.168.3.53");
+    sin.sin_addr.s_addr = inet_addr("127.0.0.1");
 #endif
     if (SOCKET_ERROR ==connect(sock,(sockaddr*)&sin, sizeof(sockaddr_in))) {
         printf("error connect\n");
