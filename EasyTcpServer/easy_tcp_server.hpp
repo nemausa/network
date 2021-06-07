@@ -33,10 +33,12 @@
 #include <algorithm>
 #include "message_header.hpp"
 
+class client_socket;
+
 class easy_tcp_server {
 private:
-    SOCKET sock_;
-    std::vector<SOCKET> clients_;
+    SOCKET sockfd_;
+    std::vector<client_socket*> clients_;
 public:
     easy_tcp_server();
     virtual ~easy_tcp_server();
@@ -48,7 +50,7 @@ public:
     void close();
     bool on_run();
     bool is_run();
-    int recv_data(SOCKET c_sock);
+    int recv_data(client_socket *client);
     int send_data(SOCKET c_sock, data_header *header);
     void send_data_to_all(data_header *header);
 };
