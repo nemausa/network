@@ -15,6 +15,14 @@ elseif(UNIX)
    message("-- This is UNIX")
 endif()
 
+if(CMAKE_CL_64)    #CMAKE的内建变量，如果是true，就说明编译器的64位的，自然可以编译64bit的程序
+set(ADDRESS_MODEL 64)
+set(NODE_TARGET x64)
+else()
+set(ADDRESS_MODEL 32)
+set(NODE_TARGET x86)
+endif()
+
 set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/)
 
 add_subdirectory(EasyTcpServer)

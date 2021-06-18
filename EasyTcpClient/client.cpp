@@ -25,7 +25,7 @@ int main() {
         clients[n] = new easy_tcp_client();
     }
     for (int n = 0; n < count; n++) {
-        clients[n]->connect("192.168.3.53", 4567);
+        clients[n]->connect("127.0.0.1", 4567);
     }
     std::thread t1(cmd_thread);
     t1.detach();

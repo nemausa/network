@@ -6,7 +6,7 @@ set start=%time%
 mkdir build
 cd build
 rm -rf *
-cmake -G "Unix Makefiles" ..
+cmake -G "Unix Makefiles"  -DCMAKE_BUILD_TYPE=Release ..
 make -j install
 cd ..
 

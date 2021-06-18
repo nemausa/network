@@ -28,10 +28,15 @@
 
 #include <stdio.h>
 #include "message_header.hpp"
-
+#ifndef RECV_BUFF_SIZE
+#define RECV_BUFF_SIZE 102400
+#endif
 class easy_tcp_client {
 private:
     SOCKET sock_;
+    int last_pos = 0;
+    char sz_recv[RECV_BUFF_SIZE] = {};
+    char sz_msg_buf[RECV_BUFF_SIZE * 10] = {};
 public:
     easy_tcp_client();
     virtual ~easy_tcp_client();

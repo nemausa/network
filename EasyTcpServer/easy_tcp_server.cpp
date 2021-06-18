@@ -114,7 +114,7 @@ SOCKET easy_tcp_server::accept() {
         printf("socket=<%d> error, accept invalid socket\n",(int)sockfd_);
     } else {
         new_join join;
-        join.sock = c_sock;
+        // join.sock = c_sock;
         send_data_to_all(&join);
         clients_.push_back(new client_socket(c_sock));
         printf("socket=<%d> new client socket = %d, ip = %s \n", (int)sockfd_, (int)c_sock, inet_ntoa(client_addr.sin_addr));

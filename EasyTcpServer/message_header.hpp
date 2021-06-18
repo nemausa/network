@@ -24,6 +24,10 @@ enum cmd_type_e{
 };
 
 struct data_header {
+    data_header() {
+        length = sizeof(data_header);
+        cmd = CMD_ERROR;
+    }
     short length;
     short cmd;
 };

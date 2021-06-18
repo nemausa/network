@@ -90,13 +90,6 @@ bool easy_tcp_client::is_run() {
     return sock_ != INVALID_SOCKET;
 }
 
-#ifndef RECV_BUFF_SIZE
-#define RECV_BUFF_SIZE 102400
-#endif
-char sz_recv[RECV_BUFF_SIZE] = {};
-char sz_msg_buf[RECV_BUFF_SIZE * 10] = {};
-int last_pos = 0;
-
 int easy_tcp_client::recv_data(SOCKET c_sock) {
     int len = (int)recv(c_sock, sz_recv, RECV_BUFF_SIZE, 0);
     if (len <=0) {
