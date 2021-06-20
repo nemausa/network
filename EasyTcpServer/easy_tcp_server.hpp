@@ -6,53 +6,37 @@
 * @ingroup PackageName
 * (note: this needs exactly one @defgroup somewhere)
 *
-* @date	2021-06-06-22-09
+* @date	2021-06-20-18-43
 * @author Nemausa
 * @contact: tappanmorris@outlook.com
 *
 */
 #ifndef EASY_TCP_SERVER
 #define EASY_TCP_SERVER
+#include "cell_server.hpp"
+#include "timestamp.hpp"
 
 
-#ifdef _WIN32
-    #define WIN32_LEAN_AND_MEAN
-    #define _WINSOCK_DEPRECATED_NO_WARNINGS
-    #include <winsock2.h>
-#else
-    #include <unistd.h>
-    #include <arpa/inet.h>
-    #include <string.h>
-    #define SOCKET int
-    #define INVALID_SOCKET  (SOCKET)(~0)
-    #define SOCKET_ERROR    (SOCKET)(-1)
-#endif
-
-#include <stdio.h>
-#include <vector>
-#include <algorithm>
-#include "message_header.hpp"
-
-class client_socket;
-
-class easy_tcp_server {
+class easy_tcp_server : public subject {
 private:
     SOCKET sockfd_;
-    std::vector<client_socket*> clients_;
+    std::vector<cell_server*> cell_servers_;
+    timestamp time_;
+    observer* observer_;
 public:
     easy_tcp_server();
-    virtual ~easy_tcp_server();
-    virtual void on_msg(SOCKET c_sock, data_header *header);
+    ~easy_tcp_server();
     SOCKET init_socket();
-    SOCKET accept();
-    int bind(const char *ip, unsigned short port);
+    int bind(const char* ip, unsigned short port);
     int listen(int n);
+    SOCKET accept();
+    void add_client_to_server(client_socket *client);
+    void start(int cellserver_count);
     void close();
-    bool on_run();
     bool is_run();
-    int recv_data(client_socket *client);
-    int send_data(SOCKET c_sock, data_header *header);
-    void send_data_to_all(data_header *header);
+    bool on_run();
+    void time4msg();
+
 };
 
 #endif // EASY_TCP_SERVER

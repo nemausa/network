@@ -22,7 +22,7 @@ void easy_tcp_client::init_socket() {
     if (INVALID_SOCKET == sock_) {
         printf("error carete socket failed\n");
     } else {
-        printf("create socket=%d success\n", sock_);
+        // printf("create socket=%d success\n", sock_);
     }
 }
 
@@ -39,12 +39,12 @@ int easy_tcp_client::connect(const char *ip, unsigned short port) {
 #else
     sin.sin_addr.s_addr = inet_addr(ip);
 #endif
-    printf("socket=%d connecting server<%s:%d>\n", sock_, ip, port);
+    // printf("socket=%d connecting server<%s:%d>\n", sock_, ip, port);
     int ret = ::connect(sock_, (sockaddr*)&sin, sizeof(sockaddr_in));
     if (SOCKET_ERROR == ret) {
         printf("socket=%d error, connect server<%s:%d> failed\n", sock_, ip, port);
     } else  {
-        printf("socket=%d connect server<%s:%d> success\n", sock_, ip, port);
+        // printf("socket=%d connect server<%s:%d> success\n", sock_, ip, port);
     }
     return ret;
 }

@@ -7,7 +7,7 @@ mkdir build
 cd build
 rm -rf *
 cmake -G "Unix Makefiles"  -DCMAKE_BUILD_TYPE=Release ..
-make -j install
+make -j8 install
 cd ..
 
 set end=%time%

@@ -1,6 +1,7 @@
 #!/bin/bash
 
 start=$[$(date +%s%N)/1000000]
+mkdir build
 cd build
 rm -rf *
 cmake ..

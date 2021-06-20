@@ -1,41 +1,9 @@
 #include "easy_tcp_server.hpp"
 
-#ifndef RECV_BUFF_SIZE
-#define RECV_BUFF_SIZE 102400
-#endif
-
-class client_socket {
-public:
-    client_socket(SOCKET sockfd = INVALID_SOCKET) {
-        sockfd_ = sockfd;
-        memset(sz_msg_buf, 0, sizeof(sz_msg_buf));
-        last_pos_ = 0;
-    }
-
-    SOCKET sockfd() {
-        return sockfd_;
-    }
-
-    char *msg_buf() {
-        return sz_msg_buf;
-    }
-
-    int get_pos() {
-        return last_pos_;
-    }
-
-    void set_pos(int pos) {
-        last_pos_ = pos;
-    }
-private:
-    SOCKET sockfd_;
-    char sz_msg_buf[RECV_BUFF_SIZE * 10];
-    int last_pos_;
-};
-
 
 easy_tcp_server::easy_tcp_server() {
     sockfd_ = INVALID_SOCKET;
+    observer_ = new observer(*this);
 }
 
 easy_tcp_server::~easy_tcp_server() {
@@ -113,60 +81,58 @@ SOCKET easy_tcp_server::accept() {
     if (INVALID_SOCKET == c_sock) {
         printf("socket=<%d> error, accept invalid socket\n",(int)sockfd_);
     } else {
-        new_join join;
-        // join.sock = c_sock;
-        send_data_to_all(&join);
-        clients_.push_back(new client_socket(c_sock));
-        printf("socket=<%d> new client socket = %d, ip = %s \n", (int)sockfd_, (int)c_sock, inet_ntoa(client_addr.sin_addr));
+        add_client_to_server(new client_socket(c_sock));
     }
     return c_sock;
 }
 
-void easy_tcp_server::close() {
-    if (sockfd_ == INVALID_SOCKET) {
-#ifdef _WIN32
-        for (int n = (int)clients_.size() - 1; n >= 0; n--) {
-            closesocket(clients_[n]->sockfd());
-            delete clients_[n];
+void easy_tcp_server::add_client_to_server(client_socket *client) {
+    auto min_server =  cell_servers_[0];
+    for (auto server : cell_servers_) {
+        if (min_server->count() > server->count()) {
+            min_server = server;
         }
+    }
+
+    min_server->add_client(client);
+    create_message("join");
+}
+
+void easy_tcp_server::start(int cell_server_count) {
+    for (int n = 0; n < cell_server_count; n++) {
+        auto server = new cell_server(sockfd_, observer_);
+        cell_servers_.push_back(server);
+        server->start();
+    }
+
+}
+
+void easy_tcp_server::close() {
+    if (sockfd_ != INVALID_SOCKET) {
+#ifdef _WIN32
         closesocket(sockfd_);
         WSACleanup();
 #else
-        for (int n = (int)clients_.size() - 1; n >= 0; n--) {
-            ::close(clients_[n]->sockfd());
-            delete clients_[n];
-        }
         ::close(sockfd_);
-#endif
-        clients_.clear();
+#endif        
     }
+
+}
+
+bool easy_tcp_server::is_run() {
+    return sockfd_ != INVALID_SOCKET;
 }
 
 bool easy_tcp_server::on_run() {
     if (is_run()) {
+        time4msg();
         fd_set fd_read;
-        fd_set fd_write;
-        fd_set fd_exp;
-
         FD_ZERO(&fd_read);
-        FD_ZERO(&fd_write);
-        FD_ZERO(&fd_exp);
-
         FD_SET(sockfd_, &fd_read);
-        FD_SET(sockfd_, &fd_write);
-        FD_SET(sockfd_, &fd_exp);
-        SOCKET max_sock = sockfd_;
-        for (int n = (int)clients_.size() - 1; n >= 0; n--) {
-            FD_SET(clients_[n]->sockfd(), &fd_read);
-            if (max_sock < clients_[n]->sockfd()) {
-                max_sock = clients_[n]->sockfd();
-            }
-        }
-
-        timeval t = {1, 0};
-        int ret = select(max_sock + 1, &fd_read, &fd_write, &fd_exp, &t);
+        timeval t = {0, 10};
+        int ret = select(sockfd_ + 1, &fd_read, nullptr, nullptr, &t);
         if (ret < 0) {
-            printf("select task end\n");
+            std::cout << "accept select end" << std::endl;
             close();
             return false;
         }
@@ -174,89 +140,24 @@ bool easy_tcp_server::on_run() {
         if (FD_ISSET(sockfd_, &fd_read)) {
             FD_CLR(sockfd_, &fd_read);
             accept();
+            return true;
         }
 
-        for (int n = (int)clients_.size() - 1; n >= 0; n--) {
-            if (FD_ISSET(clients_[n]->sockfd(), &fd_read)) {
-                if (-1 == recv_data(clients_[n])) {
-                    auto iter = clients_.begin() + n;
-                    if (iter != clients_.end()) {
-                        delete clients_[n];
-                        clients_.erase(iter);
-                    }
-                }
-            }
-        }
         return true;
     }
-    return false;
-}
 
-bool easy_tcp_server::is_run() {
-    return sockfd_ != INVALID_SOCKET;
-}
-
-char sz_recv[RECV_BUFF_SIZE] = {};
-int easy_tcp_server::recv_data(client_socket *client) {
-    
-    int len = (int)recv(client->sockfd(), sz_recv, RECV_BUFF_SIZE, 0);
-    if (len <= 0) {
-        printf("client<socket=%d> cloes, task end\n", client->sockfd());
-        return -1;
-    }
-    memcpy(client->msg_buf() + client->get_pos(), sz_recv, len);
-    client->set_pos(client->get_pos() + len);
-    while (client->get_pos() >= sizeof(data_header)) {
-        data_header *header = (data_header*)client->msg_buf();
-        if (client->get_pos() >= header->length) {
-            int size = client->get_pos() - header->length;
-            on_msg(client->sockfd(), header);
-            memcpy(client->msg_buf(), client->msg_buf() + header->length, size);
-            client->set_pos(size);
-        } else {
-            break;
-        }
-    }
-    return 0;
-}
-
-void easy_tcp_server::on_msg(SOCKET c_sock, data_header *header) {
-    switch (header->cmd) {
-    case CMD_LOGIN: {
-        login *l = (login*)header;
-        // printf("receive cmd: CMD_LOGIN,data length=%d, username=%s, password=%s\n", l->length, l->user_name, l->password);
-        login_result ret;
-        send_data(c_sock, &ret);
-    }
-    break;
-    case CMD_LOGOUT: {
-        logout *l = (logout*)header;
-        // printf("receive cmd: CMD_LOGOUT,data length=%d, username=%s \n", l->length, l->user_name);
-        logout_result ret;
-        send_data(c_sock, &ret);
-    }
-    break;
-    default: {
-        printf("receive cmd: undefined,data length=%d\n", header->length);
-        // data_header header = {0, CMD_ERROR};
-        // send(c_sock, (char*)&header, sizeof(header), 0);
-    }
-    break;
-    }
-}
-
-int easy_tcp_server::send_data(SOCKET c_sock, data_header *header) {
-    if (is_run() && header) {
-        return send(c_sock, (const char*)header, header->length, 0);
-    }
-    return SOCKET_ERROR;
-}
-
-void easy_tcp_server::send_data_to_all(data_header *header) {
-    for (int n = (int)clients_.size() -1; n >= 0; n--) {
-        send_data(clients_[n]->sockfd(), header);
-    }
 }
 
 
+void easy_tcp_server::time4msg() {
+    auto t1 = time_.second();
+    if (t1 >= 1.0f) {
+        printf("thread<%d>, time<%f>, socket<%d>, client_count<%d>, recv_count<%d>\n",
+            cell_servers_.size(), t1, sockfd_, observer_->client_count(), observer_->msg_count());
+        time_.update();
+        observer_->msg_count_ = 0;
+
+    }
+
+}
 
