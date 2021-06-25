@@ -1,12 +1,12 @@
 #!/bin/bash
 
-start=$[$(date +%s%N)/1000000]
+start_ms=$(ruby -e 'puts (Time.now.to_f * 1000).to_i')
+
 mkdir build
 cd build
-rm -rf *
-cmake ..
+cmake -DCMAKE_BUILD_TYPE=Debug ..
 make -j install
 
-end=$[$(date +%s%N)/1000000]
-take=$(( end - start ))
-echo Time taken to execute commands is ${take} millseconds.
+end_ms=$(ruby -e 'puts (Time.now.to_f * 1000).to_i')
+elapsed_ms=$((end_ms - start_ms))
+echo "-- ${elapsed_ms} ms passed"

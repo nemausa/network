@@ -39,7 +39,7 @@ struct login : public data_header {
     }
     char user_name[32];
     char password[32];
-    char data[932];
+    char data[32];
 };
 
 struct login_result : public data_header {
@@ -49,7 +49,7 @@ struct login_result : public data_header {
         result = 0;
     }
     int result;
-    char data[992];
+    char data[92];
 };
 
 struct logout : public data_header {

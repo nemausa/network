@@ -69,14 +69,14 @@ bool easy_tcp_client::on_run() {
         timeval t = {0, 0};
         int ret = select(sock_ + 1, &fd_read, 0, 0, &t);
         if (ret < 0) {
-            printf("socket=%d select task end1\n");
+            // printf("socket=%d select task end1\n");
             close();
             return false;
         }
         if (FD_ISSET(sock_, &fd_read)) {
             FD_CLR(sock_ , &fd_read);
             if (-1 == recv_data(sock_)) {
-                printf("socket=%d slect task end1\n", sock_);
+                // printf("socket=%d slect task end1\n", sock_);
                 close();
                 return false;
             }
@@ -91,12 +91,12 @@ bool easy_tcp_client::is_run() {
 }
 
 int easy_tcp_client::recv_data(SOCKET c_sock) {
-    int len = (int)recv(c_sock, sz_recv, RECV_BUFF_SIZE, 0);
+    char *sz_recv = sz_msg_buf + last_pos;
+    int len = (int)recv(c_sock, sz_recv, RECV_BUFF_SIZE * 5 - last_pos, 0);
     if (len <=0) {
-        printf("sockt=%d disconnect from server\n");
+        // printf("sockt=%d disconnect from server\n");
         return -1;
     }
-    memcpy(sz_msg_buf + last_pos, sz_recv, len);
     last_pos += len;
     while (last_pos >= sizeof(data_header)) {
         data_header *header = (data_header*)sz_msg_buf;
@@ -137,9 +137,9 @@ void easy_tcp_client::on_msg(data_header *header) {
     }
 }
 
-int easy_tcp_client::send_data(data_header *header) {
+int easy_tcp_client::send_data(data_header *header, int length) {
     if (is_run() && header) {
-        return send(sock_, (const char*)header, header->length, 0);
+        return send(sock_, (const char*)header, length, 0);
     }
     return SOCKET_ERROR;
 }

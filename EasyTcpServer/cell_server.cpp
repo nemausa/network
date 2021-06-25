@@ -44,9 +44,10 @@ bool cell_server::on_run() {
         if (clients_buff_.size() > 0) {
             std::lock_guard<std::mutex> lock(mutex_);
             for (auto client : clients_buff_){
-                clients_.push_back(client);
+                clients_[client->sockfd()] = client;
             }
             clients_buff_.clear();
+            client_change_ = true;
         }
 
         if (clients_.empty()) {
@@ -57,34 +58,56 @@ bool cell_server::on_run() {
 
         fd_set fd_read;
         FD_ZERO(&fd_read);
-        SOCKET max_socket = clients_[0]->sockfd();
-        for (int n = (int)clients_.size() - 1; n >= 0; n--) {
-            FD_SET(clients_[n]->sockfd(), &fd_read);
-            if (max_socket < clients_[n]->sockfd()) {
-                max_socket = clients_[n]->sockfd();
+        if (client_change_) {
+            client_change_ = false;
+            max_socket_ = clients_.begin()->first;
+            for (auto iter : clients_) {
+                FD_SET(iter.first, &fd_read);
+                if (max_socket_ < iter.first) {
+                    max_socket_ = iter.first;
+                }
             }
+            memcpy(&fd_back_, &fd_read, sizeof(fd_set));
+        } else {
+            memcpy(&fd_read, &fd_back_, sizeof(fd_set));
         }
 
-        int ret = select(max_socket + 1, &fd_read, nullptr, nullptr, nullptr);
+        int ret = select(max_socket_ + 1, &fd_read, nullptr, nullptr, nullptr);
         if (ret < 0) {
             std::cout << "select task end" << std::endl;
             close();
             return false;
         }
 
-        for (int n= (int)clients_.size() - 1; n >= 0; n--) {
-            if (FD_ISSET(clients_[n]->sockfd(), &fd_read)) {
-                if (-1 == recv_data(clients_[n])) {
-                    auto iter = clients_.begin() + n;
-                    if (iter != clients_.end()) {
-                        create_message("leave");
-                        delete clients_[n];
-                        clients_.erase(iter);
-                    }
+#if _WIN32
+        for (int n = 0; n < fd_read.fd_count; n++) {
+            auto iter = clients_.find(fd_read.fd_array[n]);
+            if (iter != clients_.end()) {
+                if (-1 == recv_data(iter->second)) {
+                    create_message("leave");
+                    client_change_ = true;
+                    clients_.erase(iter->first);
+                }
+            } else {
+                printf("error iter != clients_.end()\n");
+            }
+        }
+#else
+        std::vector<client_socket*> temp;
+        for (auto iter : clients_) {
+            if (FD_ISSET(iter.first, &fd_read)) {
+                if (-1 == recv_data(iter.second)) {
+                    client_change_ = true;
+                    create_message("leave");
+                    temp.push_back(iter.second);
                 }
             }
         }
-
+        for (auto client : temp) {
+            clients_.erase(client->sockfd());
+            delete client;
+        }
+#endif 
 
     }
 }
@@ -92,12 +115,13 @@ bool cell_server::on_run() {
 
 int cell_server::recv_data(client_socket *client) {
     
-    int len = (int)recv(client->sockfd(), sz_recv_, RECV_BUFF_SIZE, 0);
+    char *sz_recv = client->msg_buf() + client->get_pos();
+    int len = (int)recv(client->sockfd(), sz_recv, RECV_BUFF_SIZE - client->get_pos(), 0);
+    create_message("recv");
     if (len <= 0) {
-        printf("client<socket=%d> cloes, task end\n", client->sockfd());
+        // printf("client<socket=%d> cloes, task end\n", client->sockfd());
         return -1;
     }
-    memcpy(client->msg_buf() + client->get_pos(), sz_recv_, len);
     client->set_pos(client->get_pos() + len);
     while (client->get_pos() >= sizeof(data_header)) {
         data_header *header = (data_header*)client->msg_buf();

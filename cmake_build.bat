@@ -5,9 +5,8 @@ set start=%time%
 
 mkdir build
 cd build
-rm -rf *
-cmake -G "Unix Makefiles"  -DCMAKE_BUILD_TYPE=Release ..
-make -j8 install
+cmake -G "Unix Makefiles"  -DCMAKE_BUILD_TYPE=Debug ..
+make -j install
 cd ..
 
 set end=%time%

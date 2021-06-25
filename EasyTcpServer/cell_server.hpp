@@ -13,71 +13,26 @@
 */
 #ifndef CELL_SERVER
 #define CELL_SERVER
-#ifdef _WIN32
-    #define FD_SETSIZE      2506
-    #define WIN32_LEAN_AND_MEAN
-    #define _WINSOCK_DEPRECATED_NO_WARNINGS
-    #include <winsock2.h>
-#else
-    #include <unistd.h>
-    #include <arpa/inet.h>
-    #include <string.h>
-    #define SOCKET int
-    #define INVALID_SOCKET  (SOCKET)(~0)
-    #define SOCKET_ERROR    (SOCKET)(-1)
-#endif
+#include "cell.hpp"
 
-#include <stdio.h>
-#include <iostream>
-#include <vector>
-#include <algorithm>
-#include <thread>
-#include <mutex>
-#include "message_header.hpp"
-#include "obersver.hpp"
-#ifndef RECV_BUFF_SIZE
-#define RECV_BUFF_SIZE 102400
-#endif
-
-
-class client_socket {
+class sendmsg_to_client : public cell_task {
 public:
-    client_socket(SOCKET sockfd = INVALID_SOCKET) {
-        sockfd_ = sockfd;
-        memset(sz_msg_buf, 0, sizeof(sz_msg_buf));
-        last_pos_ = 0;
+    sendmsg_to_client(client_socket *client, data_header *data) {
+        client_ = client;
+        data_ = data;
     }
 
-    SOCKET sockfd() {
-        return sockfd_;
-    }
-
-    char *msg_buf() {
-        return sz_msg_buf;
-    }
-
-    int get_pos() {
-        return last_pos_;
-    }
-
-    void set_pos(int pos) {
-        last_pos_ = pos;
+    void do_task() {
+        client_->send_data(data_);
+        delete data_;
     }
 private:
-    SOCKET sockfd_;
-    char sz_msg_buf[RECV_BUFF_SIZE * 10];
-    int last_pos_;
+    client_socket *client_;
+    data_header *data_;
 };
 
+
 class cell_server : public subject {
-private:
-    SOCKET sockfd_;
-    std::vector<client_socket*> clients_;
-    std::vector<client_socket*> clients_buff_;
-    std::mutex mutex_;
-    std::thread thread_;
-    observer *observer_;
-    char sz_recv_[RECV_BUFF_SIZE];
 public:
     cell_server(SOCKET sockfd = INVALID_SOCKET, observer *ob = nullptr);
     virtual ~cell_server();
@@ -89,6 +44,16 @@ public:
     void add_client(client_socket* client);
     void start();
     size_t count();
+private:
+    SOCKET sockfd_;
+    SOCKET max_socket_;
+    std::mutex mutex_;
+    std::thread thread_;
+    observer *observer_;
+    std::map<SOCKET, client_socket*> clients_;
+    std::vector<client_socket*> clients_buff_;
+    fd_set fd_back_;
+    bool client_change_;
 };
 
 #endif // CELL_SERVER

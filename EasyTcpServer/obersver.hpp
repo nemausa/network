@@ -84,8 +84,9 @@ private:
 class observer : public i_observer{
 public:
     observer(subject &subject) : subject_(subject) {
-        client_count_ = 0;
         msg_count_ = 0;
+        clients_count_ = 0;
+        recv_count_ = 0;
         this->subject_.attach(this);
         std::cout << "Hi, I'm the observer \"" << ++observer::static_number_ << "\".\n";
         this->number_ = observer::static_number_;
@@ -100,10 +101,12 @@ public:
         // print_info();
         if (message_from_subject == "msg") {
             msg_count_++;
+        } else if (message_from_subject == "recv") {
+            recv_count_++;
         } else if (message_from_subject == "join") {
-            client_count_++;
+            clients_count_++;
         } else if (message_from_subject == "leave") {
-            client_count_--;
+            clients_count_--;
         }
     }
 
@@ -118,17 +121,36 @@ public:
     }
 
     int client_count() {
-        return client_count_;
+        return clients_count_;
     }
+
+    void client_count(int _client_count) {
+        clients_count_ = _client_count;
+    }
+
     int msg_count() {
         return msg_count_;
     }
-    std::atomic<int> msg_count_;
+
+    void msg_count(int _msg_count) {
+        msg_count_ = _msg_count;
+    }
+
+    int recv_count() {
+        return recv_count_;
+    }
+
+    void recv_count(int _recv_count) {
+        recv_count_ = _recv_count;
+    }
+    
 private: 
     std::string message_from_subject_;
     subject &subject_;
     static int static_number_;
-    std::atomic<int> client_count_;
+    std::atomic<int> msg_count_;
+    std::atomic<int> clients_count_;
+    std::atomic<int> recv_count_;
     int number_;
 };
 
