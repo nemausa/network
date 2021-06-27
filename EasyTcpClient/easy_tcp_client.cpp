@@ -1,3 +1,4 @@
+#include <signal.h>
 #include "easy_tcp_client.hpp"
 
 easy_tcp_client::easy_tcp_client() {
@@ -14,6 +15,12 @@ void easy_tcp_client::init_socket() {
     WSADATA dat;
     WSAStartup(ver, &dat);
 #endif
+#ifndef _WIN32
+    //忽略异常信号，默认情况会导致进程终止
+     signal(SIGPIPE, SIG_IGN);
+#endif
+
+
     if (INVALID_SOCKET != sock_) {
         printf("socket=%d close old connect\n", sock_);
         close();
