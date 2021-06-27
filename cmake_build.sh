@@ -2,8 +2,8 @@
 
 start_ms=$(ruby -e 'puts (Time.now.to_f * 1000).to_i')
 
-mkdir build
-cd build
+mkdir unix
+cd unix
 cmake -DCMAKE_BUILD_TYPE=Debug ..
 make -j install
 

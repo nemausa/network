@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.0)
 string(REGEX REPLACE ".*/(.*)" "\\1" CURRENT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR} ) 
 project(${CURRENT_FOLDER})
 
-add_definitions(-w)
+add_definitions(-w -DDebug)
 if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang") 
    MESSAGE("-- Clang") 
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") 
@@ -35,3 +35,4 @@ set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/)
 
 add_subdirectory(EasyTcpServer)
 add_subdirectory(EasyTcpClient)
+add_subdirectory(Pool)

@@ -3,9 +3,9 @@
 
 set start=%time%
 
-mkdir build
-cd build
-cmake -G "Unix Makefiles"  -DCMAKE_BUILD_TYPE=Debug ..
+mkdir windows
+cd windows
+cmake -G "Unix Makefiles"  -DCMAKE_BUILD_TYPE=Debug  ..
 make -j install
 cd ..
 

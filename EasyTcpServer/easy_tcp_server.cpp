@@ -16,6 +16,11 @@ SOCKET easy_tcp_server::init_socket() {
     WSAStartup(ver, &dat);
 #endif
 
+#ifndef _WIN32
+    //忽略异常信号，默认情况会导致进程终止
+	signal(SIGPIPE, SIG_IGN);
+#endif
+
     if (INVALID_SOCKET != sockfd_) {
         printf("<socket=%d>close old socket...\n", (int)sockfd_);
         close();
@@ -46,7 +51,13 @@ int easy_tcp_server::bind(const char *ip, unsigned short port) {
     } else {
         sin.sin_addr.s_addr = INADDR_ANY;
     }
+    int option = 1;
+    if ( setsockopt ( sockfd_, SOL_SOCKET, SO_REUSEADDR, &option,
+    sizeof( option ) ) < 0 ){
+        printf( "setsockopt\n" );
+    }
 #endif
+
 
     int ret = ::bind(sockfd_, (sockaddr*)&sin, sizeof(sockaddr));
     if (SOCKET_ERROR == ret) {
