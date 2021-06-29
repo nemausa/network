@@ -16,7 +16,7 @@
 
 #include "cell.hpp"
 #ifndef RECV_BUFF_SIZE
-#define RECV_BUFF_SIZE 10240 * 5
+#define RECV_BUFF_SIZE 10240
 #define SEND_BUFF_SIZE RECV_BUFF_SIZE
 #endif
 

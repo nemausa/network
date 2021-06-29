@@ -13,6 +13,7 @@
 */
 #ifndef EASY_TCP_SERVER
 #define EASY_TCP_SERVER
+#include <signal.h>
 #include "cell_server.hpp"
 #include "timestamp.hpp"
 

@@ -1,6 +1,8 @@
 
 build
 bin
+unix
+windows
 
 .DS_Store
 *.json
