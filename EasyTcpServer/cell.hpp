@@ -37,7 +37,7 @@
 #include <mutex>
 #include "message_header.hpp"
 #include "obersver.hpp"
-#include "client_socket.hpp"
+#include "cell_client.hpp"
 #include "cell_task.hpp"
 
 

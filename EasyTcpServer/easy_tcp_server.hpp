@@ -31,7 +31,7 @@ public:
     int bind(const char* ip, unsigned short port);
     int listen(int n);
     SOCKET accept();
-    void add_client_to_server(client_socket *client);
+    void add_client_to_server(cell_client *client);
     void start(int cellserver_count);
     void close();
     bool is_run();

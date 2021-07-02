@@ -1,6 +1,6 @@
-#include "client_socket.hpp"
+#include "cell_client.hpp"
 
-client_socket::client_socket(SOCKET sockfd) {
+cell_client::cell_client(SOCKET sockfd) {
     sockfd_ = sockfd;
     memset(sz_msg_buf, 0, sizeof(sz_msg_buf));
     memset(send_buf_, 0, SEND_BUFF_SIZE);
@@ -8,23 +8,23 @@ client_socket::client_socket(SOCKET sockfd) {
     last_send_pos_ = 0;
 }
 
-SOCKET client_socket::sockfd() {
+SOCKET cell_client::sockfd() {
     return sockfd_;
 }
 
-char* client_socket::msg_buf() {
+char* cell_client::msg_buf() {
     return sz_msg_buf;
 }
 
-int client_socket::get_pos() {
+int cell_client::get_pos() {
     return last_pos_;
 }
 
-void client_socket::set_pos(int pos) {
+void cell_client::set_pos(int pos) {
     last_pos_ = pos;
 }
 
-int client_socket::send_data(data_header *data) {
+int cell_client::send_data(data_header *data) {
     int ret = SOCKET_ERROR;
     int length = data->length;
     const char *send_data = (const char*)data;
@@ -51,3 +51,19 @@ int client_socket::send_data(data_header *data) {
     }
     return ret;
 }
+
+
+void cell_client::reset_heart() {
+    heart_ = 0;
+}
+
+bool cell_client::check_heart(time_t dt) {
+    heart_ += dt;
+    if (heart_ >= CLIENT_HEART_DEAD_TIME) {
+        printf("check_heart dead: s=%d, time=%d\n", sockfd_, heart_);
+        return true;
+    }
+    return false;
+}
+
+

@@ -17,6 +17,8 @@
 #include <chrono>
 using namespace std::chrono;
 
+
+
 class timestamp {
 public:
     timestamp();
@@ -25,6 +27,11 @@ public:
     double second();
     double millsecond();
     long long microsecond();
+
+	static time_t now_milliseconds()
+	{
+		return duration_cast<milliseconds>(high_resolution_clock::now().time_since_epoch()).count();
+    }
 private:
     time_point<high_resolution_clock> begin_;
 };

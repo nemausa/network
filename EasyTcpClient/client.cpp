@@ -19,7 +19,7 @@ void cmd_thread() {
     }
 }
 
-const int client_count = 1000;
+const int client_count = 8;
 const int thread_count = 4;
 easy_tcp_client *clients[client_count];
 std::atomic_int send_count;

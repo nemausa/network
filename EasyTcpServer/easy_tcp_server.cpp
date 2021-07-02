@@ -91,12 +91,12 @@ SOCKET easy_tcp_server::accept() {
     if (INVALID_SOCKET == c_sock) {
         printf("socket=<%d> error, accept invalid socket\n",(int)sockfd_);
     } else {
-        add_client_to_server(new client_socket(c_sock));
+        add_client_to_server(new cell_client(c_sock));
     }
     return c_sock;
 }
 
-void easy_tcp_server::add_client_to_server(client_socket *client) {
+void easy_tcp_server::add_client_to_server(cell_client *client) {
     auto min_server =  cell_servers_[0];
     for (auto server : cell_servers_) {
         if (min_server->count() > server->count()) {

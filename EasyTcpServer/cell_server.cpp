@@ -1,6 +1,7 @@
 #include "cell_server.hpp"
 #include <functional>
 
+
 int observer::static_number_ = 0;
 
 cell_server::cell_server(SOCKET sockfd, observer* _observer) {
@@ -86,19 +87,22 @@ bool cell_server::on_run() {
                 if (-1 == recv_data(iter->second)) {
                     create_message("leave");
                     client_change_ = true;
-                    clients_.erase(iter->first);
+                    delete iter->second;
+                    closesocket(iter->first);
+                    clients_.erase(iter);
                 }
             } else {
                 printf("error iter != clients_.end()\n");
             }
         }
 #else
-        std::vector<client_socket*> temp;
+        std::vector<cell_client*> temp;
         for (auto iter : clients_) {
-            if (FD_ISSET(iter.first, &fd_read)) {
+            if (FD_ISSET(iter.second->sockfd(), &fd_read)) {
                 if (-1 == recv_data(iter.second)) {
                     client_change_ = true;
                     create_message("leave");
+                    ::close(iter.first);
                     temp.push_back(iter.second);
                 }
             }
@@ -108,12 +112,12 @@ bool cell_server::on_run() {
             delete client;
         }
 #endif 
-
+        check_time();
     }
 }
 
 
-int cell_server::recv_data(client_socket *client) {
+int cell_server::recv_data(cell_client *client) {
     
     char *sz_recv = client->msg_buf() + client->get_pos();
     int len = (int)recv(client->sockfd(), sz_recv, RECV_BUFF_SIZE - client->get_pos(), 0);
@@ -127,7 +131,7 @@ int cell_server::recv_data(client_socket *client) {
         data_header *header = (data_header*)client->msg_buf();
         if (client->get_pos() >= header->length) {
             int size = client->get_pos() - header->length;
-            on_msg(client->sockfd(), header);
+            on_msg(client, header);
             memcpy(client->msg_buf(), client->msg_buf() + header->length, size);
             client->set_pos(size);
         } else {
@@ -137,11 +141,34 @@ int cell_server::recv_data(client_socket *client) {
     return 0;
 }
 
-void cell_server::on_msg(SOCKET c_sock, data_header *header) {
+void cell_server::on_msg(cell_client *client, data_header *header) {
     create_message("msg");
+    switch (header->cmd) {
+    case CMD_LOGIN: {
+        // client->reset_heart();
+        login *lg = (login*)header;
+        login_result ret ;
+        // client->send_data(&ret);
+    }
+    break;
+    case CMD_LOGOUT: {
+
+    }
+    break;
+    case CMD_C2S_HEART: {
+        client->reset_heart();
+        s2c_heart ret;
+        client->send_data(&ret);
+    }
+    break;
+    default: {
+        printf("socket=%d receive undefine command, length=%d\n", client->sockfd(), header->length);
+    }
+    break;
+    }
 }
 
-void cell_server::add_client(client_socket* client) {
+void cell_server::add_client(cell_client* client) {
     std::lock_guard<std::mutex> lock(mutex_);
     clients_buff_.push_back(client);
 }
@@ -152,4 +179,22 @@ void cell_server::start() {
 
 size_t cell_server::count() {
     return clients_.size() + clients_buff_.size();
+}
+
+void cell_server::check_time() {
+    auto now = timestamp::now_milliseconds();
+    auto dt = now -  old_clock_;
+    old_clock_ = now;
+    for (auto iter = clients_.begin(); iter != clients_.end(); ) {
+        if (iter->second->check_heart(dt)) {
+            create_message("leave");
+            client_change_ = true;
+            delete iter->second;
+            auto iterold = iter;
+            iter++;
+            clients_.erase(iterold);
+            continue;
+        }
+        iter++;
+    }
 }
