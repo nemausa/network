@@ -27,8 +27,9 @@ int main() {
     std::thread t1(cmd_thread);
     t1.detach();
 
+    std::chrono::milliseconds t(10);
     while (is_run){
-        server.on_run();
+        std::this_thread::sleep_for(t);
     }
     server.close();
     printf("exit\n");

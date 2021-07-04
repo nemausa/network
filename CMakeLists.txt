@@ -29,7 +29,7 @@ if(CMAKE_CL_64)    #CMAKE的内建变量，如果是true，就说明编译器的
 else()
    set(ADDRESS_MODEL 32)
    set(NODE_TARGET x86)
-endif()
+endif() 
 
 set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/)
 

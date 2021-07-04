@@ -110,15 +110,24 @@ void easy_tcp_server::add_client_to_server(cell_client *client) {
 
 void easy_tcp_server::start(int cell_server_count) {
     for (int n = 0; n < cell_server_count; n++) {
-        auto server = new cell_server(sockfd_, observer_);
+        auto server = new cell_server(n, observer_);
         cell_servers_.push_back(server);
         server->start();
     }
+    thread_.start(nullptr,
+        [this](cell_thread* pthread) {
+            on_run(pthread);
+        });
 
 }
 
 void easy_tcp_server::close() {
+    printf("easy_tcp_server close begin\n");
     if (sockfd_ != INVALID_SOCKET) {
+        for (auto s : cell_servers_) {
+            delete s;
+        }
+        cell_servers_.clear();
 #ifdef _WIN32
         closesocket(sockfd_);
         WSACleanup();
@@ -126,15 +135,15 @@ void easy_tcp_server::close() {
         ::close(sockfd_);
 #endif        
     }
-
+    printf("easy_tcp_server close end\n");
 }
 
 bool easy_tcp_server::is_run() {
     return sockfd_ != INVALID_SOCKET;
 }
 
-bool easy_tcp_server::on_run() {
-    if (is_run()) {
+void easy_tcp_server::on_run(cell_thread *pthread) {
+    while (pthread->is_run()) {
         time4msg();
         fd_set fd_read;
         FD_ZERO(&fd_read);
@@ -143,19 +152,15 @@ bool easy_tcp_server::on_run() {
         int ret = select(sockfd_ + 1, &fd_read, nullptr, nullptr, &t);
         if (ret < 0) {
             std::cout << "accept select end" << std::endl;
-            close();
-            return false;
+            pthread->exit();
+            break;
         }
 
         if (FD_ISSET(sockfd_, &fd_read)) {
             FD_CLR(sockfd_, &fd_read);
             accept();
-            return true;
         }
-
-        return true;
     }
-
 }
 
 

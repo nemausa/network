@@ -8,6 +8,17 @@ cell_client::cell_client(SOCKET sockfd) {
     last_send_pos_ = 0;
 }
 
+cell_client::~cell_client() {
+    if (INVALID_SOCKET != sockfd_) {
+#ifdef _WIN32
+        ::closesocket(sockfd_);
+#else
+        ::close(sockfd_);
+#endif
+        sockfd_ = INVALID_SOCKET;
+    }
+}
+
 SOCKET cell_client::sockfd() {
     return sockfd_;
 }

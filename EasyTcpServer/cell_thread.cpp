@@ -1,0 +1,53 @@
+#include "cell_thread.hpp"
+
+
+cell_thread::cell_thread() {
+    is_run_ = false;
+}
+
+void cell_thread::start(event_call on_create,
+        event_call on_run,
+        event_call on_destory) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (!is_run()) {
+        is_run_ = true;
+        if (on_create)
+            on_create_ = on_create;
+        if (on_run)
+            on_run_ = on_run;
+        if (on_destory)
+            on_destory_ = on_destory;
+
+        std::thread(std::mem_fn(&cell_thread::on_work), this).detach();
+    }
+}
+
+void cell_thread::close() {
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (is_run()) {
+        is_run_ = false;
+        sem_.wait();
+    }
+}
+
+void cell_thread::exit() {
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (is_run()) {
+        is_run_ = false;
+    }
+}
+
+bool cell_thread::is_run() {
+    return is_run_;
+}
+
+void cell_thread::on_work() {
+    if (on_create_)
+        on_create_(this);
+    if (on_run_)
+        on_run_(this);
+    if (on_destory_)
+        on_destory_(this);
+
+    sem_.wake_up();
+}

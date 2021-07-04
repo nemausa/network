@@ -4,44 +4,47 @@
 
 int observer::static_number_ = 0;
 
-cell_server::cell_server(SOCKET sockfd, observer* _observer) {
-    sockfd_ = sockfd;
+cell_server::cell_server(int id, observer* _observer) {
     observer_ = _observer;
     attach(observer_);
+    id_ = id;
+    task_server_.service_id_ = id;
 } 
 
 cell_server::~cell_server() {
     close();
-    sockfd_ = INVALID_SOCKET;
+}
+
+void cell_server::start() {
+    if (!is_run_) {
+        is_run_ = true;
+        std::thread(std::mem_fn(&cell_server::on_run), this).detach();
+        task_server_.start();
+    }
 }
 
 void cell_server::close() {
-    if (sockfd_ == INVALID_SOCKET) {
+    if (is_run_) {
 #ifdef _WIN32
         for (int n = (int)clients_.size() - 1; n >= 0; n--) {
             closesocket(clients_[n]->sockfd());
             delete clients_[n];
         }
-        closesocket(sockfd_);
         WSACleanup();
 #else
         for (int n = (int)clients_.size() - 1; n >= 0; n--) {
-            ::close(clients_[n]->sockfd());
             delete clients_[n];
         }
-        ::close(sockfd_);
 #endif
         clients_.clear();
     }
 }
 
-bool cell_server::is_run() {
-    return sockfd_ != INVALID_SOCKET;
-}
+
 
 
 bool cell_server::on_run() {
-    while (is_run()) {
+    while (is_run_) {
         if (clients_buff_.size() > 0) {
             std::lock_guard<std::mutex> lock(mutex_);
             for (auto client : clients_buff_){
@@ -80,6 +83,15 @@ bool cell_server::on_run() {
             return false;
         }
 
+        read_data(fd_read);
+        check_time();
+    }
+
+    clear_client();
+
+}
+
+void cell_server::read_data(fd_set &fd_read) {
 #if _WIN32
         for (int n = 0; n < fd_read.fd_count; n++) {
             auto iter = clients_.find(fd_read.fd_array[n]);
@@ -88,7 +100,6 @@ bool cell_server::on_run() {
                     create_message("leave");
                     client_change_ = true;
                     delete iter->second;
-                    closesocket(iter->first);
                     clients_.erase(iter);
                 }
             } else {
@@ -102,7 +113,6 @@ bool cell_server::on_run() {
                 if (-1 == recv_data(iter.second)) {
                     client_change_ = true;
                     create_message("leave");
-                    ::close(iter.first);
                     temp.push_back(iter.second);
                 }
             }
@@ -112,8 +122,6 @@ bool cell_server::on_run() {
             delete client;
         }
 #endif 
-        check_time();
-    }
 }
 
 
@@ -173,9 +181,20 @@ void cell_server::add_client(cell_client* client) {
     clients_buff_.push_back(client);
 }
 
-void cell_server::start() {
-    thread_ = std::thread(std::mem_fn(&cell_server::on_run), this);
+void cell_server::clear_client() {
+    for (auto iter : clients_) {
+        delete iter.second;
+    }
+    for (auto iter : clients_buff_) {
+        delete iter;
+    }
+
+    clients_.clear();
+    clients_buff_.clear();
+
 }
+
+
 
 size_t cell_server::count() {
     return clients_.size() + clients_buff_.size();

@@ -16,14 +16,16 @@
 #include <signal.h>
 #include "cell_server.hpp"
 #include "timestamp.hpp"
+#include "cell_thread.hpp"
 
 
 class easy_tcp_server : public subject {
 private:
-    SOCKET sockfd_;
+    cell_thread thread_;
     std::vector<cell_server*> cell_servers_;
-    timestamp time_;
     observer* observer_;
+    SOCKET sockfd_;
+    timestamp time_;
 public:
     easy_tcp_server();
     ~easy_tcp_server();
@@ -35,7 +37,7 @@ public:
     void start(int cellserver_count);
     void close();
     bool is_run();
-    bool on_run();
+    void on_run(cell_thread *pthread);
     void time4msg();
 
 };

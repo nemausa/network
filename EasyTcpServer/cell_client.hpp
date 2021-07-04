@@ -26,6 +26,7 @@
 class cell_client {
 public:
     cell_client(SOCKET sockfd = INVALID_SOCKET);
+    ~cell_client();
     SOCKET sockfd();
     char *msg_buf();
     int get_pos();
