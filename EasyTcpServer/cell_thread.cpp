@@ -9,7 +9,7 @@ void cell_thread::start(event_call on_create,
         event_call on_run,
         event_call on_destory) {
     std::lock_guard<std::mutex> lock(mutex_);
-    if (!is_run()) {
+    if (!is_run_) {
         is_run_ = true;
         if (on_create)
             on_create_ = on_create;
@@ -24,7 +24,7 @@ void cell_thread::start(event_call on_create,
 
 void cell_thread::close() {
     std::lock_guard<std::mutex> lock(mutex_);
-    if (is_run()) {
+    if (is_run_) {
         is_run_ = false;
         sem_.wait();
     }
@@ -32,7 +32,7 @@ void cell_thread::close() {
 
 void cell_thread::exit() {
     std::lock_guard<std::mutex> lock(mutex_);
-    if (is_run()) {
+    if (is_run_) {
         is_run_ = false;
     }
 }

@@ -13,9 +13,11 @@
 */
 #ifndef CELL_SERVER
 #define CELL_SERVER
+
 #include "cell.hpp"
 #include "timestamp.hpp"
 #include "cell_semaphore.hpp"
+#include "cell_thread.hpp"
 
 class sendmsg_to_client : public cell_task {
 public:
@@ -40,14 +42,16 @@ public:
     virtual ~cell_server();
     virtual void on_msg(cell_client *client, data_header *header);
     void close();
-    bool on_run();
+    bool on_run(cell_thread *pthread);
     void read_data(fd_set &fd_read);
+    void write_data(fd_set &fd_write);
     int recv_data(cell_client *client);
     void add_client(cell_client* client);
     void clear_client();
     void start();
     size_t count();
     void check_time();
+    void on_leave(cell_client *pclient);
 private:
     std::map<SOCKET, cell_client*> clients_;
     std::vector<cell_client*> clients_buff_;
@@ -58,10 +62,10 @@ private:
     observer *observer_;
     time_t old_clock_ = timestamp::now_milliseconds();
     time_t now_clock_;
+    cell_thread thread_;
     cell_semaphore sem_;
     int id_;
     bool client_change_;
-    bool is_run_;
 };
 
 #endif // CELL_SERVER

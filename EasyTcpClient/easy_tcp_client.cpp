@@ -1,6 +1,8 @@
 #include <signal.h>
 #include "easy_tcp_client.hpp"
 
+extern std::atomic_int msg_count_;
+
 easy_tcp_client::easy_tcp_client() {
     sock_ = INVALID_SOCKET;
 }
@@ -121,6 +123,7 @@ int easy_tcp_client::recv_data(SOCKET c_sock) {
 
 
 void easy_tcp_client::on_msg(data_header *header) {
+    msg_count_++;
     switch (header->cmd) {
     case CMD_LOGIN_RESULT: {
         // printf("socket=%d CMD_LOGIN_RESULT, data length=%d\n", sock_, header->length);

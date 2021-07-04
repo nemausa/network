@@ -35,14 +35,9 @@ void cell_client::set_pos(int pos) {
     last_pos_ = pos;
 }
 
-int cell_client::send_data_real(data_header *header) {
-    send_data(header);
-    send_data_real();
-}
-
 int cell_client::send_data_real() {
-    int ret = SOCKET_ERROR;
-    if (last_send_pos_ > 0 && SOCKET_ERROR != sockfd_) {
+    int ret = 0;
+    if (last_send_pos_ > 0 && INVALID_SOCKET != sockfd_) {
         ret = send(sockfd_, send_buf_, last_send_pos_, 0);
         last_send_pos_ = 0;
         reset_send_time();
@@ -55,24 +50,14 @@ int cell_client::send_data(data_header *data) {
     int length = data->length;
     const char *send_data = (const char*)data;
     
-    while (true) {
-        if (length + last_send_pos_ >= SEND_BUFF_SIZE) {
-            // 可拷贝的数据长度
-            int copy_len = SEND_BUFF_SIZE - last_send_pos_;
-            memcpy(send_buf_ + last_send_pos_, send_data, copy_len);
-            // 剩余的数据量
-            send_data += copy_len;
-            length -= copy_len;
-            ret = send(sockfd_, send_buf_, SEND_BUFF_SIZE, 0);
-            last_send_pos_ = 0;
-            if (SOCKET_ERROR == ret) {
-                return ret;
-            }
-        } else {
-            memcpy(send_buf_ + last_send_pos_, send_data, length);
-            last_send_pos_ += length;
-            break;
+    if (length + last_send_pos_ <= SEND_BUFF_SIZE) {
+        memcpy(send_buf_ +last_send_pos_, send_data, length);
+        last_send_pos_ += length;
+        if (last_pos_ == SEND_BUFF_SIZE) {
+
         }
+        return length;
+    } else {
 
     }
     return ret;

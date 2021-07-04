@@ -148,7 +148,7 @@ void easy_tcp_server::on_run(cell_thread *pthread) {
         fd_set fd_read;
         FD_ZERO(&fd_read);
         FD_SET(sockfd_, &fd_read);
-        timeval t = {0, 10};
+        timeval t = {0, 1};
         int ret = select(sockfd_ + 1, &fd_read, nullptr, nullptr, &t);
         if (ret < 0) {
             std::cout << "accept select end" << std::endl;

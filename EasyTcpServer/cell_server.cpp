@@ -16,35 +16,24 @@ cell_server::~cell_server() {
 }
 
 void cell_server::start() {
-    if (!is_run_) {
-        is_run_ = true;
-        std::thread(std::mem_fn(&cell_server::on_run), this).detach();
-        task_server_.start();
-    }
+    task_server_.start();
+    thread_.start(nullptr,
+        [this](cell_thread *pthread) {
+            on_run(pthread);
+        },
+        [this](cell_thread *pthread) {
+            clear_client();
+        }
+    );
 }
 
 void cell_server::close() {
-    if (is_run_) {
-#ifdef _WIN32
-        for (int n = (int)clients_.size() - 1; n >= 0; n--) {
-            closesocket(clients_[n]->sockfd());
-            delete clients_[n];
-        }
-        WSACleanup();
-#else
-        for (int n = (int)clients_.size() - 1; n >= 0; n--) {
-            delete clients_[n];
-        }
-#endif
-        clients_.clear();
-    }
+    task_server_.close();
+    thread_.close();
 }
 
-
-
-
-bool cell_server::on_run() {
-    while (is_run_) {
+bool cell_server::on_run(cell_thread *pthread) {
+    while (pthread->is_run()) {
         if (clients_buff_.size() > 0) {
             std::lock_guard<std::mutex> lock(mutex_);
             for (auto client : clients_buff_){
@@ -57,13 +46,15 @@ bool cell_server::on_run() {
         if (clients_.empty()) {
             std::chrono::milliseconds t(1);
             std::this_thread::sleep_for(t);
+            old_clock_ = timestamp::now_milliseconds();
             continue;
         }
 
         fd_set fd_read;
-        FD_ZERO(&fd_read);
+        fd_set fd_write;
         if (client_change_) {
             client_change_ = false;
+            FD_ZERO(&fd_read);
             max_socket_ = clients_.begin()->first;
             for (auto iter : clients_) {
                 FD_SET(iter.first, &fd_read);
@@ -75,21 +66,21 @@ bool cell_server::on_run() {
         } else {
             memcpy(&fd_read, &fd_back_, sizeof(fd_set));
         }
-
-        int ret = select(max_socket_ + 1, &fd_read, nullptr, nullptr, nullptr);
+        memcpy(&fd_write, &fd_read, sizeof(fd_set));
+        timeval t{0, 1};
+        int ret = select(max_socket_ + 1, &fd_read, &fd_write, nullptr, &t);
         if (ret < 0) {
             std::cout << "select task end" << std::endl;
-            close();
-            return false;
+            pthread->exit();
+            break;
         }
 
         read_data(fd_read);
+        write_data(fd_write);
         check_time();
     }
-
-    clear_client();
-
 }
+
 
 void cell_server::read_data(fd_set &fd_read) {
 #if _WIN32
@@ -97,9 +88,7 @@ void cell_server::read_data(fd_set &fd_read) {
             auto iter = clients_.find(fd_read.fd_array[n]);
             if (iter != clients_.end()) {
                 if (-1 == recv_data(iter->second)) {
-                    create_message("leave");
-                    client_change_ = true;
-                    delete iter->second;
+                    on_leave(iter->second);
                     clients_.erase(iter);
                 }
             } else {
@@ -107,23 +96,47 @@ void cell_server::read_data(fd_set &fd_read) {
             }
         }
 #else
-        std::vector<cell_client*> temp;
-        for (auto iter : clients_) {
-            if (FD_ISSET(iter.second->sockfd(), &fd_read)) {
-                if (-1 == recv_data(iter.second)) {
-                    client_change_ = true;
-                    create_message("leave");
-                    temp.push_back(iter.second);
+        for (auto iter = clients_.begin(); iter != clients_.end();) {
+            if (FD_ISSET(iter->second->sockfd(), &fd_read)) {
+                if (-1 == recv_data(iter->second)) {
+                    on_leave(iter->second);
+                    auto iter_old = iter;
+                    iter++;
+                    clients_.erase(iter_old);
+                    continue;
                 }
             }
-        }
-        for (auto client : temp) {
-            clients_.erase(client->sockfd());
-            delete client;
+            iter++;
         }
 #endif 
 }
 
+void cell_server::write_data(fd_set &fd_write) {
+#ifdef _WIN32
+    for (int n = 0; n < fd_write.fd_count; n++) {
+        auto iter = clients_.find(fd_write.fd_array[n]);
+        if (iter != clients_.end()) {
+            if (-1 == iter->second->send_data_real()) {
+                on_leave(iter->second);
+                clients_.erase(iter);
+            }
+        }
+    }
+#else
+    for (auto iter = clients_.begin(); iter != clients_.end();) {
+        if (FD_ISSET(iter->second->sockfd(), &fd_write)) {
+            if (-1 == iter->second->send_data_real()) {
+                on_leave(iter->second);
+                auto iter_old = iter;
+                iter++;
+                clients_.erase(iter_old);
+                continue;
+            }
+        }
+        iter++;
+    }
+#endif
+}
 
 int cell_server::recv_data(cell_client *client) {
     
@@ -156,7 +169,9 @@ void cell_server::on_msg(cell_client *client, data_header *header) {
         client->reset_heart_time();
         login *lg = (login*)header;
         login_result ret ;
-        // client->send_data(&ret);
+        if (SOCKET_ERROR == client->send_data(&ret)) {
+            printf("socket=%d\n", client->sockfd());
+        }
     }
     break;
     case CMD_LOGOUT: {
@@ -206,15 +221,19 @@ void cell_server::check_time() {
     old_clock_ = now;
     for (auto iter = clients_.begin(); iter != clients_.end(); ) {
         if (iter->second->check_heart_time(dt)) {
-            create_message("leave");
-            client_change_ = true;
-            delete iter->second;
+            on_leave(iter->second);
             auto iterold = iter;
             iter++;
             clients_.erase(iterold);
             continue;
         }
-        iter->second->check_send_time(dt);
+        // iter->second->check_send_time(dt);
         iter++;
     }
+}
+
+void cell_server::on_leave(cell_client *pclient) {
+    create_message("levae");
+    client_change_ = true;
+    delete pclient;
 }

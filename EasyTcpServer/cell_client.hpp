@@ -31,7 +31,6 @@ public:
     char *msg_buf();
     int get_pos();
     void set_pos(int pos);
-    int send_data_real(data_header *header);
     int send_data_real();
     int send_data(data_header *header);
     void reset_heart_time();

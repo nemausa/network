@@ -24,6 +24,7 @@ const int thread_count = 1;
 easy_tcp_client *clients[client_count];
 std::atomic_int send_count;
 std::atomic_int ready_count;
+std::atomic_int msg_count_;
 
 void send_thread(int id) {
     printf("thread<%d> start\n", id);
@@ -75,6 +76,7 @@ void send_thread(int id) {
 int main() {
     ready_count = 0;
     send_count = 0;
+    msg_count_ = 0;
     std::thread t1(cmd_thread);
 
     for (int n = 0; n < thread_count; n++) {
@@ -85,8 +87,9 @@ int main() {
     while(is_run) {
         auto t = stamp.second();
         if (t > 1.0) {
-            printf("thread<%d>, clients<%d>, time<%lf>, send<%d>\n", thread_count, client_count, t, (int)(send_count / t));
+            printf("thread<%d>, clients<%d>, time<%lf>, send<%d>, msg<%d>\n", thread_count, client_count, t, (int)(send_count / t), (int)msg_count_);
             send_count = 0;
+            msg_count_ = 0;
             stamp.update();
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
