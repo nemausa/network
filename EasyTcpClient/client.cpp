@@ -19,8 +19,8 @@ void cmd_thread() {
     }
 }
 
-const int client_count = 8;
-const int thread_count = 4;
+const int client_count = 1;
+const int thread_count = 1;
 easy_tcp_client *clients[client_count];
 std::atomic_int send_count;
 std::atomic_int ready_count;
@@ -57,6 +57,8 @@ void send_thread(int id) {
                 send_count++;
             }
             clients[n]->on_run();
+            std::chrono::milliseconds t(100);
+            std::this_thread::sleep_for(t);
         }
     }
 

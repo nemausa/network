@@ -145,7 +145,7 @@ void cell_server::on_msg(cell_client *client, data_header *header) {
     create_message("msg");
     switch (header->cmd) {
     case CMD_LOGIN: {
-        // client->reset_heart();
+        client->reset_heart_time();
         login *lg = (login*)header;
         login_result ret ;
         // client->send_data(&ret);
@@ -156,7 +156,7 @@ void cell_server::on_msg(cell_client *client, data_header *header) {
     }
     break;
     case CMD_C2S_HEART: {
-        client->reset_heart();
+        client->reset_heart_time();
         s2c_heart ret;
         client->send_data(&ret);
     }
@@ -186,7 +186,7 @@ void cell_server::check_time() {
     auto dt = now -  old_clock_;
     old_clock_ = now;
     for (auto iter = clients_.begin(); iter != clients_.end(); ) {
-        if (iter->second->check_heart(dt)) {
+        if (iter->second->check_heart_time(dt)) {
             create_message("leave");
             client_change_ = true;
             delete iter->second;
@@ -195,6 +195,7 @@ void cell_server::check_time() {
             clients_.erase(iterold);
             continue;
         }
+        iter->second->check_send_time(dt);
         iter++;
     }
 }

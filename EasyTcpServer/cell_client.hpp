@@ -21,6 +21,7 @@
 #endif
 
 #define CLIENT_HEART_DEAD_TIME  10000
+#define CLIENT_SEND_BUFF_TIME   200
 
 class cell_client {
 public:
@@ -29,17 +30,21 @@ public:
     char *msg_buf();
     int get_pos();
     void set_pos(int pos);
+    int send_data_real(data_header *header);
+    int send_data_real();
     int send_data(data_header *header);
-    void reset_heart();
-    bool check_heart(time_t dt);
-
+    void reset_heart_time();
+    void reset_send_time();
+    bool check_heart_time(time_t dt);
+    bool check_send_time(time_t dt);
 private:
     SOCKET sockfd_;
     char sz_msg_buf[RECV_BUFF_SIZE];
     char send_buf_[SEND_BUFF_SIZE];
     int last_pos_;
     int last_send_pos_;
-    time_t heart_;
+    time_t heart_time_;
+    time_t send_time_;
 };
 
 #endif // CELL_CLIENT
