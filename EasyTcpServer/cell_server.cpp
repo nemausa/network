@@ -1,6 +1,6 @@
-#include "cell_server.hpp"
 #include <functional>
-
+#include "cell_server.hpp"
+#include "cell_client.hpp"
 
 int observer::static_number_ = 0;
 
@@ -36,8 +36,8 @@ bool cell_server::on_run(cell_thread *pthread) {
     while (pthread->is_run()) {
         if (clients_buff_.size() > 0) {
             std::lock_guard<std::mutex> lock(mutex_);
-            for (auto client : clients_buff_){
-                clients_[client->sockfd()] = client;
+            for (auto pclient : clients_buff_){
+                clients_[pclient->sockfd()] = pclient;
             }
             clients_buff_.clear();
             client_change_ = true;
@@ -138,39 +138,28 @@ void cell_server::write_data(fd_set &fd_write) {
 #endif
 }
 
-int cell_server::recv_data(cell_client *client) {
-    
-    char *sz_recv = client->msg_buf() + client->get_pos();
-    int len = (int)recv(client->sockfd(), sz_recv, RECV_BUFF_SIZE - client->get_pos(), 0);
-    create_message("recv");
+int cell_server::recv_data(cell_client *pclient) {
+    int len = pclient->recv_data();
     if (len <= 0) {
-        // printf("client<socket=%d> cloes, task end\n", client->sockfd());
         return -1;
-    }
-    client->set_pos(client->get_pos() + len);
-    while (client->get_pos() >= sizeof(data_header)) {
-        data_header *header = (data_header*)client->msg_buf();
-        if (client->get_pos() >= header->length) {
-            int size = client->get_pos() - header->length;
-            on_msg(client, header);
-            memcpy(client->msg_buf(), client->msg_buf() + header->length, size);
-            client->set_pos(size);
-        } else {
-            break;
-        }
-    }
+    }   
+    create_message("recv");
+    while (pclient->has_msg()) {
+        on_msg(pclient, pclient->front_msg());
+        pclient->pop_msg();
+    } 
     return 0;
 }
 
-void cell_server::on_msg(cell_client *client, data_header *header) {
+void cell_server::on_msg(cell_client *pclient, data_header *header) {
     create_message("msg");
     switch (header->cmd) {
     case CMD_LOGIN: {
-        client->reset_heart_time();
+        pclient->reset_heart_time();
         login *lg = (login*)header;
         login_result ret ;
-        if (SOCKET_ERROR == client->send_data(&ret)) {
-            printf("socket=%d\n", client->sockfd());
+        if (SOCKET_ERROR == pclient->send_data(&ret)) {
+            printf("socket=%d\n", pclient->sockfd());
         }
     }
     break;
@@ -179,21 +168,21 @@ void cell_server::on_msg(cell_client *client, data_header *header) {
     }
     break;
     case CMD_C2S_HEART: {
-        client->reset_heart_time();
+        pclient->reset_heart_time();
         s2c_heart ret;
-        client->send_data(&ret);
+        pclient->send_data(&ret);
     }
     break;
     default: {
-        printf("socket=%d receive undefine command, length=%d\n", client->sockfd(), header->length);
+        printf("socket=%d receive undefine command, length=%d\n", pclient->sockfd(), header->length);
     }
     break;
     }
 }
 
-void cell_server::add_client(cell_client* client) {
+void cell_server::add_client(cell_client* pclient) {
     std::lock_guard<std::mutex> lock(mutex_);
-    clients_buff_.push_back(client);
+    clients_buff_.push_back(pclient);
 }
 
 void cell_server::clear_client() {

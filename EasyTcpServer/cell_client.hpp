@@ -15,6 +15,8 @@
 #define CELL_CLIENT
 
 #include "cell.hpp"
+#include "cell_buffer.hpp"
+
 #ifndef RECV_BUFF_SIZE
 #define RECV_BUFF_SIZE 10240
 #define SEND_BUFF_SIZE RECV_BUFF_SIZE
@@ -28,9 +30,10 @@ public:
     cell_client(SOCKET sockfd = INVALID_SOCKET);
     ~cell_client();
     SOCKET sockfd();
-    char *msg_buf();
-    int get_pos();
-    void set_pos(int pos);
+    int recv_data();
+    bool has_msg();
+    data_header *front_msg();
+    void pop_msg();
     int send_data_real();
     int send_data(data_header *header);
     void reset_heart_time();
@@ -38,13 +41,15 @@ public:
     bool check_heart_time(time_t dt);
     bool check_send_time(time_t dt);
 private:
-    SOCKET sockfd_;
-    char sz_msg_buf[RECV_BUFF_SIZE];
-    char send_buf_[SEND_BUFF_SIZE];
-    int last_pos_;
-    int last_send_pos_;
+    cell_buffer recv_buffer_;
+    cell_buffer send_buffer_;
     time_t heart_time_;
     time_t send_time_;
+    SOCKET sockfd_;
+    int last_pos_;
+    int last_send_pos_;
+    int id_;
+    int service_id_;
 };
 
 #endif // CELL_CLIENT

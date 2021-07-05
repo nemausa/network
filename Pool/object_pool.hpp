@@ -20,7 +20,7 @@
 
 #ifdef _DEBUG
     #ifndef xprintf
-    #include <stdio.h>
+    #include <stdio.hpp>
     #define xprintf(fmt,...) \
 	printf("%s(%d)-<%s>: "##fmt, __FILE__, __LINE__, __FUNCTION__, ##__VA_ARGS__
     #endif

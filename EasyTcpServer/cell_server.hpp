@@ -18,6 +18,9 @@
 #include "timestamp.hpp"
 #include "cell_semaphore.hpp"
 #include "cell_thread.hpp"
+#include "cell_client.hpp"
+#include "cell_task.hpp"
+#include "cell_buffer.hpp"
 
 class sendmsg_to_client : public cell_task {
 public:
@@ -38,7 +41,7 @@ private:
 
 class cell_server : public subject {
 public:
-    cell_server(SOCKET sockfd = INVALID_SOCKET, observer *ob = nullptr);
+    cell_server(int id, observer *ob = nullptr);
     virtual ~cell_server();
     virtual void on_msg(cell_client *client, data_header *header);
     void close();

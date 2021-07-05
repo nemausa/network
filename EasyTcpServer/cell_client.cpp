@@ -1,14 +1,18 @@
 #include "cell_client.hpp"
 
-cell_client::cell_client(SOCKET sockfd) {
+cell_client::cell_client(SOCKET sockfd):
+    send_buffer_(SEND_BUFF_SIZE),
+    recv_buffer_(RECV_BUFF_SIZE) {
+    static int n = 1;
     sockfd_ = sockfd;
-    memset(sz_msg_buf, 0, sizeof(sz_msg_buf));
-    memset(send_buf_, 0, SEND_BUFF_SIZE);
     last_pos_ = 0;
     last_send_pos_ = 0;
+    id_ = n++;
+    service_id_ = -1;
 }
 
 cell_client::~cell_client() {
+    printf("s=%d client%d", service_id_, id_);
     if (INVALID_SOCKET != sockfd_) {
 #ifdef _WIN32
         ::closesocket(sockfd_);
@@ -23,44 +27,33 @@ SOCKET cell_client::sockfd() {
     return sockfd_;
 }
 
-char* cell_client::msg_buf() {
-    return sz_msg_buf;
+int cell_client::recv_data() {
+    return recv_buffer_.recv_from_socket(sockfd_);
+}
+bool cell_client::has_msg() {
+    return recv_buffer_.has_msg();
 }
 
-int cell_client::get_pos() {
-    return last_pos_;
+data_header *cell_client::front_msg() {
+    return (data_header*)recv_buffer_.data();
 }
 
-void cell_client::set_pos(int pos) {
-    last_pos_ = pos;
+void cell_client::pop_msg() {
+    if (has_msg()) {
+        recv_buffer_.pop(front_msg()->length);
+    }
 }
 
 int cell_client::send_data_real() {
-    int ret = 0;
-    if (last_send_pos_ > 0 && INVALID_SOCKET != sockfd_) {
-        ret = send(sockfd_, send_buf_, last_send_pos_, 0);
-        last_send_pos_ = 0;
-        reset_send_time();
-    }
-    return ret;
+    reset_send_time();
+    return send_buffer_.send_to_socket(sockfd_);
 }
 
 int cell_client::send_data(data_header *data) {
-    int ret = SOCKET_ERROR;
-    int length = data->length;
-    const char *send_data = (const char*)data;
-    
-    if (length + last_send_pos_ <= SEND_BUFF_SIZE) {
-        memcpy(send_buf_ +last_send_pos_, send_data, length);
-        last_send_pos_ += length;
-        if (last_pos_ == SEND_BUFF_SIZE) {
-
-        }
-        return length;
-    } else {
-
+    if (send_buffer_.push((const char*)data, data->length)) {
+        return data->length;
     }
-    return ret;
+    return SOCKET_ERROR;
 }
 
 
