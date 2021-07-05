@@ -6,6 +6,7 @@ cell_buffer::cell_buffer(int size) {
     last_ = 0;
     size_ = size;
     full_count_ = 0;
+    data_ = new char[size];
 }
 
 cell_buffer::~cell_buffer() {

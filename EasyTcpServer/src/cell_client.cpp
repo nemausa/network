@@ -12,7 +12,7 @@ cell_client::cell_client(SOCKET sockfd):
 }
 
 cell_client::~cell_client() {
-    printf("s=%d client%d", service_id_, id_);
+    printf("s=%d client%d\n", service_id_, id_);
     if (INVALID_SOCKET != sockfd_) {
 #ifdef _WIN32
         ::closesocket(sockfd_);

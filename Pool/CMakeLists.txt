@@ -3,8 +3,8 @@ cmake_minimum_required(VERSION 3.0)
 string(REGEX REPLACE ".*/(.*)" "\\1" CURRENT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR} ) 
 project(${CURRENT_FOLDER})
 
-
-aux_source_directory(. SRC_LIST_CPP)
+include_directories(include)
+aux_source_directory(src SRC_LIST_CPP)
 add_executable(${PROJECT_NAME} ${SRC_LIST_CPP})
 
 if (WIN32)

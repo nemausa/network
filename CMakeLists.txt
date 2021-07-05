@@ -33,6 +33,6 @@ endif()
 
 set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/)
 
-add_subdirectory(EasyTcpServer)
 add_subdirectory(EasyTcpClient)
 add_subdirectory(Pool)
+add_subdirectory(EasyTcpServer)
