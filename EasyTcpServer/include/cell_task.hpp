@@ -18,29 +18,22 @@
 #include <mutex>
 #include <list>
 #include <functional>
-
-class cell_task {
-public:
-    cell_task();
-
-    virtual ~cell_task();
-    virtual void do_task();
-};
+#include "cell_thread.hpp"
 
 class cell_task_server {
-
+typedef std::function<void()> cell_task;
 public:
-    void add_task(cell_task *task);
+    void add_task(cell_task task);
     void start();
     void close();
 protected:
-    void on_run();
+    void on_run(cell_thread *pthread);
 
 private:
-    std::list<cell_task*> task_list_;
-    std::list<cell_task*> task_buff_;
+    std::list<cell_task> task_list_;
+    std::list<cell_task> task_buff_;
     std::mutex mutex_;
-    bool is_run_;
+    cell_thread thread_;
 public:
     int service_id_;
 };

@@ -12,7 +12,7 @@ cell_client::cell_client(SOCKET sockfd):
 }
 
 cell_client::~cell_client() {
-    printf("s=%d client%d\n", service_id_, id_);
+    cell_log::info("s=%d client%d\n", service_id_, id_);
     if (INVALID_SOCKET != sockfd_) {
 #ifdef _WIN32
         ::closesocket(sockfd_);
@@ -68,7 +68,7 @@ void cell_client::reset_send_time() {
 bool cell_client::check_heart_time(time_t dt) {
     heart_time_ += dt;
     if (heart_time_ >= CLIENT_HEART_DEAD_TIME) {
-        printf("check_heart_time dead: s=%d, time=%d\n", sockfd_, heart_time_);
+        cell_log::info("check_heart_time dead: s=%d, time=%d\n", sockfd_, heart_time_);
         return true;
     }
     return false;
@@ -77,7 +77,7 @@ bool cell_client::check_heart_time(time_t dt) {
 bool cell_client::check_send_time(time_t dt) {
     send_time_ += dt;
     if (send_time_ >= CLIENT_SEND_BUFF_TIME) {
-        printf("check_send_time:socket=%d, time=%d\n", sockfd_, send_time_);
+        cell_log::info("check_send_time:socket=%d, time=%d\n", sockfd_, send_time_);
         send_data_real();
         reset_send_time();
         return true;

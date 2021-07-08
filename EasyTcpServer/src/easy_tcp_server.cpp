@@ -22,14 +22,14 @@ SOCKET easy_tcp_server::init_socket() {
 #endif
 
     if (INVALID_SOCKET != sockfd_) {
-        printf("<socket=%d>close old socket...\n", (int)sockfd_);
+        cell_log::info("<socket=%d>close old socket...\n", (int)sockfd_);
         close();
     }
     sockfd_ = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (INVALID_SOCKET == sockfd_) {
-        printf("error, create socket failed\n");
+        cell_log::info("error, create socket failed\n");
     } else {
-        printf("create socket=<%d> succes\n", (int)sockfd_);
+        cell_log::info("create socket=<%d> succes\n", (int)sockfd_);
     }
     return sockfd_;
 }
@@ -54,16 +54,16 @@ int easy_tcp_server::bind(const char *ip, unsigned short port) {
     int option = 1;
     if ( setsockopt ( sockfd_, SOL_SOCKET, SO_REUSEADDR, &option,
     sizeof( option ) ) < 0 ){
-        printf( "setsockopt\n" );
+        cell_log::info( "setsockopt\n" );
     }
 #endif
 
 
     int ret = ::bind(sockfd_, (sockaddr*)&sin, sizeof(sockaddr));
     if (SOCKET_ERROR == ret) {
-        printf("error, bind port<%d> failed\n", port);
+        cell_log::info("error, bind port<%d> failed\n", port);
     } else {
-        printf("bind port<%d> success\n", port);
+        cell_log::info("bind port<%d> success\n", port);
     }
     return ret;
 }
@@ -72,9 +72,9 @@ int easy_tcp_server::listen(int n) {
     int ret = ::listen(sockfd_, n);
 
     if (SOCKET_ERROR == ret) {
-        printf("socket=<%d> error, listen port failed\n", sockfd_);
+        cell_log::info("socket=<%d> error, listen port failed\n", sockfd_);
     } else {
-        printf("socket=<%d> listen port success\n", sockfd_);
+        cell_log::info("socket=<%d> listen port success\n", sockfd_);
     }
     return ret;
 }
@@ -89,7 +89,7 @@ SOCKET easy_tcp_server::accept() {
     c_sock = ::accept(sockfd_, (sockaddr*)&client_addr, (socklen_t*)&length);
 #endif
     if (INVALID_SOCKET == c_sock) {
-        printf("socket=<%d> error, accept invalid socket\n",(int)sockfd_);
+        cell_log::info("socket=<%d> error, accept invalid socket\n",(int)sockfd_);
     } else {
         add_client_to_server(new cell_client(c_sock));
     }
@@ -122,7 +122,8 @@ void easy_tcp_server::start(int cell_server_count) {
 }
 
 void easy_tcp_server::close() {
-    printf("easy_tcp_server close begin\n");
+    cell_log::info("easy_tcp_server close begin\n");
+    thread_.close();
     if (sockfd_ != INVALID_SOCKET) {
         for (auto s : cell_servers_) {
             delete s;
@@ -135,7 +136,7 @@ void easy_tcp_server::close() {
         ::close(sockfd_);
 #endif        
     }
-    printf("easy_tcp_server close end\n");
+    cell_log::info("easy_tcp_server close end\n");
 }
 
 bool easy_tcp_server::is_run() {
@@ -167,7 +168,7 @@ void easy_tcp_server::on_run(cell_thread *pthread) {
 void easy_tcp_server::time4msg() {
     auto t1 = time_.second();
     if (t1 >= 1.0f) {
-        printf("thread<%d>, time<%f>, socket<%d>, client_count<%d>, recv_count<%d>, message<%d>\n",
+        cell_log::info("thread<%d>, time<%f>, socket<%d>, client_count<%d>, recv_count<%d>, message<%d>\n",
             cell_servers_.size(), t1, sockfd_, observer_->client_count(), observer_->recv_count(), observer_->msg_count());
         observer_->msg_count(0);
         observer_->recv_count(0);

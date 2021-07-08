@@ -6,8 +6,7 @@ set start=%time%
 mkdir windows
 cd windows
 cmake -G "Unix Makefiles"  -DCMAKE_BUILD_TYPE=Debug  ..
-make -j8
-make install
+make -j install
 cd ..
 
 set end=%time%

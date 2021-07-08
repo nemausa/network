@@ -37,6 +37,7 @@
 #include <mutex>
 #include "message_header.hpp"
 #include "obersver.hpp"
+#include "cell_log.hpp"
 
 #ifndef RECV_BUFF_SIZE
 #define RECV_BUFF_SIZE 10240

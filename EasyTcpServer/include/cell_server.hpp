@@ -22,22 +22,6 @@
 #include "cell_task.hpp"
 #include "cell_buffer.hpp"
 
-class sendmsg_to_client : public cell_task {
-public:
-    sendmsg_to_client(cell_client *client, data_header *data) {
-        client_ = client;
-        data_ = data;
-    }
-
-    void do_task() {
-        client_->send_data(data_);
-        delete data_;
-    }
-private:
-    cell_client *client_;
-    data_header *data_;
-};
-
 
 class cell_server : public subject {
 public:

@@ -92,7 +92,7 @@ void cell_server::read_data(fd_set &fd_read) {
                     clients_.erase(iter);
                 }
             } else {
-                printf("error iter != clients_.end()\n");
+                cell_log::info("error iter != clients_.end()\n");
             }
         }
 #else
@@ -159,7 +159,7 @@ void cell_server::on_msg(cell_client *pclient, data_header *header) {
         login *lg = (login*)header;
         login_result ret ;
         if (SOCKET_ERROR == pclient->send_data(&ret)) {
-            printf("socket=%d\n", pclient->sockfd());
+            cell_log::info("socket=%d\n", pclient->sockfd());
         }
     }
     break;
@@ -174,7 +174,7 @@ void cell_server::on_msg(cell_client *pclient, data_header *header) {
     }
     break;
     default: {
-        printf("socket=%d receive undefine command, length=%d\n", pclient->sockfd(), header->length);
+        cell_log::info("socket=%d receive undefine command, length=%d\n", pclient->sockfd(), header->length);
     }
     break;
     }

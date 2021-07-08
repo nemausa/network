@@ -8,8 +8,8 @@ cell_semaphore::cell_semaphore() {
 void cell_semaphore::wait() {
     std::unique_lock<std::mutex> lock(mutex_);
     if (--wait_ < 0) {
-        cv_.wait(lock, []()->bool {
-
+        cv_.wait(lock, [this]()->bool {
+            return wakeup_ > 0;
         });
         --wakeup_;
     }
