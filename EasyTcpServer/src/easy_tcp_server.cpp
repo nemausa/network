@@ -1,4 +1,5 @@
 #include "easy_tcp_server.hpp"
+#include "cell_network.hpp"
 
 easy_tcp_server::easy_tcp_server() {
     sockfd_ = INVALID_SOCKET;
@@ -10,17 +11,7 @@ easy_tcp_server::~easy_tcp_server() {
 }
 
 SOCKET easy_tcp_server::init_socket() {
-#ifdef _WIN32   
-    WORD ver = MAKEWORD(2, 2);
-    WSADATA dat;
-    WSAStartup(ver, &dat);
-#endif
-
-#ifndef _WIN32
-    //忽略异常信号，默认情况会导致进程终止
-	signal(SIGPIPE, SIG_IGN);
-#endif
-
+    cell_network::init();
     if (INVALID_SOCKET != sockfd_) {
         cell_log::info("<socket=%d>close old socket...\n", (int)sockfd_);
         close();

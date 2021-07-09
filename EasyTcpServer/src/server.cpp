@@ -1,6 +1,10 @@
 #include <thread>
 #include "easy_tcp_server.hpp"
 
+#ifndef VERSION
+const char *VERSION_INFO = "VERSION: 0.0.1";
+#endif
+
 int main() {
     cell_log::initstance().set_path("server_log.txt", "w");
     easy_tcp_server server;
