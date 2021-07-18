@@ -154,7 +154,7 @@ void easy_tcp_server::on_run(cell_thread *pthread) {
 void easy_tcp_server::time4msg() {
     auto t1 = time_.second();
     if (t1 >= 1.0f) {
-        cell_log::info("thread<%d>, time<%f>, socket<%d>, client_count<%d>, recv_count<%d>, message<%d>\n",
+        cell_log::info("thread<%d>, time<%f>, socket<%d>, client_count<%d>, recv_count<%d>, message<%d>",
             cell_servers_.size(), t1, sockfd_, observer_->client_count(), observer_->recv_count(), observer_->msg_count());
         observer_->msg_count(0);
         observer_->recv_count(0);

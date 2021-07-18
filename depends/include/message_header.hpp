@@ -15,7 +15,7 @@
 #define MESSAGE_HEADER
 
 enum cmd_type_e{
-    CMD_LOGIN,
+    CMD_LOGIN = 10,
     CMD_LOGIN_RESULT,
     CMD_LOGOUT,
     CMD_LOGOUT_RESULT,
@@ -41,7 +41,7 @@ struct login : public data_header {
     }
     char user_name[32];
     char password[32];
-    char data[32];
+    char data[28];
     int msg_id;
 };
 
@@ -52,7 +52,8 @@ struct login_result : public data_header {
         result = 0;
     }
     int result;
-    char data[92];
+    char data[88];
+    int msg_id;
 };
 
 struct logout : public data_header {

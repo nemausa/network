@@ -46,6 +46,7 @@ int easy_tcp_client::connect(const char *ip, unsigned short port) {
         printf("socket=%d error, connect server<%s:%d> failed\n", (int)pclient_->sockfd(), ip, port);
     } else  {
         // printf("socket=%d connect server<%s:%d> success\n", sock_, ip, port);
+        is_connect_ = true;
     }
     return ret;
 }

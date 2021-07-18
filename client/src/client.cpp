@@ -32,7 +32,14 @@ public:
     // msg_count_++;
     switch (header->cmd) {
     case CMD_LOGIN_RESULT: {
-        // printf("socket=%d CMD_LOGIN_RESULT, data length=%d\n", sock_, header->length);
+        login_result *login = (login_result*)header;
+        if (is_check_id_) {
+            if (login->msg_id != recv_msg_id_) {
+                cell_log::info("socket<%d> msg_id<%d> recv_id<%d> %d", pclient_->sockfd(), login->msg_id, recv_msg_id_, login->msg_id - recv_msg_id_);
+            }
+            ++recv_msg_id_;
+        }
+        // printf("socket=%d CMD_LOGIN_RESULT, data length=%d\n", pclient_->sockfd(), header->length);
     }
     break;
     case CMD_LOGOUT_RESULT: {
@@ -205,7 +212,7 @@ int main(int argc, char *args[]) {
         if (t >= 1.0) {
             cell_log::info(
                 "thread<%d> clients<%d> connect<%d> time<%lf> send<%d>",
-                thread_num, client_num, (int)connect_count, (int)send_count);
+                thread_num, client_num, (int)connect_count, t, (int)send_count);
             send_count = 0;
             ts.update();
         }
