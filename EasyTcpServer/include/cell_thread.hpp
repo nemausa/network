@@ -28,6 +28,7 @@ public:
     void close();
     void exit();
     bool is_run();
+    static void sleep(time_t _t);
 protected:
     void on_work();
 private:

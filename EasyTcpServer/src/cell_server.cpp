@@ -1,6 +1,7 @@
 #include <functional>
-#include "cell_server.hpp"
+#include "cell.hpp"
 #include "cell_client.hpp"
+#include "cell_server.hpp"
 
 int observer::static_number_ = 0;
 
@@ -50,71 +51,93 @@ bool cell_server::on_run(cell_thread *pthread) {
             continue;
         }
 
-        fd_set fd_read;
-        fd_set fd_write;
-        if (client_change_) {
-            client_change_ = false;
-            FD_ZERO(&fd_read);
-            max_socket_ = clients_.begin()->first;
-            for (auto iter : clients_) {
-                FD_SET(iter.first, &fd_read);
-                if (max_socket_ < iter.first) {
-                    max_socket_ = iter.first;
-                }
-            }
-            memcpy(&fd_back_, &fd_read, sizeof(fd_set));
-        } else {
-            memcpy(&fd_read, &fd_back_, sizeof(fd_set));
-        }
-        memcpy(&fd_write, &fd_read, sizeof(fd_set));
-        timeval t{0, 1};
-        int ret = select(max_socket_ + 1, &fd_read, &fd_write, nullptr, &t);
-        if (ret < 0) {
-            std::cout << "select task end" << std::endl;
+        check_time();
+        if (!do_select()) {
             pthread->exit();
             break;
         }
-
-        read_data(fd_read);
-        write_data(fd_write);
-        check_time();
+        do_msg();
     }
+    cell_log::info("cell_server%d on run exit", id_);
 }
 
+bool cell_server::do_select() {
+    if (client_change_) {
+        client_change_ = false;
+        fd_read_.zero();
+        max_socket_ = clients_.begin()->second->sockfd();
+        for (auto iter : clients_) {
+            fd_read_.add(iter.second->sockfd());
+            if (max_socket_ < iter.second->sockfd()) {
+                max_socket_ = iter.second->sockfd();
+            }
+        }
+        fd_read_bak_.copy(fd_read_);
+    } else {
+        fd_read_.copy(fd_read_bak_);
+    }
+    bool is_need_write = false;
+    fd_write_.zero();
+    for (auto iter : clients_) {
+        // 需要些数据才加入fd_set检测是否可写
+        if (iter.second->need_write()) {
+            is_need_write = true;
+            fd_write_.add(iter.second->sockfd());
+        }
+    }
+    timeval t{0, 1};
+    int ret = 0;
+    if (is_need_write) {
+        ret = select(max_socket_ + 1, fd_read_.fdset(), fd_write_.fdset(), nullptr, &t);
+    } else {
+        ret = select(max_socket_ + 1, fd_read_.fdset(), nullptr, nullptr, &t);
+    }
+    if (ret < 0) {
+        cell_log::info("");
+    } else if (ret == 0) {
+        return true;
+    }
+    read_data();
+    write_data();
+    return true;
+}
 
-void cell_server::read_data(fd_set &fd_read) {
+void cell_server::read_data() {
 #if _WIN32
-        for (int n = 0; n < fd_read.fd_count; n++) {
-            auto iter = clients_.find(fd_read.fd_array[n]);
-            if (iter != clients_.end()) {
-                if (-1 == recv_data(iter->second)) {
-                    on_leave(iter->second);
-                    clients_.erase(iter);
-                }
-            } else {
-                cell_log::info("error iter != clients_.end()\n");
+    auto pfdset = fd_read_.fdset();
+    for (int n = 0; n < pfdset->fd_count; n++) {
+        auto iter = clients_.find(pfdset->fd_array[n]);
+        if (iter != clients_.end()) {
+            if (-1 == recv_data(iter->second)) {
+                on_leave(iter->second);
+                clients_.erase(iter);
             }
+        } else {
+            cell_log::info("error iter != clients_.end()\n");
         }
+    }
 #else
-        for (auto iter = clients_.begin(); iter != clients_.end();) {
-            if (FD_ISSET(iter->second->sockfd(), &fd_read)) {
-                if (-1 == recv_data(iter->second)) {
-                    on_leave(iter->second);
-                    auto iter_old = iter;
-                    iter++;
-                    clients_.erase(iter_old);
-                    continue;
-                }
+    auto pfdset = fd_read_.fdset();
+    for (auto iter = clients_.begin(); iter != clients_.end();) {
+        if (fd_read_.has(iter->second->sockfd())) {
+            if (SOCKET_ERROR == recv_data(iter->second)) {
+                on_leave(iter->second);
+                auto iter_old = iter;
+                iter++;
+                clients_.erase(iter_old);
+                continue;
             }
-            iter++;
         }
+        iter++;
+    }
 #endif 
 }
 
-void cell_server::write_data(fd_set &fd_write) {
+void cell_server::write_data() {
 #ifdef _WIN32
-    for (int n = 0; n < fd_write.fd_count; n++) {
-        auto iter = clients_.find(fd_write.fd_array[n]);
+    auto pfdset = fd_read_.fdset();
+    for (int n = 0; n < pfdset->fd_count; n++) {
+        auto iter = clients_.find(pfdset->fd_array[n]);
         if (iter != clients_.end()) {
             if (-1 == iter->second->send_data_real()) {
                 on_leave(iter->second);
@@ -124,8 +147,8 @@ void cell_server::write_data(fd_set &fd_write) {
     }
 #else
     for (auto iter = clients_.begin(); iter != clients_.end();) {
-        if (FD_ISSET(iter->second->sockfd(), &fd_write)) {
-            if (-1 == iter->second->send_data_real()) {
+        if (iter->second->need_write() && fd_write_.has(iter->second->sockfd())) {
+            if (SOCKET_ERROR == iter->second->send_data_real()) {
                 on_leave(iter->second);
                 auto iter_old = iter;
                 iter++;
@@ -136,6 +159,17 @@ void cell_server::write_data(fd_set &fd_write) {
         iter++;
     }
 #endif
+}
+
+void cell_server::do_msg() {
+    cell_client *pclient = nullptr;
+    for (auto iter : clients_) {
+        pclient = iter.second;
+        while (pclient->has_msg()) {
+            on_msg(pclient, pclient->front_msg());
+            pclient->pop_msg();
+        }
+    }
 }
 
 int cell_server::recv_data(cell_client *pclient) {
@@ -150,6 +184,7 @@ int cell_server::recv_data(cell_client *pclient) {
     } 
     return 0;
 }
+
 
 void cell_server::on_msg(cell_client *pclient, data_header *header) {
     create_message("msg");

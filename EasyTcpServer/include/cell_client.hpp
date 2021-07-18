@@ -34,6 +34,7 @@ public:
     bool has_msg();
     data_header *front_msg();
     void pop_msg();
+    bool need_write();
     int send_data_real();
     int send_data(data_header *header);
     void reset_heart_time();

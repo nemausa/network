@@ -24,6 +24,7 @@ public:
     int send_to_socket(SOCKET sockfd);
     int recv_from_socket(SOCKET sockfd);
     bool has_msg();
+    bool need_write();
 private:
     char *data_;
     int last_;

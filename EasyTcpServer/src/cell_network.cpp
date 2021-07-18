@@ -1,5 +1,5 @@
 #include "cell_network.hpp"
-
+#include <signal.h>
 cell_network::cell_network() {
 #ifdef _WIN32
     WORD ver = MAKEWORD(2, 2);

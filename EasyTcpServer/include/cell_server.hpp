@@ -16,11 +16,13 @@
 
 #include "cell.hpp"
 #include "timestamp.hpp"
+#include "cell_fdset.hpp"
 #include "cell_semaphore.hpp"
 #include "cell_thread.hpp"
 #include "cell_client.hpp"
 #include "cell_task.hpp"
 #include "cell_buffer.hpp"
+
 
 
 class cell_server : public subject {
@@ -30,8 +32,10 @@ public:
     virtual void on_msg(cell_client *client, data_header *header);
     void close();
     bool on_run(cell_thread *pthread);
-    void read_data(fd_set &fd_read);
-    void write_data(fd_set &fd_write);
+    bool do_select();
+    void do_msg();
+    void read_data();
+    void write_data();
     int recv_data(cell_client *client);
     void add_client(cell_client* client);
     void clear_client();
@@ -44,7 +48,9 @@ private:
     std::vector<cell_client*> clients_buff_;
     std::mutex mutex_;
     cell_task_server task_server_;
-    fd_set fd_back_;
+    cell_fdset fd_read_;
+    cell_fdset fd_write_;
+    cell_fdset fd_read_bak_;
     SOCKET max_socket_;
     observer *observer_;
     time_t old_clock_ = timestamp::now_milliseconds();

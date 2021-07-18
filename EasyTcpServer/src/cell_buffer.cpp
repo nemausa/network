@@ -75,3 +75,7 @@ bool cell_buffer::has_msg() {
     }
     return false;
 }
+
+bool cell_buffer::need_write() {
+    return last_ > 0;
+}

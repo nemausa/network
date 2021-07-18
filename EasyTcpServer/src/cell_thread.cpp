@@ -51,3 +51,8 @@ void cell_thread::on_work() {
 
     sem_.wake_up();
 }
+
+void cell_thread::sleep(time_t _t) {
+    std::chrono::milliseconds t(_t);
+    std::this_thread::sleep_for(t);
+}

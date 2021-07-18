@@ -44,6 +44,10 @@ void cell_client::pop_msg() {
     }
 }
 
+bool cell_client::need_write() {
+    return send_buffer_.need_write();
+}
+
 int cell_client::send_data_real() {
     reset_send_time();
     return send_buffer_.send_to_socket(sockfd_);
@@ -55,7 +59,6 @@ int cell_client::send_data(data_header *data) {
     }
     return SOCKET_ERROR;
 }
-
 
 void cell_client::reset_heart_time() {
     heart_time_ = 0;
