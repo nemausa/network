@@ -27,7 +27,7 @@
 
 class cell_client {
 public:
-    cell_client(SOCKET sockfd = INVALID_SOCKET);
+    cell_client(SOCKET sockfd = INVALID_SOCKET, int send_size = SEND_BUFF_SIZE, int recv_size = RECV_BUFF_SIZE);
     ~cell_client();
     SOCKET sockfd();
     int recv_data();
@@ -37,6 +37,7 @@ public:
     bool need_write();
     int send_data_real();
     int send_data(data_header *header);
+    int send_data(const char *data, int length);
     void reset_heart_time();
     void reset_send_time();
     bool check_heart_time(time_t dt);

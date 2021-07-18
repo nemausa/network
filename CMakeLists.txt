@@ -1,38 +1,130 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 2.8.12)
+project (network)
 
-string(REGEX REPLACE ".*/(.*)" "\\1" CURRENT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR} ) 
-project(${CURRENT_FOLDER})
+set (SERVER_NAME server)
+set (CLIENT_NAME client)
+set (POOL_NAME pool)
 
-add_definitions(-w -DDebug)
-if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang") 
-   MESSAGE("-- Clang") 
-elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU") 
-   MESSAGE("-- GNU") 
-elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel") 
-   MESSAGE("-- Intel") 
-elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC") 
-   MESSAGE("-- MSVC") 
+set (NETWORK_MAJOR_VERSION 0)
+set (NETWORK_MINOR_VERSION 0)
+set (NETWORK_PATCH_VERSION 0)
+set (NETWORK_HOTIFX_VERSION 0)
+
+set (NETWORK_VERSION ${NETWORK_MAJOR_VERSION}.${NETWORK_MINOR_VERSION}.${NETWORK_PATCH_VERSION}.${NETWORK_HOTIFX_VERSION})
+set (CMAKE_VERBOSE_MAKEFILE off)
+
+# Set a default build type if none was specified
+set (default_build_type "RelWithDebInfo")
+if(NOT CMAKE_BUILD_TYPE)
+   message(STATUS "Setting build type to '${default_build_type}' as none was specified.")
+   set(CMAKE_BUILD_TYPE "${default_build_type}" CACHE STRING "Choose the type of build." FORCE)
+   # Set the possible values of build type for cmake-gui
+   set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread -fpermissive")
 
-if (WIN32)
-   message("-- This is Windows")
-elseif(APPLE)
-   message("-- This is Apple")
-elseif(UNIX)
-   message("-- This is UNIX")
-endif()
+#OS
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+	message(status "Linux")
+    set (OS "LINUX")
+    set (OS_CXX_FLAGS "")
+endif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
-if(CMAKE_CL_64)    #CMAKE的内建变量，如果是true，就说明编译器的64位的，自然可以编译64bit的程序
-   set(ADDRESS_MODEL 64)
-   set(NODE_TARGET x64)
+if (${CMAKE_SYSTEM_NAME} MATCHES "WIN32")
+	message(status "Windows")
+	set (OS "WIN32")
+   	set (OS_CXX_FLAGS "")
+endif (${CMAKE_SYSTEM_NAME} MATCHES "WIN32")
+
+
+################################################################################
+# Options
+################################################################################
+
+
+
+################################################################################
+# Directories
+################################################################################
+
+include_directories(
+	depends/include
+)
+
+if (MSVC)
+	message(using MSVC compiler)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 else()
-   set(ADDRESS_MODEL 32)
-   set(NODE_TARGET x86)
-endif() 
+	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OS_CXX_FLAGS} -g -std=c++11 -pthread")
+endif()
 
+
+################################################################################
+# server executable
+################################################################################
+file(GLOB ${SERVER_NAME}_SRC
+	"depends/src/*.cpp"
+	"server/src/*.cpp"
+)
+message (status "${${SERVER_NAME}_SRC}")
+list (SORT ${SERVER_NAME}_SRC)
+
+add_executable(${SERVER_NAME} ${${SERVER_NAME}_SRC} )
+if (WIN32)
+	target_link_libraries(${SERVER_NAME} ws2_32)
+endif()
+
+################################################################################
+# client executable
+################################################################################
+file(GLOB ${CLIENT_NAME}_SRC
+	"depends/src/*.cpp"
+	"client/src/*.cpp"
+)
+message (status "${${CLIENT_NAME}_SRC}")
+list (SORT ${CLIENT_NAME}_SRC)
+
+add_executable(${CLIENT_NAME} ${${CLIENT_NAME}_SRC} )
+if (WIN32)
+	target_link_libraries(${CLIENT_NAME} ws2_32)
+endif()
+
+################################################################################
+# server executable
+################################################################################
+file(GLOB ${POOL_NAME}_SRC
+	"depends/src/*.cpp"
+	"pool/src/*.cpp"
+)
+message (status "${${POOL_NAME}_SRC}")
+list (SORT ${POOL_NAME}_SRC)
+
+add_executable(${POOL_NAME} ${${POOL_NAME}_SRC} )
+if (WIN32)
+	target_link_libraries(${POOL_NAME} ws2_32)
+endif()
+
+################################################################################
+# Installation
+################################################################################
 set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/)
 
-add_subdirectory(EasyTcpClient)
-add_subdirectory(Pool)
-add_subdirectory(EasyTcpServer)
+install(TARGETS ${SERVER_NAME}
+	LIBRARY DESTINATION lib  # 动态库安装路径
+	ARCHIVE DESTINATION lib  # 静态库安装路径
+	RUNTIME DESTINATION bin  # 可执行文件安装路径
+	PUBLIC_HEADER DESTINATION include  # 头文件安装路径
+)
+
+install(TARGETS ${CLIENT_NAME}
+	LIBRARY DESTINATION lib  # 动态库安装路径
+	ARCHIVE DESTINATION lib  # 静态库安装路径
+	RUNTIME DESTINATION bin  # 可执行文件安装路径
+	PUBLIC_HEADER DESTINATION include  # 头文件安装路径
+)
+
+install(TARGETS ${POOL_NAME}
+	LIBRARY DESTINATION lib  # 动态库安装路径
+	ARCHIVE DESTINATION lib  # 静态库安装路径
+	RUNTIME DESTINATION bin  # 可执行文件安装路径
+	PUBLIC_HEADER DESTINATION include  # 头文件安装路径
+)

@@ -20,6 +20,7 @@ SOCKET easy_tcp_server::init_socket() {
     if (INVALID_SOCKET == sockfd_) {
         cell_log::info("error, create socket failed\n");
     } else {
+        cell_network::make_reuseadd(sockfd_);
         cell_log::info("create socket=<%d> succes\n", (int)sockfd_);
     }
     return sockfd_;
@@ -42,13 +43,7 @@ int easy_tcp_server::bind(const char *ip, unsigned short port) {
     } else {
         sin.sin_addr.s_addr = INADDR_ANY;
     }
-    int option = 1;
-    if ( setsockopt ( sockfd_, SOL_SOCKET, SO_REUSEADDR, &option,
-    sizeof( option ) ) < 0 ){
-        cell_log::info( "setsockopt\n" );
-    }
 #endif
-
 
     int ret = ::bind(sockfd_, (sockaddr*)&sin, sizeof(sockaddr));
     if (SOCKET_ERROR == ret) {

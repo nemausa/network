@@ -1,14 +1,11 @@
 #include "cell_client.hpp"
 
-cell_client::cell_client(SOCKET sockfd):
-    send_buffer_(SEND_BUFF_SIZE),
-    recv_buffer_(RECV_BUFF_SIZE) {
+cell_client::cell_client(SOCKET sockfd, int send_size, int recv_size):
+    send_buffer_(send_size),
+    recv_buffer_(recv_size) {
     static int n = 1;
     sockfd_ = sockfd;
-    last_pos_ = 0;
-    last_send_pos_ = 0;
     id_ = n++;
-    service_id_ = -1;
 }
 
 cell_client::~cell_client() {
@@ -56,6 +53,13 @@ int cell_client::send_data_real() {
 int cell_client::send_data(data_header *data) {
     if (send_buffer_.push((const char*)data, data->length)) {
         return data->length;
+    }
+    return SOCKET_ERROR;
+}
+
+int cell_client::send_data(const char *data, int length) {
+    if (send_buffer_.push(data, length)) {
+        return length;
     }
     return SOCKET_ERROR;
 }

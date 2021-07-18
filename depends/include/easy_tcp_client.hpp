@@ -13,18 +13,12 @@
 */
 #ifndef EASY_TCP_CLIENT
 #define EASY_TCP_CLIENT
-#ifdef _WIN32
-    #define WIN32_LEAN_AND_MEAN
-    #define _WINSOCK_DEPRECATED_NO_WARNINGS
-    #include <winsock2.h>
-#else
-    #include <unistd.h>
-    #include <arpa/inet.h>
-    #include <string.h>
-    #define SOCKET int
-    #define INVALID_SOCKET  (SOCKET)(~0)
-    #define SOCKET_ERROR    (SOCKET)(-1)
-#endif
+
+#include "cell.hpp"
+#include "cell_network.hpp"
+#include "message_header.hpp"
+#include "cell_client.hpp"
+#include "cell_fdset.hpp"
 
 #include <stdio.h>
 #include <atomic>
@@ -37,18 +31,20 @@ class easy_tcp_client {
 public:
     easy_tcp_client();
     virtual ~easy_tcp_client();
-    void init_socket();
+    SOCKET init_socket(int send_size = SEND_BUFF_SIZE, int redv_size = RECV_BUFF_SIZE);
     int connect(const char *ip, unsigned short port);
     void close();
-    bool on_run();
+    bool on_run(int microseconds = 1);
     bool is_run();
     int recv_data(SOCKET c_sock);
-    virtual void on_msg(data_header *header);
-    int send_data(data_header *header, int length);
-private:
-    SOCKET sock_;
-    int last_pos = 0;
-    char sz_msg_buf[RECV_BUFF_SIZE * 5] = {};
+    virtual void on_msg(data_header *header) = 0;
+    int send_data(data_header *header);
+    int send_data(const char *data, int length);
+protected:
+    cell_fdset fd_read_;
+    cell_fdset fd_write_;
+    cell_client* pclient_ = nullptr;
+    bool is_connect_ = false;
 };
 
 #endif // EASY_TCP_CLIENT

@@ -8,7 +8,7 @@
             "name": "EasyTcpServer", //名称
             "type": "cppdbg", //调试类型，除使用msvc进行调试外，均为该类型
             "request": "launch",
-            "program": "${workspaceFolder}/bin/EasyTcpServer", //指定C/C++程序位置
+            "program": "${workspaceFolder}/bin/server", //指定C/C++程序位置
             "args": [], //指定运行参数
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}", //指定工作目录
@@ -33,7 +33,7 @@
             },
             "windows": { 
                 "MIMode": "gdb", //指定使用gdb调试
-                "program": "${workspaceFolder}/bin/EasyTcpServer.exe", //指定C/C++程序位置
+                "program": "${workspaceFolder}/bin/server.exe", //指定C/C++程序位置
                 "setupCommands": [
                     {
                         "description": "Enable pretty-printing for gdb",
@@ -48,7 +48,7 @@
             "name": "EasyTcpClient", //名称
             "type": "cppdbg", //调试类型，除使用msvc进行调试外，均为该类型
             "request": "launch",
-            "program": "${workspaceFolder}/bin/EasyTcpClient", //指定C/C++程序位置
+            "program": "${workspaceFolder}/bin/client", //指定C/C++程序位置
             "args": [], //指定运行参数
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}", //指定工作目录
@@ -72,7 +72,7 @@
             },
             "windows": { 
                 "MIMode": "gdb", //指定使用gdb调试
-                "program": "${workspaceFolder}/bin/EasyTcpClient.exe", //指定C/C++程序位置
+                "program": "${workspaceFolder}/bin/client.exe", //指定C/C++程序位置
                 "setupCommands": [
                     {
                         "description": "Enable pretty-printing for gdb",
@@ -88,7 +88,7 @@
             "name": "Pool", //名称
             "type": "cppdbg", //调试类型，除使用msvc进行调试外，均为该类型
             "request": "launch",
-            "program": "${workspaceFolder}/bin/Pool", //指定C/C++程序位置
+            "program": "${workspaceFolder}/bin/pool", //指定C/C++程序位置
             "args": [], //指定运行参数
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}", //指定工作目录
@@ -112,7 +112,7 @@
             },
             "windows": { 
                 "MIMode": "gdb", //指定使用gdb调试
-            "program": "${workspaceFolder}/bin/Pool.exe", //指定C/C++程序位置
+            "program": "${workspaceFolder}/bin/pool.exe", //指定C/C++程序位置
                 "setupCommands": [
                     {
                         "description": "Enable pretty-printing for gdb",

@@ -96,6 +96,7 @@ public:
                 fflush(plog->logfile_);
             }
             printf(pformat, args...);
+            printf("%s", "\n");
         });
     }
 private:

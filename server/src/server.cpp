@@ -11,7 +11,7 @@ int main() {
     server.init_socket();
     server.bind(nullptr, 4567);
     server.listen(64);
-    server.start(4);
+    server.start(1);
 
 
     while(true) {

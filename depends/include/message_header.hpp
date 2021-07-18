@@ -20,6 +20,8 @@ enum cmd_type_e{
     CMD_LOGOUT,
     CMD_LOGOUT_RESULT,
     CMD_NEW_JOIN,
+    CMD_C2S_HEART,
+    CMD_S2C_HEART,
     CMD_ERROR
 };
 
@@ -40,6 +42,7 @@ struct login : public data_header {
     char user_name[32];
     char password[32];
     char data[32];
+    int msg_id;
 };
 
 struct login_result : public data_header {
@@ -79,5 +82,19 @@ struct new_join : public data_header {
     int sock;
 };
 
+struct c2s_heart : public data_header {
+    c2s_heart() {
+        length = sizeof(c2s_heart);
+        cmd = CMD_C2S_HEART;
+    }
+};
+
+
+struct s2c_heart : public data_header {
+    s2c_heart() {
+        length = sizeof(s2c_heart);
+        cmd = CMD_C2S_HEART;
+    }
+};
 
 #endif // MESSAGE_HEADER

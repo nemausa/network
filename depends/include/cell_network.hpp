@@ -22,6 +22,7 @@ private:
     ~cell_network();
 public:
     static void init();
+    static int make_reuseadd(SOCKET fd);
 };
 
 #endif // CELL_NETWORK
