@@ -1,9 +1,5 @@
 #include "cell_network.hpp"
-#ifndef _WIN32
-    #include <signal.h>
-    #include<fcntl.h>
-    #include<stdlib.h>
-#endif // !_WIN32
+
 
 cell_network::cell_network() {
 #ifdef _WIN32

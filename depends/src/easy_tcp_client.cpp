@@ -1,4 +1,3 @@
-#include <signal.h>
 #include "easy_tcp_client.hpp"
 #include "cell_network.hpp"
 

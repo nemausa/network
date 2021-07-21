@@ -33,7 +33,7 @@ void cell_server::close() {
     thread_.close();
 }
 
-bool cell_server::on_run(cell_thread *pthread) {
+void cell_server::on_run(cell_thread *pthread) {
     while (pthread->is_run()) {
         if (clients_buff_.size() > 0) {
             std::lock_guard<std::mutex> lock(mutex_);
@@ -256,7 +256,7 @@ void cell_server::check_time() {
 }
 
 void cell_server::on_leave(cell_client *pclient) {
-    create_message("levae");
+    create_message("leave");
     client_change_ = true;
     delete pclient;
 }

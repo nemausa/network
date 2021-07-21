@@ -6,10 +6,13 @@ cell_client::cell_client(SOCKET sockfd, int send_size, int recv_size):
     static int n = 1;
     sockfd_ = sockfd;
     id_ = n++;
+
+    reset_heart_time();
+    reset_send_time();
 }
 
 cell_client::~cell_client() {
-    cell_log::info("s=%d client%d\n", service_id_, id_);
+    // cell_log::info("s=%d client%d\n", service_id_, id_);
     if (INVALID_SOCKET != sockfd_) {
 #ifdef _WIN32
         ::closesocket(sockfd_);

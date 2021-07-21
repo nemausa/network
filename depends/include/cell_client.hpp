@@ -22,7 +22,7 @@
 #define SEND_BUFF_SIZE RECV_BUFF_SIZE
 #endif
 
-#define CLIENT_HEART_DEAD_TIME  1000000
+#define CLIENT_HEART_DEAD_TIME  10000
 #define CLIENT_SEND_BUFF_TIME   200
 
 class cell_client {

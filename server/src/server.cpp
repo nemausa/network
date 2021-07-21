@@ -2,7 +2,7 @@
 #include "easy_tcp_server.hpp"
 
 #ifndef VERSION
-const char *VERSION_INFO = "VERSION: 0.0.1";
+const char *VERSION_INFO = "version: 0.0.1";
 #endif
 
 int main() {
@@ -11,7 +11,7 @@ int main() {
     server.init_socket();
     server.bind(nullptr, 4567);
     server.listen(64);
-    server.start(1);
+    server.start(4);
 
 
     while(true) {

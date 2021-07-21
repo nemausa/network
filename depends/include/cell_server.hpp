@@ -14,6 +14,9 @@
 #ifndef CELL_SERVER
 #define CELL_SERVER
 
+#include <map>
+#include <vector>
+
 #include "cell.hpp"
 #include "timestamp.hpp"
 #include "cell_fdset.hpp"
@@ -31,7 +34,7 @@ public:
     virtual ~cell_server();
     virtual void on_msg(cell_client *client, data_header *header);
     void close();
-    bool on_run(cell_thread *pthread);
+    void on_run(cell_thread *pthread);
     bool do_select();
     void do_msg();
     void read_data();
