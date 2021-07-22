@@ -11,10 +11,10 @@ using namespace std;
 const char *ip = "127.0.0.1";
 uint16_t port  = 4567;
 int thread_num = 1;
-int client_num = 10000;
+int client_num = 1;
 
 // 客户端每次发送几条消息
-int msg_num = 100;
+int msg_num = 1;
 // 写入消息到缓冲区的时间
 int send_sleep = 1;
 // 工作休眠的时间

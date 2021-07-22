@@ -4,6 +4,7 @@ project (network)
 set (SERVER_NAME server)
 set (CLIENT_NAME client)
 set (POOL_NAME pool)
+set (EPOLL_NAME epoll)
 
 set (NETWORK_MAJOR_VERSION 0)
 set (NETWORK_MINOR_VERSION 0)
@@ -89,7 +90,7 @@ if (WIN32)
 endif()
 
 ################################################################################
-# server executable
+# pool executable
 ################################################################################
 file(GLOB ${POOL_NAME}_SRC
 	"depends/src/*.cpp"
@@ -101,6 +102,20 @@ list (SORT ${POOL_NAME}_SRC)
 add_executable(${POOL_NAME} ${${POOL_NAME}_SRC} )
 if (WIN32)
 	target_link_libraries(${POOL_NAME} ws2_32)
+endif()
+
+################################################################################
+# epoll executable
+################################################################################
+file(GLOB ${EPOLL_NAME}_SRC
+	"epoll/src/*.cpp"
+)
+message (status "${${EPOLL_NAME}_SRC}")
+list (SORT ${EPOLL_NAME}_SRC)
+
+add_executable(${EPOLL_NAME} ${${EPOLL_NAME}_SRC} )
+if (WIN32)
+	target_link_libraries(${EPOLL_NAME} ws2_32)
 endif()
 
 ################################################################################
@@ -123,6 +138,14 @@ install(TARGETS ${CLIENT_NAME}
 )
 
 install(TARGETS ${POOL_NAME}
+	LIBRARY DESTINATION lib  # 动态库安装路径
+	ARCHIVE DESTINATION lib  # 静态库安装路径
+	RUNTIME DESTINATION bin  # 可执行文件安装路径
+	PUBLIC_HEADER DESTINATION include  # 头文件安装路径
+)
+
+
+install(TARGETS ${EPOLL_NAME}
 	LIBRARY DESTINATION lib  # 动态库安装路径
 	ARCHIVE DESTINATION lib  # 静态库安装路径
 	RUNTIME DESTINATION bin  # 可执行文件安装路径
