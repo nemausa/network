@@ -23,6 +23,7 @@ private:
 public:
     static void init();
     static int make_reuseadd(SOCKET fd);
+    static int destory_socket(SOCKET sockfd);
 };
 
 #endif // CELL_NETWORK

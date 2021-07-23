@@ -30,3 +30,14 @@ int cell_network::make_reuseadd(SOCKET fd) {
     return 0;
 }
 
+int cell_network::destory_socket(SOCKET sockfd) {
+#ifdef _WIN32
+    int ret = closesocket(sockfd);
+#else
+    int ret = close(sockfd);
+#endif
+    if (ret < 0) {
+        cell_log::info("destory sockfd<%d>", int(sockfd));
+    }
+    return ret;
+}

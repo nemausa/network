@@ -30,6 +30,7 @@
 
 class cell_server : public subject {
 public:
+    cell_server();
     cell_server(int id, observer *ob = nullptr);
     virtual ~cell_server();
     virtual void on_msg(cell_client *client, data_header *header);
@@ -46,8 +47,11 @@ public:
     size_t count();
     void check_time();
     void on_leave(cell_client *pclient);
-private:
+protected:
     std::map<SOCKET, cell_client*> clients_;
+    int id_;
+    bool client_change_;
+private:
     std::vector<cell_client*> clients_buff_;
     std::mutex mutex_;
     cell_task_server task_server_;
@@ -60,8 +64,6 @@ private:
     time_t now_clock_;
     cell_thread thread_;
     cell_semaphore sem_;
-    int id_;
-    bool client_change_;
 };
 
 #endif // CELL_SERVER

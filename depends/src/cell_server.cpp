@@ -5,6 +5,10 @@
 
 int observer::static_number_ = 0;
 
+cell_server::cell_server() {
+
+}
+
 cell_server::cell_server(int id, observer* _observer) {
     observer_ = _observer;
     attach(observer_);
