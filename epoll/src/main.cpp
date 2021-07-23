@@ -1,3 +1,5 @@
+#if __linux__
+
 #include<unistd.h> //uni std
 #include<arpa/inet.h>
 #include<string.h>
@@ -180,3 +182,12 @@ int main() {
     printf("exit\n");
     return 0;
 }
+
+#endif
+
+#ifndef __linux__
+int main() {
+    return 0;
+}
+
+#endif

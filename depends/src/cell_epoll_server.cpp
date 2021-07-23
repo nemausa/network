@@ -1,3 +1,5 @@
+#if __linux__
+
 #include "cell_epoll_server.hpp"
 
 cell_epoll_server::cell_epoll_server() {
@@ -58,3 +60,5 @@ void cell_epoll_server::rm_client(cell_client *pclient) {
 void cell_epoll_server::on_join(cell_client *pclient) {
     ep_.ctl(EPOLL_CTL_ADD, pclient, EPOLLIN);
 }
+
+#endif

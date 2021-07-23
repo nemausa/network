@@ -1,3 +1,4 @@
+#if __linux__
 #include "cell_epoll.hpp"
 
 
@@ -75,3 +76,4 @@ int cell_epoll::wait(int timeout) {
 epoll_event *cell_epoll::events() {
     return pevents_;
 }
+#endif

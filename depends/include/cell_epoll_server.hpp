@@ -14,6 +14,8 @@
 #ifndef CELL_EPOLL_SERVER
 #define CELL_EPOLL_SERVER
 
+#if __linux__
+
 #include "cell_server.hpp"
 #include "cell_epoll.hpp"
 
@@ -29,3 +31,5 @@ private:
 };
 
 #endif // CELL_EPOLL_SERVER
+
+#endif
