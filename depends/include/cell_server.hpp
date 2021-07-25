@@ -31,7 +31,6 @@
 class cell_server : public subject {
 public:
     cell_server();
-    cell_server(int id, observer *ob = nullptr);
     virtual ~cell_server();
     virtual void on_msg(cell_client *client, data_header *header);
     void close();
@@ -47,6 +46,7 @@ public:
     size_t count();
     void check_time();
     void on_leave(cell_client *pclient);
+    void set_id(int id);
 protected:
     std::map<SOCKET, cell_client*> clients_;
     int id_;

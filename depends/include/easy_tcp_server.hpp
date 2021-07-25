@@ -22,12 +22,6 @@
 
 
 class easy_tcp_server : public subject {
-private:
-    cell_thread thread_;
-    std::vector<cell_server*> cell_servers_;
-    observer* observer_;
-    SOCKET sockfd_;
-    timestamp time_;
 public:
     easy_tcp_server();
     ~easy_tcp_server();
@@ -36,12 +30,32 @@ public:
     int listen(int n);
     SOCKET accept();
     void add_client_to_server(cell_client *client);
-    void start(int cellserver_count);
     void close();
     bool is_run();
-    void on_run(cell_thread *pthread);
+    template<class T>
+    void start(int cell_server_count) {
+        for (int n = 0; n < cell_server_count; n++) {
+            auto server = new T();
+            server->set_id(n);
+            server->attach(observer_);
+            cell_servers_.push_back(server);
+            server->start();
+        }
+        thread_.start(nullptr,
+            [this](cell_thread* pthread) {
+                on_run(pthread);
+            });
+    }
+protected:
+    virtual void on_run(cell_thread *pthread);
     void time4msg();
-
+    int sockfd();
+private:
+    cell_thread thread_;
+    std::vector<cell_server*> cell_servers_;
+    observer* observer_;
+    SOCKET sockfd_;
+    timestamp time_;
 };
 
 #endif // EASY_TCP_SERVER

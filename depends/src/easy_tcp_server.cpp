@@ -94,18 +94,6 @@ void easy_tcp_server::add_client_to_server(cell_client *client) {
     create_message("join");
 }
 
-void easy_tcp_server::start(int cell_server_count) {
-    for (int n = 0; n < cell_server_count; n++) {
-        auto server = new cell_server(n, observer_);
-        cell_servers_.push_back(server);
-        server->start();
-    }
-    thread_.start(nullptr,
-        [this](cell_thread* pthread) {
-            on_run(pthread);
-        });
-
-}
 
 void easy_tcp_server::close() {
     cell_log::info("easy_tcp_server close begin\n");
@@ -164,3 +152,6 @@ void easy_tcp_server::time4msg() {
 
 }
 
+int easy_tcp_server::sockfd() {
+    return sockfd_;
+}

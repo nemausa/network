@@ -36,10 +36,11 @@ public:
     void close();
     bool on_run(int microseconds = 1);
     bool is_run();
-    int recv_data(SOCKET c_sock);
+    int recv_data();
     virtual void on_msg(data_header *header) = 0;
     int send_data(data_header *header);
     int send_data(const char *data, int length);
+    virtual void on_init_socket();
 protected:
     cell_fdset fd_read_;
     cell_fdset fd_write_;

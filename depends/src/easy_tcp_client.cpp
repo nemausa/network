@@ -21,6 +21,7 @@ SOCKET easy_tcp_client::init_socket(int send_size, int recv_size) {
     } else {
         cell_network::make_reuseadd(sock);
         pclient_ = new cell_client(sock, send_size, recv_size);
+        on_init_socket();
     }
     return sock;
 }
@@ -80,7 +81,7 @@ bool easy_tcp_client::on_run(int microseconds) {
         }
 
         if (fd_read_.has(_sock)) {
-            if (SOCKET_ERROR == recv_data(_sock)) {
+            if (SOCKET_ERROR == recv_data()) {
                 cell_log::info("socket=%d onrun select recv_data exit", (int)_sock);
                 close();
                 return false;
@@ -104,7 +105,7 @@ bool easy_tcp_client::is_run() {
     return pclient_ && is_connect_;
 }
 
-int easy_tcp_client::recv_data(SOCKET c_sock) {
+int easy_tcp_client::recv_data() {
    if (is_run()) {
        int len = pclient_->recv_data();
        if (len > 0) {
@@ -131,4 +132,8 @@ int easy_tcp_client::send_data(const char *data, int length) {
         return pclient_->send_data(data, length);
     }
     return SOCKET_ERROR;
+}
+
+void easy_tcp_client::on_init_socket() {
+    
 }

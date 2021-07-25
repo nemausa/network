@@ -9,13 +9,6 @@ cell_server::cell_server() {
 
 }
 
-cell_server::cell_server(int id, observer* _observer) {
-    observer_ = _observer;
-    attach(observer_);
-    id_ = id;
-    task_server_.service_id_ = id;
-} 
-
 cell_server::~cell_server() {
     close();
 }
@@ -263,4 +256,9 @@ void cell_server::on_leave(cell_client *pclient) {
     create_message("leave");
     client_change_ = true;
     delete pclient;
+}
+
+void cell_server::set_id(int id) {
+    id_ = id;
+    task_server_.service_id_ = id;
 }
