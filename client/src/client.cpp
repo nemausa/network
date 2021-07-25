@@ -12,7 +12,7 @@ using namespace std;
 const char *ip = "127.0.0.1";
 uint16_t port  = 4567;
 int thread_num = 4;
-int client_num = 2500;
+int client_num = 10000;
 
 // 客户端每次发送几条消息
 int msg_num = 10;

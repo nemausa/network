@@ -16,7 +16,7 @@
 
 #include "cell.hpp"
 
-#define CELL_AMX_FD 10240
+#define CELL_AMX_FD 102400 
 
 class cell_fdset {
 public:
