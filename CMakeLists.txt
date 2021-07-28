@@ -5,6 +5,7 @@ set (SERVER_NAME server)
 set (CLIENT_NAME client)
 set (POOL_NAME pool)
 set (EPOLL_NAME epoll)
+set (IOCP_NAME iocp)
 
 set (NETWORK_MAJOR_VERSION 0)
 set (NETWORK_MINOR_VERSION 0)
@@ -59,95 +60,11 @@ else()
 endif()
 
 
-################################################################################
-# server executable
-################################################################################
-file(GLOB ${SERVER_NAME}_SRC
-	"depends/src/*.cpp"
-	"server/src/*.cpp"
-)
-message (status "${${SERVER_NAME}_SRC}")
-list (SORT ${SERVER_NAME}_SRC)
-
-add_executable(${SERVER_NAME} ${${SERVER_NAME}_SRC} )
-if (WIN32)
-	target_link_libraries(${SERVER_NAME} ws2_32)
-endif()
-
-################################################################################
-# client executable
-################################################################################
-file(GLOB ${CLIENT_NAME}_SRC
-	"depends/src/*.cpp"
-	"client/src/*.cpp"
-)
-message (status "${${CLIENT_NAME}_SRC}")
-list (SORT ${CLIENT_NAME}_SRC)
-
-add_executable(${CLIENT_NAME} ${${CLIENT_NAME}_SRC} )
-if (WIN32)
-	target_link_libraries(${CLIENT_NAME} ws2_32)
-endif()
-
-################################################################################
-# pool executable
-################################################################################
-file(GLOB ${POOL_NAME}_SRC
-	"depends/src/*.cpp"
-	"pool/src/*.cpp"
-)
-message (status "${${POOL_NAME}_SRC}")
-list (SORT ${POOL_NAME}_SRC)
-
-add_executable(${POOL_NAME} ${${POOL_NAME}_SRC} )
-if (WIN32)
-	target_link_libraries(${POOL_NAME} ws2_32)
-endif()
-
-################################################################################
-# epoll executable
-################################################################################
-file(GLOB ${EPOLL_NAME}_SRC
-	"epoll/src/*.cpp"
-)
-message (status "${${EPOLL_NAME}_SRC}")
-list (SORT ${EPOLL_NAME}_SRC)
-
-add_executable(${EPOLL_NAME} ${${EPOLL_NAME}_SRC} )
-if (WIN32)
-	target_link_libraries(${EPOLL_NAME} ws2_32)
-endif()
-
-################################################################################
-# Installation
-################################################################################
 set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/)
 
-install(TARGETS ${SERVER_NAME}
-	LIBRARY DESTINATION lib  # 动态库安装路径
-	ARCHIVE DESTINATION lib  # 静态库安装路径
-	RUNTIME DESTINATION bin  # 可执行文件安装路径
-	PUBLIC_HEADER DESTINATION include  # 头文件安装路径
-)
 
-install(TARGETS ${CLIENT_NAME}
-	LIBRARY DESTINATION lib  # 动态库安装路径
-	ARCHIVE DESTINATION lib  # 静态库安装路径
-	RUNTIME DESTINATION bin  # 可执行文件安装路径
-	PUBLIC_HEADER DESTINATION include  # 头文件安装路径
-)
-
-install(TARGETS ${POOL_NAME}
-	LIBRARY DESTINATION lib  # 动态库安装路径
-	ARCHIVE DESTINATION lib  # 静态库安装路径
-	RUNTIME DESTINATION bin  # 可执行文件安装路径
-	PUBLIC_HEADER DESTINATION include  # 头文件安装路径
-)
-
-
-install(TARGETS ${EPOLL_NAME}
-	LIBRARY DESTINATION lib  # 动态库安装路径
-	ARCHIVE DESTINATION lib  # 静态库安装路径
-	RUNTIME DESTINATION bin  # 可执行文件安装路径
-	PUBLIC_HEADER DESTINATION include  # 头文件安装路径
-)
+# add_subdirectory(server)
+# add_subdirectory(client)
+# add_subdirectory(epoll)
+add_subdirectory(pool)
+add_subdirectory(iocp)

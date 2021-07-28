@@ -1,3 +1,4 @@
+#ifdef __WIN32
 #include "cell_iocp.hpp"
 
 cell_iocp::~cell_iocp() {
@@ -151,3 +152,5 @@ bool cell_iocp::load_accept(SOCKET listen_socket) {
     }    
     return true;
 }
+
+#endif 
