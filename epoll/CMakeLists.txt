@@ -7,13 +7,14 @@ file(GLOB ${PROJECT_NAME}_SRC
 	"../depends/src/*.cpp"
 	"src/*.cpp"
 )
-message (status "${${PROJECT_NAME}_SRC}")
-list (SORT ${PROJECT_NAME}_SRC)
 
+list (SORT ${PROJECT_NAME}_SRC)
 add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_SRC} )
-if (WIN32)
+
+if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+	message(status "Windows")
 	target_link_libraries(${PROJECT_NAME} ws2_32)
-endif()
+endif (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
 install(TARGETS ${PROJECT_NAME}
 	LIBRARY DESTINATION lib  # 动态库安装路径
