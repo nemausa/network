@@ -16,6 +16,7 @@
 
 #include "cell.hpp"
 #include "cell_buffer.hpp"
+#include "cell_iocp.hpp"
 
 #ifndef RECV_BUFF_SIZE
 #define RECV_BUFF_SIZE 10240
@@ -42,6 +43,11 @@ public:
     void reset_send_time();
     bool check_heart_time(time_t dt);
     bool check_send_time(time_t dt);
+    io_data_base *make_recv_iodata();
+    void recv_for_iocp(int nrecv);
+    io_data_base *make_send_iodata();
+    void send_to_iocp(int nsend);
+    bool is_post_action();
 private:
     cell_buffer recv_buffer_;
     cell_buffer send_buffer_;
@@ -52,6 +58,8 @@ private:
     int last_send_pos_;
     int id_;
     int service_id_;
+    bool is_post_recv_ = false;
+    bool is_post_send_ = false;
 };
 
 #endif // CELL_CLIENT

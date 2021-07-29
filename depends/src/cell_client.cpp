@@ -95,3 +95,9 @@ bool cell_client::check_send_time(time_t dt) {
     return false;
 }
 
+io_data_base *cell_client::make_recv_iodata() {
+    if (is_post_recv_)
+        return nullptr;
+    is_post_recv_ = true;
+    return recv_buffer_.make
+}
