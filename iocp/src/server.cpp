@@ -41,10 +41,6 @@ int main() {
     iocp.create();
 
     io_event io_event = {};
-    const int len = 1024;
-    char buf[len] = {};
-    io_event.p_io_data->wsabuff.buf = new char[1024];
-    io_event.p_io_data->wsabuff.len = len;
 	//5 关联IOCP与ServerSocket
 	//完成键
     iocp.reg(sock_server);
@@ -52,11 +48,8 @@ int main() {
 	//6 向IOCP投递接受连接的任务
     iocp.load_accept(sock_server);
 
-    char buffers[nclient][1024] = {};
     io_data_base io_data[nclient] = {};
     for (int n = 0; n < nclient; n++) {
-        io_data[n].wsabuff.buf = &buffers[n][0];
-        io_data[n].wsabuff.len = len;
         iocp.post_accept(&io_data[n]);
     }
 
@@ -79,6 +72,7 @@ int main() {
                 iocp.post_accept(io_event.p_io_data);
                 continue;
             }
+            iocp.post_accept(io_event.p_io_data);
         } else if (io_type_e::RECV == io_event.p_io_data->io_type) {
             if (io_event.bytes_trans <= 0) {
                 printf("close socket=%d, recv bytestrans=%d\n", io_event.p_io_data->sockfd, io_event.bytes_trans);

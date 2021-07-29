@@ -1,4 +1,4 @@
-#ifdef __WIN32
+#ifdef _WIN32
 #include "cell_iocp.hpp"
 
 cell_iocp::~cell_iocp() {
@@ -40,14 +40,24 @@ bool cell_iocp::reg(SOCKET sockfd, void *ptr) {
 }
 
 bool cell_iocp::post_accept(io_data_base *p_io_data) {
-   if (!acceptex_) {
-       cell_log::info("error, post_accept acceptex_ is null");
-       return false;
-   } 
-
-   p_io_data->io_type = io_type_e::ACCEPT;
-   p_io_data->sockfd  = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-   if (FALSE == acceptex_(sock_server_,
+    if (!acceptex_) {
+        cell_log::info("error, post_accept acceptex_ is null");
+        return false;
+    } 
+    const int len = 1024;
+    char buf[len] = {};
+    p_io_data->wsabuff.buf = buf;
+    p_io_data->wsabuff.len = len;
+    if (!p_io_data) {
+        printf("p_io_data is null\n");
+        return false;
+    } else if (!p_io_data->wsabuff.buf) {
+        printf("wsabuf is null");
+        return false;
+    }
+    p_io_data->io_type = io_type_e::ACCEPT;
+    p_io_data->sockfd  = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if (FALSE == acceptex_(sock_server_,
             p_io_data->sockfd,
             p_io_data->wsabuff.buf,
             0,
