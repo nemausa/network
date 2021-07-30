@@ -48,6 +48,9 @@ public:
     io_data_base *make_send_iodata();
     void send_to_iocp(int nsend);
     bool is_post_action();
+public:
+    int id_;
+    int service_id_;
 private:
     cell_buffer recv_buffer_;
     cell_buffer send_buffer_;
@@ -56,8 +59,6 @@ private:
     SOCKET sockfd_;
     int last_pos_;
     int last_send_pos_;
-    int id_;
-    int service_id_;
     bool is_post_recv_ = false;
     bool is_post_send_ = false;
 };

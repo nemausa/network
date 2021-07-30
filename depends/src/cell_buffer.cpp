@@ -79,3 +79,51 @@ bool cell_buffer::has_msg() {
 bool cell_buffer::need_write() {
     return last_ > 0;
 }
+
+#ifdef _WIN32
+io_data_base *cell_buffer::make_recv_iodata(SOCKET sockfd) {
+    int len = size_ - last_;
+    if (len > 0) {
+        iodata_.wsabuff.buf = data_ + last_;
+        iodata_.wsabuff.len = len;
+        iodata_.sockfd = sockfd;
+        return &iodata_;
+    }
+    return nullptr;
+}
+
+io_data_base *cell_buffer::make_send_iodata(SOCKET sockfd) {
+    if (last_ > 0) {
+        iodata_.wsabuff.buf = data_;
+        iodata_.wsabuff.len = last_;
+        iodata_.sockfd = sockfd;
+        return &iodata_;
+    }
+    return nullptr;
+}
+
+bool cell_buffer::read_for_iocp(int nrecv) {
+    if (nrecv > 0 && size_ - last_ >= nrecv) {
+        last_ += nrecv;
+        return true;
+    }
+    cell_log::info("read_for_iocp:socket<%d> size<%d> last<%d> nrecv<%d>", iodata_.sockfd, size_, last_, nrecv);
+    return false;
+}
+
+bool cell_buffer::write_to_iocp(int nsend) {
+    if (last_ < nsend) {
+        cell_log::info("write_to_iocp:sockfd<%d> size<%d> last<%d> nsend<%d>", iodata_.sockfd, size_, last_, nsend);
+        return false;
+    }
+    if (last_ == nsend) {
+        last_ = 0;
+    } else {
+        last_ -= nsend;
+        memcpy(data_, data_ + nsend, last_);
+    }
+    full_count_ = 0;
+    return true;
+}
+
+#endif

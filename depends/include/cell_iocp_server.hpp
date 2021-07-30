@@ -26,7 +26,7 @@ public:
     bool do_net_events();
     int do_iocp_net_events();
     void rm_client(cell_client *pclient);
-    void rm_client(io_event &_io_event)
+    void rm_client(io_event &_io_event);
 private:
     cell_iocp iocp_;
     io_event io_event_ = {};    

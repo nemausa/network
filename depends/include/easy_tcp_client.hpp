@@ -37,6 +37,7 @@ public:
     bool on_run(int microseconds = 1);
     bool is_run();
     int recv_data();
+    void do_msg();
     virtual void on_msg(data_header *header) = 0;
     int send_data(data_header *header);
     int send_data(const char *data, int length);

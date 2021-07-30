@@ -95,9 +95,39 @@ bool cell_client::check_send_time(time_t dt) {
     return false;
 }
 
+#ifdef _WIN32
 io_data_base *cell_client::make_recv_iodata() {
     if (is_post_recv_)
         return nullptr;
     is_post_recv_ = true;
-    return recv_buffer_.make
+    return recv_buffer_.make_recv_iodata(sockfd_);
 }
+
+void cell_client::recv_for_iocp(int nrecv) {
+    if (!is_post_recv_) {
+        cell_log::info("recv_for_iocp is+post_recv_ is false");
+    }
+    is_post_recv_ = false;
+    recv_buffer_.read_for_iocp(nrecv);
+}
+
+io_data_base *cell_client::make_send_iodata() {
+    if (is_post_send_)
+        return nullptr;
+    is_post_send_ = true;
+    return send_buffer_.make_send_iodata(sockfd_);
+}
+
+void cell_client::send_to_iocp(int nsend) {
+    if (!is_post_send_) {
+        cell_log::info("send_to_iocp is_post_send_ is false");
+    }
+    is_post_send_ = false;
+    send_buffer_.write_to_iocp(nsend);
+}
+
+bool cell_client::is_post_action() {
+    return is_post_recv_ || is_post_send_;
+}
+
+#endif

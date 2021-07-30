@@ -109,14 +109,18 @@ int easy_tcp_client::recv_data() {
    if (is_run()) {
        int len = pclient_->recv_data();
        if (len > 0) {
-           while (pclient_->has_msg()) {
-               on_msg(pclient_->front_msg());
-               pclient_->pop_msg();
-           }
+           do_msg();
        }
        return len;
    }
    return 0;
+}
+
+void easy_tcp_client::do_msg() {
+    while (pclient_->has_msg()) {
+        on_msg(pclient_->front_msg());
+        pclient_->pop_msg();
+    }
 }
 
 int easy_tcp_client::send_data(data_header *header) {

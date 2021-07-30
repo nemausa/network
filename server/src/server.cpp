@@ -2,13 +2,14 @@
 #include <cstring>
 #include "easy_epoll_server.hpp"
 #include "cell_log.hpp"
+#include "easy_iocp_server.hpp"
 #ifndef VERSION
 const char *VERSION_INFO = "version: 0.0.1";
 #endif
 
 int main() {
     cell_log::initstance().set_path("server_log.txt", "w");
-    easy_epoll_server server;
+    easy_iocp_server server;
     server.init_socket();
     server.bind(nullptr, 4567);
     server.listen(64);

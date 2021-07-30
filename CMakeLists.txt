@@ -64,7 +64,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive -std=c++11 -pthread")
 set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/)
 
 
-# add_subdirectory(server)
+add_subdirectory(server)
 add_subdirectory(client)
 # add_subdirectory(epoll)
 # add_subdirectory(pool)
