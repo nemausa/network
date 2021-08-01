@@ -36,7 +36,7 @@ bool cell_select_server::do_net_events() {
         ret = select(max_socket_ + 1, fd_read_.fdset(), nullptr, nullptr, &t);
     }
     if (ret < 0) {
-        cell_log::info("");
+        LOG_INFO("");
     } else if (ret == 0) {
         return true;
     }
@@ -52,11 +52,11 @@ void cell_select_server::write_data() {
         auto iter = clients_.find(pfdset->fd_array[n]);
         if (iter != clients_.end()) {
             if (-1 == recv_data(iter->second)) {
-                on_client_leave(iter->second);
+                on_leave(iter->second);
                 clients_.erase(iter);
             }
         } else {
-            cell_log::info("error iter != clients_.end()\n");
+            LOG_INFO("error iter != clients_.end()\n");
         }
     }
 #else

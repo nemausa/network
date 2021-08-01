@@ -37,7 +37,7 @@ private:
     event_call on_destory_;
     std::mutex mutex_;
     cell_semaphore sem_;
-    bool is_run_;
+    bool is_run_ = false;
 };
 
 #endif // CELL_THREAD

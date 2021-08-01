@@ -10,7 +10,7 @@ cell_epoll_server::~cell_epoll_server() noexcept {
     close();
 }
 
-bool cell_epoll_server::do_events() {
+bool cell_epoll_server::do_net_events() {
     for (auto iter : clients_) {
        if (iter.second->need_write()) {
            ep_.ctl(EPOLL_CTL_MOD, iter.second, EPOLLIN|EPOLLOUT);
@@ -21,7 +21,7 @@ bool cell_epoll_server::do_events() {
     
     int ret = ep_.wait(1);
     if (ret < 0) {
-        cell_log::info("cell_epoll_server%d wait", id_);
+        LOG_INFO("cell_epoll_server%d wait", id_);
         return false;
     } else if (ret == 0) {
         return true;

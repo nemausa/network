@@ -66,6 +66,6 @@ set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/)
 
 add_subdirectory(server)
 add_subdirectory(client)
-# add_subdirectory(epoll)
-# add_subdirectory(pool)
+add_subdirectory(epoll)
+add_subdirectory(pool)
 add_subdirectory(iocp)

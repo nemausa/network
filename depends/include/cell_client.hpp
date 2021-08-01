@@ -44,11 +44,13 @@ public:
     void reset_send_time();
     bool check_heart_time(time_t dt);
     bool check_send_time(time_t dt);
+#ifdef _WIN32
     io_data_base *make_recv_iodata();
     void recv_for_iocp(int nrecv);
     io_data_base *make_send_iodata();
     void send_to_iocp(int nsend);
     bool is_post_action();
+#endif
 public:
     int id_;
     int service_id_;

@@ -26,8 +26,7 @@ void cell_task_server::on_run(cell_thread *pthread) {
         }
 
         if (task_list_.empty()) {
-            std::chrono::milliseconds t(1);
-            std::this_thread::sleep_for(t);
+            cell_thread::sleep(1);
             continue;
         }
 

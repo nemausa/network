@@ -1,4 +1,7 @@
+#ifdef _WIN32
+
 #include "easy_iocp_client.hpp" 
+#include "cell_log.hpp"
 
 void easy_iocp_client::on_init_socket() {
     iocp_.create();
@@ -54,7 +57,7 @@ bool easy_iocp_client::on_run(int microseconds) {
 int easy_iocp_client::do_iocp_net_events(int microseconds) {
     int ret = iocp_.wait(ioevent_, microseconds);
     if (ret <0) {
-        cell_log::info("easy_iocp_client.do_iocp_net_events.wait clientid<%d> sockfd<%d>", pclient_->id_, (int)pclient_->sockfd());
+        LOG_INFO("easy_iocp_client.do_iocp_net_events.wait clientid<%d> sockfd<%d>", pclient_->id_, (int)pclient_->sockfd());
         return ret;
     } else if (ret == 0) {
         return ret;
@@ -62,13 +65,13 @@ int easy_iocp_client::do_iocp_net_events(int microseconds) {
 
     if (io_type_e::RECV == ioevent_.p_io_data->io_type) {
         if (ioevent_.bytes_trans <= 0) {
-            cell_log::info("easy_ioco_client.do_iocp_net_events sockfd%d RECV bytes_trans=%d", pclient_->sockfd(), ioevent_.bytes_trans);
+            LOG_INFO("easy_ioco_client.do_iocp_net_events sockfd%d RECV bytes_trans=%d", pclient_->sockfd(), ioevent_.bytes_trans);
             close();
             return -1;
         }
     } else if (io_type_e::SEND == ioevent_.p_io_data->io_type) {
         if (ioevent_.bytes_trans <= 0) {
-            cell_log::info("easy_ioco_client.do_iocp_net_events sockfd%d RECV bytes_trans=%d", pclient_->sockfd(), ioevent_.bytes_trans);
+            LOG_INFO("easy_ioco_client.do_iocp_net_events sockfd%d RECV bytes_trans=%d", pclient_->sockfd(), ioevent_.bytes_trans);
             close();
             return -1;
         }
@@ -77,6 +80,9 @@ int easy_iocp_client::do_iocp_net_events(int microseconds) {
             pclient->send_to_iocp(ioevent_.bytes_trans);
         }
     } else {
-        cell_log::info("undefine io type.");
+        LOG_INFO("undefine io type.");
     }
+    return ret;
 }
+
+#endif

@@ -15,7 +15,7 @@
 #define CELL_BUFFER
 
 #include "cell_iocp.hpp"
-
+#include "cell_task.hpp"
 class cell_buffer {
 public:
     cell_buffer(int size = 8192);

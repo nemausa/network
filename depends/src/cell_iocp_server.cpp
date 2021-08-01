@@ -18,7 +18,7 @@ bool cell_iocp_server::do_net_events() {
             auto p_io_data = pclient->make_send_iodata();
             if (p_io_data) {
                 if (!iocp_.post_send(p_io_data)) {
-                    on_client_leave(pclient);
+                    on_leave(pclient);
                     iter = clients_.erase(iter);
                     continue;
                 }
@@ -26,7 +26,7 @@ bool cell_iocp_server::do_net_events() {
             p_io_data = pclient->make_recv_iodata();
             if (p_io_data) {
                 if (!iocp_.post_recv(p_io_data)) {
-                    on_client_leave(pclient);
+                    on_leave(pclient);
                     iter = clients_.erase(iter);
                     continue;
                 }
@@ -35,7 +35,7 @@ bool cell_iocp_server::do_net_events() {
             auto p_io_data = pclient->make_recv_iodata();
             if (p_io_data) {
                 if (!iocp_.post_recv(p_io_data)) {
-                    on_client_leave(pclient);
+                    on_leave(pclient);
                     iter = clients_.erase(iter);
                     continue;
                 }
@@ -62,7 +62,7 @@ bool cell_iocp_server::do_net_events() {
 int cell_iocp_server::do_iocp_net_events() {
     int ret = iocp_.wait(io_event_, 1);
     if (ret < 0) {
-        cell_log::info("cell_iocp_server%d.wait", id_);
+        LOG_INFO("cell_iocp_server%d.wait", id_);
         return ret;
     } else if (ret == 0) {
         return ret;
@@ -70,18 +70,18 @@ int cell_iocp_server::do_iocp_net_events() {
 
     if (io_type_e::RECV == io_event_.p_io_data->io_type) {
         if (io_event_.bytes_trans <= 0) {
-            cell_log::info("rm_client sockfd=%d, RECV byte_trans = %d", io_event_.p_io_data->sockfd, io_event_.bytes_trans);
+            LOG_INFO("rm_client sockfd=%d, RECV byte_trans = %d", io_event_.p_io_data->sockfd, io_event_.bytes_trans);
             rm_client(io_event_);
             return ret;
         }
         cell_client *pclient = (cell_client*)io_event_.data.ptr;
         if (pclient) {
             pclient->recv_for_iocp(io_event_.bytes_trans);
-            on_net_recv(pclient);
+            on_recv(pclient);
         }
     } else if (io_type_e::SEND == io_event_.p_io_data->io_type) {
         if (io_event_.bytes_trans <= 0) {
-            cell_log::info("rm_client sockfd=%d, RECV byte_trans = %d", io_event_.p_io_data->sockfd, io_event_.bytes_trans);
+            LOG_INFO("rm_client sockfd=%d, RECV byte_trans = %d", io_event_.p_io_data->sockfd, io_event_.bytes_trans);
             rm_client(io_event_);
             return ret;
         }
@@ -90,7 +90,7 @@ int cell_iocp_server::do_iocp_net_events() {
             pclient->send_to_iocp(io_event_.bytes_trans);
         } 
     } else {
-        cell_log::info("undefine io type");
+        LOG_INFO("undefine io type");
     }
     return ret;
 }
@@ -100,7 +100,7 @@ void cell_iocp_server::rm_client(cell_client *pclient) {
     if (iter != clients_.end()) {
         clients_.erase(iter);
     }
-    on_client_leave(pclient);
+    on_leave(pclient);
 }
 
 void cell_iocp_server::rm_client(io_event &_ioevent) {

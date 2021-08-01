@@ -26,7 +26,7 @@ void cell_fdset::add(SOCKET s) {
     if (s < CELL_AMX_FD) {
         FD_SET(s, pfdset_);
     } else {
-        cell_log::info("add sock<%d> cell_max_fd<%d>", (int)s, CELL_AMX_FD);
+        LOG_INFO("add sock<%d> cell_max_fd<%d>", (int)s, CELL_AMX_FD);
     }
 #endif
 }

@@ -1,9 +1,15 @@
 #include "easy_tcp_server.hpp"
 #include "cell_network.hpp"
+#include "cell_config.hpp"
 
 easy_tcp_server::easy_tcp_server() {
     sockfd_ = INVALID_SOCKET;
-    observer_ = new observer(*this);
+    recv_count_ = 0;
+    message_count_ = 0;
+    client_count_ = 0;
+    send_buffer_size_ = cell_config::instance().get_int("send_buffer_szie", SEND_BUFF_SIZE);
+    recv_buffer_size_ = cell_config::instance().get_int("recv_buffer_szie", RECV_BUFF_SIZE);
+    max_client_ = cell_config::instance().get_int("max_client", FD_SETSIZE);
 }
 
 easy_tcp_server::~easy_tcp_server() {
@@ -13,15 +19,15 @@ easy_tcp_server::~easy_tcp_server() {
 SOCKET easy_tcp_server::init_socket() {
     cell_network::init();
     if (INVALID_SOCKET != sockfd_) {
-        cell_log::info("<socket=%d>close old socket...\n", (int)sockfd_);
+        LOG_WARN("<socket=%d>close old socket...\n", (int)sockfd_);
         close();
     }
     sockfd_ = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (INVALID_SOCKET == sockfd_) {
-        cell_log::info("error, create socket failed\n");
+        LOG_PERROR("error, create socket failed\n");
     } else {
         cell_network::make_reuseadd(sockfd_);
-        cell_log::info("create socket=<%d> succes\n", (int)sockfd_);
+        LOG_INFO("create socket=<%d> succes\n", (int)sockfd_);
     }
     return sockfd_;
 }
@@ -47,9 +53,9 @@ int easy_tcp_server::bind(const char *ip, unsigned short port) {
 
     int ret = ::bind(sockfd_, (sockaddr*)&sin, sizeof(sockaddr));
     if (SOCKET_ERROR == ret) {
-        cell_log::info("error, bind port<%d> failed\n", port);
+        LOG_PERROR("error, bind port<%d> failed\n", port);
     } else {
-        cell_log::info("bind port<%d> success\n", port);
+        LOG_INFO("bind port<%d> success\n", port);
     }
     return ret;
 }
@@ -58,9 +64,9 @@ int easy_tcp_server::listen(int n) {
     int ret = ::listen(sockfd_, n);
 
     if (SOCKET_ERROR == ret) {
-        cell_log::info("socket=<%d> error, listen port failed\n", sockfd_);
+        LOG_PERROR("socket=<%d> error, listen port failed\n", sockfd_);
     } else {
-        cell_log::info("socket=<%d> listen port success\n", sockfd_);
+        LOG_INFO("socket=<%d> listen port success\n", sockfd_);
     }
     return ret;
 }
@@ -75,9 +81,15 @@ SOCKET easy_tcp_server::accept() {
     c_sock = ::accept(sockfd_, (sockaddr*)&client_addr, (socklen_t*)&length);
 #endif
     if (INVALID_SOCKET == c_sock) {
-        cell_log::info("socket=<%d> error, accept invalid socket\n",(int)sockfd_);
+        LOG_PERROR("socket=<%d> error, accept invalid socket\n",(int)sockfd_);
     } else {
-        add_client_to_server(new cell_client(c_sock));
+        if (client_count_ < max_client_) {
+            cell_network::make_reuseadd(c_sock);
+            add_client_to_server(new cell_client(c_sock));
+        } else {
+            cell_network::destory_socket(c_sock);;
+            LOG_WARN("accept to max_client");
+        }
     }
     return c_sock;
 }
@@ -85,71 +97,48 @@ SOCKET easy_tcp_server::accept() {
 void easy_tcp_server::add_client_to_server(cell_client *client) {
     auto min_server =  cell_servers_[0];
     for (auto server : cell_servers_) {
-        if (min_server->count() > server->count()) {
+        if (min_server->client_count() > server->client_count()) {
             min_server = server;
         }
     }
-
     min_server->add_client(client);
-    create_message("join");
 }
 
-
 void easy_tcp_server::close() {
-    cell_log::info("easy_tcp_server close begin\n");
+    LOG_INFO("easy_tcp_server close begin");
     thread_.close();
     if (sockfd_ != INVALID_SOCKET) {
         for (auto s : cell_servers_) {
             delete s;
         }
         cell_servers_.clear();
-#ifdef _WIN32
-        closesocket(sockfd_);
-        WSACleanup();
-#else
-        ::close(sockfd_);
-#endif        
+        cell_network::destory_socket(sockfd_);
+        sockfd_ = INVALID_SOCKET;
     }
-    cell_log::info("easy_tcp_server close end\n");
+    LOG_INFO("easy_tcp_server close end");
 }
 
-bool easy_tcp_server::is_run() {
-    return sockfd_ != INVALID_SOCKET;
+void easy_tcp_server::on_join(cell_client *pclient) {
+    client_count_++;
 }
-
-void easy_tcp_server::on_run(cell_thread *pthread) {
-    while (pthread->is_run()) {
-        time4msg();
-        fd_set fd_read;
-        FD_ZERO(&fd_read);
-        FD_SET(sockfd_, &fd_read);
-        timeval t = {0, 1};
-        int ret = select(sockfd_ + 1, &fd_read, nullptr, nullptr, &t);
-        if (ret < 0) {
-            std::cout << "accept select end" << std::endl;
-            pthread->exit();
-            break;
-        }
-
-        if (FD_ISSET(sockfd_, &fd_read)) {
-            FD_CLR(sockfd_, &fd_read);
-            accept();
-        }
-    }
+void easy_tcp_server::on_leave(cell_client *pclient) {
+    client_count_--;
 }
-
-
+void easy_tcp_server::on_msg(cell_server *pserver, cell_client *pclient, data_header *header) {
+    message_count_++;
+}
+void easy_tcp_server::on_recv(cell_client *pclient) {
+    recv_count_++;
+}
 void easy_tcp_server::time4msg() {
     auto t1 = time_.second();
     if (t1 >= 1.0f) {
-        cell_log::info("thread<%d>, time<%f>, socket<%d>, client_count<%d>, recv_count<%d>, message<%d>",
-            cell_servers_.size(), t1, sockfd_, observer_->client_count(), observer_->recv_count(), observer_->msg_count());
-        observer_->msg_count(0);
-        observer_->recv_count(0);
+        LOG_INFO("thread<%d>, time<%f>, socket<%d>, client_count<%d>, recv_count<%d>, message<%d>",
+            cell_servers_.size(), t1, sockfd_, (int)client_count_, (int)recv_count_, (int)message_count_); 
+        recv_count_  = 0;
+        message_count_ = 0;
         time_.update();
-
     }
-
 }
 
 int easy_tcp_server::sockfd() {

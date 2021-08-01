@@ -1,5 +1,5 @@
 /**
-* @file timestamp.hpp
+* @file cell_timestamp.hpp
 *
 * @brief This message displayed in Doxygen Files index
 *
@@ -17,12 +17,10 @@
 #include <chrono>
 using namespace std::chrono;
 
-
-
-class timestamp {
+class cell_timestamp {
 public:
-    timestamp();
-    ~timestamp();
+    cell_timestamp();
+    ~cell_timestamp();
     void update();
     double second();
     double millsecond();

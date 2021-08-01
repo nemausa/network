@@ -1,3 +1,5 @@
+#ifdef _WIN32
+
 #include "cell_iocp.hpp"
 
 #define nclient 3
@@ -102,3 +104,9 @@ int main() {
     WSACleanup();
     return 0;
 }
+
+#else
+    int main() {
+        return 0;
+    }
+#endif

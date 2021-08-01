@@ -14,6 +14,8 @@
 #ifndef EASY_IOCP_CLIENT
 #define EASY_IOCP_CLIENT
 
+#ifdef _WIN32
+
 #include "easy_tcp_client.hpp"
 #include "cell_iocp.hpp"
 
@@ -28,5 +30,7 @@ protected:
     cell_iocp iocp_;
     io_event ioevent_ = {};
 };
+
+#endif
 
 #endif // EASY_IOCP_CLIENT

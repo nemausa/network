@@ -23,12 +23,12 @@
 class cell_task_server {
 typedef std::function<void()> cell_task;
 public:
+    cell_task_server(){}
     void add_task(cell_task task);
     void start();
     void close();
 protected:
     void on_run(cell_thread *pthread);
-
 private:
     std::list<cell_task> task_list_;
     std::list<cell_task> task_buff_;

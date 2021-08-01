@@ -12,7 +12,7 @@ int cell_epoll::create(int max_events) {
     }
     epfd_ = epoll_create(max_events);
     if (EPOLL_ERROR == epfd_) {
-        cell_log::info("epoll_create");
+        LOG_INFO("epoll_create");
         return epfd_;
     }
     pevents_ = new epoll_event[max_events];
@@ -44,7 +44,7 @@ int cell_epoll::ctl(int op, SOCKET sockfd, uint32_t events) {
     // 返回0代表操作成功，返回负值代表失败 -1
     int ret = epoll_ctl(epfd_, op, sockfd, &ev);
     if (EPOLL_ERROR == ret) {
-        cell_log::info("epoll_ctl error");
+        LOG_INFO("epoll_ctl error");
     }
     return ret;
 }
@@ -57,7 +57,7 @@ int cell_epoll::ctl(int op, cell_client *pclient, uint32_t events) {
     ev.data.ptr = pclient;
     int ret = epoll_ctl(epfd_, op, pclient->sockfd(), &ev);
     if (EPOLL_ERROR == ret) {
-        cell_log::info("epoll_ctl2");
+        LOG_INFO("epoll_ctl2");
     }
     return ret;
 }
@@ -66,10 +66,10 @@ int cell_epoll::wait(int timeout) {
     int ret = epoll_wait(epfd_, pevents_, max_events_, timeout);
     if (EPOLL_ERROR == ret) {
         if (errno == EINTR) {
-            cell_log::info("epoll_wait EINTR");
+            LOG_INFO("epoll_wait EINTR");
             return 0;
         }
-        cell_log::info("epoll_wait");
+        LOG_INFO("epoll_wait");
     }
 }
 

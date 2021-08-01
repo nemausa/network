@@ -14,7 +14,7 @@ void easy_epoll_server::on_run(cell_thread *pthread) {
         time4msg();
         int ret = ep.wait(1);
         if (ret < 0) {
-            cell_log::info("easy_epoll_server.on_run.wait exit");
+            LOG_INFO("easy_epoll_server.on_run.wait exit");
             pthread->exit();
             break;
         } 

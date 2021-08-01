@@ -1,6 +1,7 @@
 #include "easy_tcp_client.hpp"
 #include "easy_epoll_client.hpp"
-#include "timestamp.hpp"
+#include "easy_iocp_client.hpp"
+#include "cell_timestamp.hpp"
 #include "cell_config.hpp"
 #include "cell_thread.hpp"
 
@@ -23,7 +24,7 @@ int work_sleep = 1000;
 int send_buffer_size = SEND_BUFF_SIZE;
 int recv_buffer_size = RECV_BUFF_SIZE;
 
-class my_client : public easy_tcp_client{
+class my_client : public easy_epoll_client {
 public:
     my_client() {
         is_check_id_ = false;
@@ -36,7 +37,7 @@ public:
         login_result *login = (login_result*)header;
         if (is_check_id_) {
             if (login->msg_id != recv_msg_id_) {
-                cell_log::info("socket<%d> msg_id<%d> recv_id<%d> %d", pclient_->sockfd(), login->msg_id, recv_msg_id_, login->msg_id - recv_msg_id_);
+                LOG_INFO("socket<%d> msg_id<%d> recv_id<%d> %d", pclient_->sockfd(), login->msg_id, recv_msg_id_, login->msg_id - recv_msg_id_);
             }
             ++recv_msg_id_;
         }
@@ -96,7 +97,7 @@ std::atomic_int ready_count(0);
 std::atomic_int connect_count(0); 
 
 void work_thread(cell_thread *pthread, int id) {
-    cell_log::info("thread<%d> start", id);
+    LOG_INFO("thread<%d> start", id);
     vector<my_client*> clients(client_num);
     int begin = 0;
     int end = client_num;
@@ -120,7 +121,7 @@ void work_thread(cell_thread *pthread, int id) {
         cell_thread::sleep(0);
     }
 
-    cell_log::info("thread<%d> connect<begin=%d, end=%d, connect_count=%d>", id, begin, end, (int)connect_count);
+    LOG_INFO("thread<%d> connect<begin=%d, end=%d, connect_count=%d>", id, begin, end, (int)connect_count);
     
     ready_count++;
     // 等待其他线程准备好再发送数据
@@ -132,13 +133,13 @@ void work_thread(cell_thread *pthread, int id) {
     strcpy(lg.user_name, "nemausa");
     strcpy(lg.password, "nemausa password");
     
-    auto t2 = timestamp::now_milliseconds();
+    auto t2 = cell_timestamp::now_milliseconds();
     auto t0 = t2;
     auto dt = t0;
 
-    timestamp t_time;
+    cell_timestamp t_time;
     while (pthread->is_run()) {
-        t0 = timestamp::now_milliseconds();
+        t0 = cell_timestamp::now_milliseconds();
         dt = t0 -t2;
         t2 = t0;
         
@@ -171,7 +172,7 @@ void work_thread(cell_thread *pthread, int id) {
         clients[n]->close();
         delete clients[n];
     }
-    cell_log::info("thread<%d> exit", id);
+    LOG_INFO("thread<%d> exit", id);
     --ready_count;
 }
 
@@ -189,12 +190,12 @@ int main(int argc, char *args[]) {
 			if (0 == strcmp(cmdBuf, "exit"))
 			{
 				//pThread->Exit();
-				cell_log::info("exit ");
+				LOG_INFO("exit ");
                 pThread->exit();
 				break;
 			}
 			else {
-				cell_log::info("undefine");
+				LOG_INFO("undefine");
 			}
 		}
 	});
@@ -208,11 +209,11 @@ int main(int argc, char *args[]) {
         threads.push_back(t);
     }
 
-    timestamp ts;
+    cell_timestamp ts;
     while (tCmd.is_run()) {
         auto t = ts.second();
         if (t >= 1.0) {
-            cell_log::info(
+            LOG_INFO(
                 "thread<%d> clients<%d> connect<%d> time<%lf> send<%d>",
                 thread_num, client_num, (int)connect_count, t, (int)send_count);
             send_count = 0;
@@ -225,6 +226,6 @@ int main(int argc, char *args[]) {
         t->close();
         delete t;
     }
-    cell_log::info("eixt");
+    LOG_INFO("eixt");
     return 0;
 }

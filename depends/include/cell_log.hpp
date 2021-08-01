@@ -14,16 +14,19 @@
 #ifndef CELL_LOG
 #define CELL_LOG
 
-#include "cell.hpp"
 #include <ctime>
+
+#include "cell.hpp"
+#include "cell_task.hpp"
+
 using namespace std::chrono;
 
-class cell_log {
 #define LOG_INFO(...)       cell_log::info(__VA_ARGS__)
 #define LOG_WARN(...)       cell_log::warn(__VA_ARGS__)
 #define LOG_ERROR(...)      cell_log::error(__VA_ARGS__)
 #define LOG_DEBUG(...)      cell_log::debug(__VA_ARGS__)
 #define LOG_PERROR(...)     cell_log::perror(__VA_ARGS__)
+class cell_log {
 
 public:
     cell_log() {
@@ -96,13 +99,13 @@ public:
             );
             echo_real(true,  "perror ", pformat, args...);
             echo_real(false, "perror ", "errno=%d, errmsg=%s", err_code, text);
-        })
+        });
 #else
         auto err_code = errno;
         instance().task_server_.add_task([=]() {
             echo_real(true,  "perror ", pformat, args...);
             echo_real(false, "perror ", "errno=%d, errmsg=%s", err_code, strerror(err_code));
-        })
+        });
         
 #endif        
     }
@@ -131,8 +134,8 @@ public:
     }
 
     template<typename ...Args>
-    static void debug(const char *pformat, Args ... arg) {
-        echo("debug ", pformat, args);
+    static void debug(const char *pformat, Args ... args) {
+        echo("debug ", pformat, args...);
     } 
 
     static void info(const char *pstr) {
@@ -147,7 +150,7 @@ public:
     template<typename ...Args>
     static void echo(const char *type, const char *pformat, Args ... args) {
         cell_log *plog = &instance();
-        plog->task_server.add_task([=]() {
+        plog->task_server_.add_task([=]() {
             echo_real(true, type, pformat, args...);
         });
     }
@@ -178,9 +181,9 @@ public:
         if (type) {
             printf("%s", type);
         }
-        printf(perror, args...);
+        printf(pformat, args...);
         if (br) {
-            printf("%s", "\n")
+            printf("%s", "\n");
         }
     }
 private:

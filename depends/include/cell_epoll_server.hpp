@@ -23,7 +23,7 @@ class cell_epoll_server : public cell_server {
 public:
     cell_epoll_server();
     ~cell_epoll_server() noexcept;
-    bool do_events();
+    bool do_net_events();
     void rm_client(cell_client *pclient);
     void on_join(cell_client *pclient);
 private:

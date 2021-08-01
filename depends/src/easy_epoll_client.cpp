@@ -21,7 +21,7 @@ bool easy_epoll_client::on_run(int microseconds) {
        }
        int ret = ep_.wait(microseconds);
        if (ret < 0) {
-           cell_log::info("cell_epoll_client.on_run.wait");
+           LOG_INFO("cell_epoll_client.on_run.wait");
            return false;
        } else if (ret == 0) {
            return true;
@@ -32,14 +32,14 @@ bool easy_epoll_client::on_run(int microseconds) {
            if (pclient) {
                 if (events[i].events & EPOLLIN) {
                     if (SOCKET_ERROR == recv_data()) {
-                        cell_log::info("socket<%d>on_run.epoll recv_data exit", pclient->sockfd());
+                        LOG_INFO("socket<%d>on_run.epoll recv_data exit", pclient->sockfd());
                         close();
                         continue;
                     }
                 }
                 if (events[i].events & EPOLLOUT) {
                     if (SOCKET_ERROR == pclient->send_data_real()) {
-                        cell_log::info("socket<%d>on_run.epoll sen_data_real exit", pclient->sockfd());
+                        LOG_INFO("socket<%d>on_run.epoll sen_data_real exit", pclient->sockfd());
                         close();
                     }
                 }

@@ -33,8 +33,8 @@ public:
     virtual ~easy_tcp_client();
     SOCKET init_socket(int send_size = SEND_BUFF_SIZE, int redv_size = RECV_BUFF_SIZE);
     int connect(const char *ip, unsigned short port);
-    void close();
-    bool on_run(int microseconds = 1);
+    virtual void close();
+    virtual bool on_run(int microseconds = 1) = 0;
     bool is_run();
     int recv_data();
     void do_msg();
@@ -42,9 +42,8 @@ public:
     int send_data(data_header *header);
     int send_data(const char *data, int length);
     virtual void on_init_socket();
+    virtual void on_connect();
 protected:
-    cell_fdset fd_read_;
-    cell_fdset fd_write_;
     cell_client* pclient_ = nullptr;
     bool is_connect_ = false;
 };

@@ -8,8 +8,12 @@ const char *VERSION_INFO = "version: 0.0.1";
 #endif
 
 int main() {
-    cell_log::initstance().set_path("server_log.txt", "w");
+    cell_log::instance().set_path("server_log.txt", "w", true);
+#ifdef _WIN32
     easy_iocp_server server;
+#else
+    easy_epoll_server server;
+#endif
     server.init_socket();
     server.bind(nullptr, 4567);
     server.listen(64);
@@ -20,15 +24,15 @@ int main() {
         char buf[256] = {};
         scanf("%s", buf);
         if (0 == strcmp(buf, "exit")) {
-            cell_log::info("exit thread\n");
+            LOG_INFO("exit thread\n");
             server.close();
             break;
         } else {
-            cell_log::info("undefined commad\n");
+            LOG_INFO("undefined commad\n");
         }
     }
 
-    cell_log::info("exit\n");
+    LOG_INFO("exit\n");
     getchar();
     return 0;
 }

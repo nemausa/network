@@ -1,8 +1,7 @@
 #include "cell_thread.hpp"
 
-
 cell_thread::cell_thread() {
-    is_run_ = false;
+
 }
 
 void cell_thread::start(event_call on_create,

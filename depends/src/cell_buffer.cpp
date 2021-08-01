@@ -50,7 +50,7 @@ int cell_buffer::send_to_socket(SOCKET sockfd) {
     if (last_ > 0 && sockfd != INVALID_SOCKET) {
         ret = send(sockfd, data_, last_, 0);
         if (ret <= 0) {
-        cell_log::info("send_to_socket:sockfd%d size<%d> last<%d> ret<%d>",
+        LOG_INFO("send_to_socket:sockfd%d size<%d> last<%d> ret<%d>",
             sockfd, size_, last_, ret);
             return SOCKET_ERROR; 
         }
@@ -70,7 +70,7 @@ int cell_buffer::recv_from_socket(SOCKET sockfd) {
         char *szrecv = data_ + last_;
         int len = (int)recv(sockfd, szrecv, size_ - last_, 0);
         if (len <= 0) {
-            cell_log::info("send_to_socket:sockfd%d size<%d> last<%d> len<%d>",
+            LOG_INFO("send_to_socket:sockfd%d size<%d> last<%d> len<%d>",
                 sockfd, size_, last_, len);
             return len;
         }
@@ -119,13 +119,13 @@ bool cell_buffer::read_for_iocp(int nrecv) {
         last_ += nrecv;
         return true;
     }
-    cell_log::info("read_for_iocp:socket<%d> size<%d> last<%d> nrecv<%d>", iodata_.sockfd, size_, last_, nrecv);
+    LOG_INFO("read_for_iocp:socket<%d> size<%d> last<%d> nrecv<%d>", iodata_.sockfd, size_, last_, nrecv);
     return false;
 }
 
 bool cell_buffer::write_to_iocp(int nsend) {
     if (last_ < nsend) {
-        cell_log::info("write_to_iocp:sockfd<%d> size<%d> last<%d> nsend<%d>", iodata_.sockfd, size_, last_, nsend);
+        LOG_INFO("write_to_iocp:sockfd<%d> size<%d> last<%d> nsend<%d>", iodata_.sockfd, size_, last_, nsend);
         return false;
     }
     if (last_ == nsend) {
