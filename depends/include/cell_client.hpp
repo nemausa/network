@@ -16,7 +16,7 @@
 
 #include "cell.hpp"
 #include "cell_buffer.hpp"
-#include "cell_iocp.hpp"
+#include "cell_network.hpp"
 
 #ifndef RECV_BUFF_SIZE
 #define RECV_BUFF_SIZE 10240
@@ -30,6 +30,7 @@ class cell_client {
 public:
     cell_client(SOCKET sockfd = INVALID_SOCKET, int send_size = SEND_BUFF_SIZE, int recv_size = RECV_BUFF_SIZE);
     ~cell_client();
+    void destory();
     SOCKET sockfd();
     int recv_data();
     bool has_msg();
@@ -51,6 +52,8 @@ public:
 public:
     int id_;
     int service_id_;
+    int recv_id = 1;
+    int send_id = 1;
 private:
     cell_buffer recv_buffer_;
     cell_buffer send_buffer_;

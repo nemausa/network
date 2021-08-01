@@ -49,7 +49,17 @@ int cell_buffer::send_to_socket(SOCKET sockfd) {
     int ret  = 0;
     if (last_ > 0 && sockfd != INVALID_SOCKET) {
         ret = send(sockfd, data_, last_, 0);
-        last_ = 0;
+        if (ret <= 0) {
+        cell_log::info("send_to_socket:sockfd%d size<%d> last<%d> ret<%d>",
+            sockfd, size_, last_, ret);
+            return SOCKET_ERROR; 
+        }
+        if (ret == last_) {
+            last_ = 0;
+        } else {
+            last_ -= ret;
+            memcpy(data_, data_ + ret, last_);
+        }
         full_count_ = 0;
     }
     return ret;
@@ -60,6 +70,8 @@ int cell_buffer::recv_from_socket(SOCKET sockfd) {
         char *szrecv = data_ + last_;
         int len = (int)recv(sockfd, szrecv, size_ - last_, 0);
         if (len <= 0) {
+            cell_log::info("send_to_socket:sockfd%d size<%d> last<%d> len<%d>",
+                sockfd, size_, last_, len);
             return len;
         }
         last_ += len;

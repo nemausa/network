@@ -55,10 +55,6 @@ private:
     std::vector<cell_client*> clients_buff_;
     std::mutex mutex_;
     cell_task_server task_server_;
-    cell_fdset fd_read_;
-    cell_fdset fd_write_;
-    cell_fdset fd_read_bak_;
-    SOCKET max_socket_;
     observer *observer_;
     time_t old_clock_ = timestamp::now_milliseconds();
     time_t now_clock_;

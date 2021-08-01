@@ -1,4 +1,5 @@
 #include "cell_config.hpp"
+#include "cell_log.hpp"
 
 cell_config::cell_config() {
 
@@ -53,4 +54,9 @@ int cell_config::get_int(const char *arg_name, int def) {
     }
     cell_log::info("%s=%s", arg_name, def);
     return def;
+}
+
+bool cell_config::has_key(const char *key) {
+    auto itr = kv_.find(key);
+    return itr != kv_.end();
 }

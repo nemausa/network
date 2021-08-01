@@ -15,7 +15,7 @@
 #define CELL_ARGS
 
 #include <map>
-#include "cell.hpp"
+#include <string>
 
 class cell_config {
 private:
@@ -27,6 +27,7 @@ public:
     void made_cmd(char *cmd);
     const char *get_string(const char *arg_name, const char *def);
     int get_int(const char *arg_name, int def);
+    bool has_key(const char *key);
 private:
     std::string exe_path_;
     std::map<std::string, std::string> kv_;

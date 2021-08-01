@@ -12,13 +12,14 @@ cell_client::cell_client(SOCKET sockfd, int send_size, int recv_size):
 }
 
 cell_client::~cell_client() {
-    // cell_log::info("s=%d client%d\n", service_id_, id_);
+    cell_log::info("s=%d client%d\n", service_id_, id_);
+    destory();
+}
+
+void cell_client::destory() {
     if (INVALID_SOCKET != sockfd_) {
-#ifdef _WIN32
-        ::closesocket(sockfd_);
-#else
-        ::close(sockfd_);
-#endif
+        cell_log::info("cell_client::destory sid=%d id=%d socket=%d", service_id_, id, (int)sockfd_);
+        cell_network::destory_socket(sockfd_);
         sockfd_ = INVALID_SOCKET;
     }
 }
@@ -54,10 +55,7 @@ int cell_client::send_data_real() {
 }
 
 int cell_client::send_data(data_header *data) {
-    if (send_buffer_.push((const char*)data, data->length)) {
-        return data->length;
-    }
-    return SOCKET_ERROR;
+    return send_data((const char*)data, data->length); 
 }
 
 int cell_client::send_data(const char *data, int length) {

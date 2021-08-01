@@ -22,7 +22,9 @@ private:
     ~cell_network();
 public:
     static void init();
+    static int make_nonblock(SOCKET fd);
     static int make_reuseadd(SOCKET fd);
+    static int make_nodelay(SOCKET fd);
     static int destory_socket(SOCKET sockfd);
 };
 
