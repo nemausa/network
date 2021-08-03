@@ -129,6 +129,7 @@ int cell_server::recv_data(cell_client *pclient) {
 
 void cell_server::on_msg(cell_client *pclient, data_header *header) {
     if (p_net_event_) {
+        printf("cell_server::on_msg");
         p_net_event_->on_msg(this, pclient, header);
     }
 }

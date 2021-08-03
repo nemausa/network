@@ -37,6 +37,7 @@ public:
         for (int n = 0; n < cell_server_count; n++) {
             auto server = new T();
             server->set_id(n);
+            server->set_event(this);
             cell_servers_.push_back(server);
             server->start();
         }

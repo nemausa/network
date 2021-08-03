@@ -52,7 +52,7 @@ int cell_config::get_int(const char *arg_name, int def) {
     } else {
         def = atoi(itr->second.c_str());
     }
-    LOG_INFO("%s=%s", arg_name, def);
+    LOG_INFO("%s=%d", arg_name, def);
     return def;
 }
 
