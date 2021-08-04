@@ -46,6 +46,11 @@ void cell_server::on_run(cell_thread *pthread) {
             std::lock_guard<std::mutex> lock(mutex_);
             for (auto pclient : clients_buff_){
                 clients_[pclient->sockfd()] = pclient;
+                pclient->service_id_ = id_;
+                if (p_net_event_) {
+                    p_net_event_->on_join(pclient);
+                }
+                on_join(pclient);
             }
             clients_buff_.clear();
             client_change_ = true;
@@ -129,7 +134,6 @@ int cell_server::recv_data(cell_client *pclient) {
 
 void cell_server::on_msg(cell_client *pclient, data_header *header) {
     if (p_net_event_) {
-        printf("cell_server::on_msg");
         p_net_event_->on_msg(this, pclient, header);
     }
 }

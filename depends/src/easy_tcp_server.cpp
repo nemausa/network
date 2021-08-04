@@ -9,7 +9,7 @@ easy_tcp_server::easy_tcp_server() {
     client_count_ = 0;
     send_buffer_size_ = cell_config::instance().get_int("send_buffer_szie", SEND_BUFF_SIZE);
     recv_buffer_size_ = cell_config::instance().get_int("recv_buffer_szie", RECV_BUFF_SIZE);
-    max_client_ = cell_config::instance().get_int("max_client", FD_SETSIZE);
+    max_client_ = cell_config::instance().get_int("max_client", 102400);
 }
 
 easy_tcp_server::~easy_tcp_server() {
