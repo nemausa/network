@@ -4,6 +4,7 @@ bin
 unix
 windows
 
+logs
 .DS_Store
 *.json
 server_log.txt

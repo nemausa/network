@@ -1,4 +1,4 @@
-#include "cell_semaphore.hpp"
+#include "depends/cell_semaphore.hpp"
 
 cell_semaphore::cell_semaphore() {
     wait_ = 0;

@@ -1,6 +1,6 @@
-#include "easy_tcp_server.hpp"
-#include "cell_network.hpp"
-#include "cell_config.hpp"
+#include "depends/easy_tcp_server.hpp"
+#include "depends/cell_network.hpp"
+#include "depends/cell_config.hpp"
 
 easy_tcp_server::easy_tcp_server() {
     sockfd_ = INVALID_SOCKET;

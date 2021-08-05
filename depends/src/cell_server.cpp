@@ -1,8 +1,8 @@
 #include <functional>
-#include "cell.hpp"
-#include "cell_client.hpp"
-#include "cell_server.hpp"
-#include "net_event.hpp"
+#include "depends/cell.hpp"
+#include "depends/cell_client.hpp"
+#include "depends/cell_server.hpp"
+#include "depends/net_event.hpp"
 
 int observer::static_number_ = 0;
 

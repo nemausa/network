@@ -1,5 +1,5 @@
-#include "easy_select_server.hpp"
-#include "cell_select_server.hpp"
+#include "depends/easy_select_server.hpp"
+#include "depends/cell_select_server.hpp"
 
 void easy_select_server::start(int n) {
     easy_tcp_server::start<cell_select_server>(n);

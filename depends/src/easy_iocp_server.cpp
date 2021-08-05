@@ -1,7 +1,7 @@
 #ifdef _WIN32
 
-#include "easy_iocp_server.hpp" 
-#include "cell_network.hpp"
+#include "depends/easy_iocp_server.hpp" 
+#include "depends/cell_network.hpp"
 
 void easy_iocp_server::start(int n) {
     easy_tcp_server::start<cell_iocp_server>(n);

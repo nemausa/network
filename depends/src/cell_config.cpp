@@ -1,5 +1,5 @@
-#include "cell_config.hpp"
-#include "cell_log.hpp"
+#include "depends/cell_config.hpp"
+#include "depends/cell_log.hpp"
 
 cell_config::cell_config() {
 

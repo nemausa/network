@@ -1,8 +1,12 @@
 #include <thread>
 #include <cstring>
-#include "cell_log.hpp"
-#include "cell_config.hpp"
-#include "easy_server_mgr.hpp"
+#include "depends/cell_log.hpp"
+#include "depends/cell_config.hpp"
+#include "depends/easy_server_mgr.hpp"
+
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/basic_file_sink.h"
+#include "spdlog/sinks/daily_file_sink.h"
 #ifndef VERSION
 const char *VERSION_INFO = "version: 0.0.1";
 #endif
@@ -70,6 +74,17 @@ private:
 };
 
 int main(int argc, char *args[]) {
+    try 
+    {
+        auto logger = spdlog::basic_logger_mt("basic_logger", "logs/basic-log.txt");
+        logger->info("Welcome to spdlog!");
+        logger->flush();
+    }
+    catch (const spdlog::spdlog_ex &ex)
+    {
+        std::cout << "Log init failed: " << ex.what() << std::endl;
+    }
+
     cell_log::instance().set_path("server_log.txt", "w", false);
     cell_config::instance().init(argc, args);
 

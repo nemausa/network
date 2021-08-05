@@ -1,7 +1,7 @@
-#include "easy_server_mgr.hpp"
-#include "cell_timestamp.hpp"
-#include "cell_config.hpp"
-#include "cell_thread.hpp"
+#include "depends/easy_server_mgr.hpp"
+#include "depends/cell_timestamp.hpp"
+#include "depends/cell_config.hpp"
+#include "depends/cell_thread.hpp"
 
 #include <atomic>
 #include <list>

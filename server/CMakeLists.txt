@@ -16,6 +16,8 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	target_link_libraries(${PROJECT_NAME} ws2_32)
 endif (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
+
+target_link_libraries(${PROJECT_NAME} spdlog)
 install(TARGETS ${PROJECT_NAME}
 	LIBRARY DESTINATION lib  # 动态库安装路径
 	ARCHIVE DESTINATION lib  # 静态库安装路径

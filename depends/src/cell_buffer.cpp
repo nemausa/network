@@ -1,5 +1,5 @@
-#include "cell.hpp"
-#include "cell_buffer.hpp"
+#include "depends/cell.hpp"
+#include "depends/cell_buffer.hpp"
 
 cell_buffer::cell_buffer(int size) {
     data_ = nullptr;
