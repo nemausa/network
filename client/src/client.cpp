@@ -1,6 +1,4 @@
-#include "easy_tcp_client.hpp"
-#include "easy_epoll_client.hpp"
-#include "easy_iocp_client.hpp"
+#include "easy_server_mgr.hpp"
 #include "cell_timestamp.hpp"
 #include "cell_config.hpp"
 #include "cell_thread.hpp"
@@ -13,7 +11,7 @@ using namespace std;
 const char *ip = "127.0.0.1";
 uint16_t port  = 4567;
 int thread_num = 4;
-int client_num = 10000;
+int client_num = 1000;
 
 // 客户端每次发送几条消息
 int msg_num = 10;
@@ -24,7 +22,7 @@ int work_sleep = 1000;
 int send_buffer_size = SEND_BUFF_SIZE;
 int recv_buffer_size = RECV_BUFF_SIZE;
 
-class my_client : public easy_epoll_client {
+class my_client : public easy_client_mgr {
 public:
     my_client() {
         is_check_id_ = false;

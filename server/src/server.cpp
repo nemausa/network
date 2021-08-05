@@ -8,7 +8,7 @@ const char *VERSION_INFO = "version: 0.0.1";
 #endif
 
 
-class MyServer : public easy_select_server {
+class MyServer : public easy_server_mgr {
 public:
     MyServer() {
         send_back_ = cell_config::instance().has_key("sendback");
@@ -17,11 +17,11 @@ public:
     }
 
     virtual void on_join(cell_client *pclient) {
-        easy_select_server::on_join(pclient);
+        easy_server_mgr::on_join(pclient);
     }
 
     virtual void on_leave(cell_client *pclient) {
-        easy_select_server::on_leave(pclient);
+        easy_server_mgr::on_leave(pclient);
     }
 
     virtual void on_msg(cell_server *server, cell_client *pclient, data_header *header) {

@@ -110,7 +110,7 @@ void cell_iocp_server::rm_client(io_event &_ioevent) {
     }
 }
 
-void cell_iocp_server::on_client_join(cell_client *pclient) {
+void cell_iocp_server::on_join(cell_client *pclient) {
     iocp_.reg(pclient->sockfd(), pclient);
     auto p_iodata = pclient->make_recv_iodata();
     if (p_iodata) {
