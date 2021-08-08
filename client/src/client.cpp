@@ -1,12 +1,17 @@
+#include <atomic>
+#include <list>
+#include <vector>
+
 #include "depends/easy_server_mgr.hpp"
 #include "depends/cell_timestamp.hpp"
 #include "depends/cell_config.hpp"
 #include "depends/cell_thread.hpp"
-
 #include "utils/conf.hpp"
-#include <atomic>
-#include <list>
-#include <vector>
+
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/stdout_sinks.h"
+#include "spdlog/sinks/daily_file_sink.h"
+
 using namespace std;
 
 const char *ip = "127.0.0.1";
@@ -36,7 +41,7 @@ public:
         login_result *login = (login_result*)header;
         if (is_check_id_) {
             if (login->msg_id != recv_msg_id_) {
-                LOG_INFO("socket<%d> msg_id<%d> recv_id<%d> %d", pclient_->sockfd(), login->msg_id, recv_msg_id_, login->msg_id - recv_msg_id_);
+                SPDLOG_INFO("socket<{}> msg_id<{}> recv_id<{}> {}", pclient_->sockfd(), login->msg_id, recv_msg_id_, login->msg_id - recv_msg_id_);
             }
             ++recv_msg_id_;
         }
@@ -96,7 +101,7 @@ std::atomic_int ready_count(0);
 std::atomic_int connect_count(0); 
 
 void work_thread(cell_thread *pthread, int id) {
-    LOG_INFO("thread<%d> start", id);
+    SPDLOG_INFO("thread<{}> start", id);
     vector<my_client*> clients(client_num);
     int begin = 0;
     int end = client_num;
@@ -120,7 +125,7 @@ void work_thread(cell_thread *pthread, int id) {
         cell_thread::sleep(0);
     }
 
-    LOG_INFO("thread<%d> connect<begin=%d, end=%d, connect_count=%d>", id, begin, end, (int)connect_count);
+    SPDLOG_INFO("thread<{}> connect<begin={}, end={}, connect_count={}>", id, begin, end, (int)connect_count);
     
     ready_count++;
     // 等待其他线程准备好再发送数据
@@ -171,11 +176,11 @@ void work_thread(cell_thread *pthread, int id) {
         clients[n]->close();
         delete clients[n];
     }
-    LOG_INFO("thread<%d> exit", id);
+    SPDLOG_INFO("thread<{}> exit", id);
     --ready_count;
 }
 
-
+#include <memory>
 int main(int argc, char *args[]) {
 
     config::instance().load("client.conf");
@@ -189,10 +194,20 @@ int main(int argc, char *args[]) {
     send_buffer_size = config::instance().get_int_default("send_buffer_size", SEND_BUFF_SIZE);
     recv_buffer_size = config::instance().get_int_default("recv_buffer_size", RECV_BUFF_SIZE);
 
+    std::vector<spdlog::sink_ptr> sinks;
+    sinks.push_back(std::make_shared<spdlog::sinks::stdout_sink_st>());
+    sinks.push_back(std::make_shared<spdlog::sinks::daily_file_sink_mt>("logfile.txt", 23, 59));
+    auto combined_logger = std::make_shared<spdlog::logger>("name", begin(sinks), end(sinks));
+    //register it if you need to access it globally
+    spdlog::register_logger(combined_logger);
+    spdlog::flush_every(std::chrono::seconds(5));
+    combined_logger->info("Welecome to spdlog!");
+
+    // spdlog::warn("Welcome to spdlog!");
 	//启动终端命令线程
 	//用于接收运行时用户输入的指令
 	cell_thread tCmd;
-	tCmd.start(nullptr, [](cell_thread* pThread) {
+	tCmd.start(nullptr, [combined_logger](cell_thread* pThread) {
 		while (true)
 		{
 			char cmdBuf[256] = {};
@@ -200,12 +215,12 @@ int main(int argc, char *args[]) {
 			if (0 == strcmp(cmdBuf, "exit"))
 			{
 				//pThread->Exit();
-				LOG_INFO("exit ");
+				combined_logger->info("exit ");
                 pThread->exit();
 				break;
 			}
 			else {
-				LOG_INFO("undefine");
+				combined_logger->info("undefine");
 			}
 		}
 	});
@@ -223,8 +238,8 @@ int main(int argc, char *args[]) {
     while (tCmd.is_run()) {
         auto t = ts.second();
         if (t >= 1.0) {
-            LOG_INFO(
-                "thread<%d> clients<%d> connect<%d> time<%lf> send<%d>",
+            combined_logger->info(
+                "thread<{}> clients<{}> connect<{}> time<{:02.4f}> send<{}>",
                 thread_num, client_num, (int)connect_count, t, (int)send_count);
             send_count = 0;
             ts.update();
@@ -236,6 +251,6 @@ int main(int argc, char *args[]) {
         t->close();
         delete t;
     }
-    LOG_INFO("eixt");
+    combined_logger->info("eixt");
     return 0;
 }
