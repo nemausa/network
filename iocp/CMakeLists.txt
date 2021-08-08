@@ -4,7 +4,7 @@ string(REGEX REPLACE ".*/(.*)" "\\1" CURRENT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR} 
 project(${CURRENT_FOLDER})
 
 file(GLOB ${PROJECT_NAME}_SRC
-	"../depends/src/*.cpp"
+	"../implementation/depends/src/*.cpp"
 	"src/*.cpp"
 )
 

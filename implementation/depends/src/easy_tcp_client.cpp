@@ -1,4 +1,6 @@
+
 #include "depends/easy_tcp_client.hpp"
+
 #include "depends/cell_network.hpp"
 
 easy_tcp_client::easy_tcp_client() {

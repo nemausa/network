@@ -56,7 +56,7 @@ if (MSVC)
 	message(using MSVC compiler)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 else()
-	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OS_CXX_FLAGS} -g -std=c++11 -pthread")
+	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OS_CXX_FLAGS} -std=c++11 -pthread")
 endif()
 
 add_definitions(-w)
@@ -69,6 +69,6 @@ link_directories(
 
 add_subdirectory(server)
 add_subdirectory(client)
-add_subdirectory(epoll)
-add_subdirectory(pool)
-add_subdirectory(iocp)
+# add_subdirectory(epoll)
+# add_subdirectory(pool)
+# add_subdirectory(iocp)

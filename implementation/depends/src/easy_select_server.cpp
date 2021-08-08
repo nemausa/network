@@ -1,4 +1,6 @@
+
 #include "depends/easy_select_server.hpp"
+
 #include "depends/cell_select_server.hpp"
 
 void easy_select_server::start(int n) {

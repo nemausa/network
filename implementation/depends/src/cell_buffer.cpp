@@ -1,4 +1,6 @@
+
 #include "depends/cell.hpp"
+
 #include "depends/cell_buffer.hpp"
 
 cell_buffer::cell_buffer(int size) {

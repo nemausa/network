@@ -1,15 +1,17 @@
+
 #include "depends/easy_tcp_server.hpp"
 #include "depends/cell_network.hpp"
 #include "depends/cell_config.hpp"
+#include "utils/conf.hpp"
 
 easy_tcp_server::easy_tcp_server() {
     sockfd_ = INVALID_SOCKET;
     recv_count_ = 0;
     message_count_ = 0;
     client_count_ = 0;
-    send_buffer_size_ = cell_config::instance().get_int("send_buffer_szie", SEND_BUFF_SIZE);
-    recv_buffer_size_ = cell_config::instance().get_int("recv_buffer_szie", RECV_BUFF_SIZE);
-    max_client_ = cell_config::instance().get_int("max_client", 102400);
+    send_buffer_size_ = config::instance().get_int_default("send_buffer_szie", SEND_BUFF_SIZE);
+    recv_buffer_size_ = config::instance().get_int_default("recv_buffer_szie", RECV_BUFF_SIZE);
+    max_client_ = config::instance().get_int_default("max_client", 102400);
 }
 
 easy_tcp_server::~easy_tcp_server() {

@@ -4,7 +4,8 @@ string(REGEX REPLACE ".*/(.*)" "\\1" CURRENT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR} 
 project(${CURRENT_FOLDER})
 
 file(GLOB ${PROJECT_NAME}_SRC
-	"../depends/src/*.cpp"
+	"../implementation/depends/src/*.cpp"
+	"../implementation/config/src/*.cpp"
 	"src/*.cpp"
 )
 
@@ -16,8 +17,6 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	target_link_libraries(${PROJECT_NAME} ws2_32)
 endif (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
-
-target_link_libraries(${PROJECT_NAME} spdlog)
 install(TARGETS ${PROJECT_NAME}
 	LIBRARY DESTINATION lib  # 动态库安装路径
 	ARCHIVE DESTINATION lib  # 静态库安装路径

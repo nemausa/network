@@ -3,6 +3,7 @@
 #include "depends/cell_config.hpp"
 #include "depends/cell_thread.hpp"
 
+#include "utils/conf.hpp"
 #include <atomic>
 #include <list>
 #include <vector>

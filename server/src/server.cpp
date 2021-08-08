@@ -1,12 +1,14 @@
 #include <thread>
 #include <cstring>
+
 #include "depends/cell_log.hpp"
 #include "depends/cell_config.hpp"
 #include "depends/easy_server_mgr.hpp"
 
-#include "spdlog/spdlog.h"
-#include "spdlog/sinks/basic_file_sink.h"
-#include "spdlog/sinks/daily_file_sink.h"
+#include "utils/conf.hpp"
+//#include "spdlog/spdlog.h"
+//#include "spdlog/sinks/basic_file_sink.h"
+//#include "spdlog/sinks/daily_file_sink.h"
 #ifndef VERSION
 const char *VERSION_INFO = "version: 0.0.1";
 #endif
@@ -15,9 +17,9 @@ const char *VERSION_INFO = "version: 0.0.1";
 class MyServer : public easy_server_mgr {
 public:
     MyServer() {
-        send_back_ = cell_config::instance().has_key("sendback");
-        send_full_ = cell_config::instance().has_key("sendfull");
-        check_msg_id_ = cell_config::instance().has_key("check_msg_id");
+        send_back_ = config::instance().has_key("-sendback");
+        send_full_ = config::instance().has_key("-sendfull");
+        check_msg_id_ = config::instance().has_key("-check_msg_id");
     }
 
     virtual void on_join(cell_client *pclient) {
@@ -74,29 +76,16 @@ private:
 };
 
 int main(int argc, char *args[]) {
-    try 
-    {
-        auto logger = spdlog::basic_logger_mt("basic_logger", "logs/basic-log.txt");
-        logger->info("Welcome to spdlog!");
-        logger->flush();
-    }
-    catch (const spdlog::spdlog_ex &ex)
-    {
-        std::cout << "Log init failed: " << ex.what() << std::endl;
-    }
 
+    config::instance().load("config.txt");
+    const char *ip = config::instance().get_string("ip");
     cell_log::instance().set_path("server_log.txt", "w", false);
-    cell_config::instance().init(argc, args);
 
-    const char *ip = cell_config::instance().get_string("ip", "any");
-    uint16_t port = cell_config::instance().get_int("port", 4567);
-    int thread_num = cell_config::instance().get_int("thread_num", 1);
+    int port = config::instance().get_int_default("port", 4567);
+    int thread_num = config::instance().get_int_default("thread_num", 1);
 
-    if (cell_config::instance().has_key("-p")) {
+    if (config::instance().has_key("-p")) {
         LOG_INFO("has key -p");
-    }
-    if (strcmp(ip, "any") == 0) {
-        ip = nullptr;
     }
     MyServer server;
     server.init_socket();
