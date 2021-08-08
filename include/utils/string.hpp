@@ -18,24 +18,33 @@
 #include <cstring>
 #include <cctype>
 
-char* rtrim(char *str) {
-    // Trim leading space
-    while(isspace((unsigned char)*str)) str++;
-
-    if(*str == 0)  // All spaces?
-        return str;
+void rtrim(char *str) {
+    if (str == NULL)
+        return;
+    
+    size_t len = strlen(str);
+    while (len >0 && str[len-1] == ' ')
+        str[--len] = 0;
 }
 
-char* ltrim(char *str) {
-    char *end;
-    // Trim trailing space
-    end = str + strlen(str) - 1;
-    while(end > str && isspace((unsigned char)*end)) end--;
-
-    // Write new null terminator character
-    end[1] = '\0';
-
-    return str;
+void ltrim(char *str) {
+    char *start, *temp;
+    temp = str;
+    while ((*temp) == ' ') {
+        ++temp;
+    }
+    if ((*temp) == '\0') {
+        *str = '\0';
+        return;
+    }
+    start = temp;
+    temp = str; 
+    while ((*start) != '\0') {
+        (*temp) = (*start);
+        start++;
+        temp++;
+    }
+    (*temp) = '\0';
 }
 
 void trim(char *str) {

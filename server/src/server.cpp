@@ -17,9 +17,9 @@ const char *VERSION_INFO = "version: 0.0.1";
 class MyServer : public easy_server_mgr {
 public:
     MyServer() {
-        send_back_ = config::instance().has_key("-sendback");
-        send_full_ = config::instance().has_key("-sendfull");
-        check_msg_id_ = config::instance().has_key("-check_msg_id");
+        send_back_ = config::instance().has_key("sendback");
+        send_full_ = config::instance().has_key("sendfull");
+        check_msg_id_ = config::instance().has_key("check_msg_id");
     }
 
     virtual void on_join(cell_client *pclient) {
@@ -77,7 +77,7 @@ private:
 
 int main(int argc, char *args[]) {
 
-    config::instance().load("config.txt");
+    config::instance().load("server.conf");
     const char *ip = config::instance().get_string("ip");
     cell_log::instance().set_path("server_log.txt", "w", false);
 

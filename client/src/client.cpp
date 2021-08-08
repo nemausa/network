@@ -26,7 +26,7 @@ int recv_buffer_size = RECV_BUFF_SIZE;
 class my_client : public easy_client_mgr {
 public:
     my_client() {
-        is_check_id_ = false;
+        is_check_id_ = config::instance().has_key("check_id");
     }
 
     void on_msg(data_header *header) {
@@ -177,6 +177,17 @@ void work_thread(cell_thread *pthread, int id) {
 
 
 int main(int argc, char *args[]) {
+
+    config::instance().load("client.conf");
+    ip = config::instance().get_string("ip");
+    port = config::instance().get_int_default("port", 4567);
+    thread_num = config::instance().get_int_default("thread_num", 1);
+    client_num = config::instance().get_int_default("client_num", 1000);
+    msg_num = config::instance().get_int_default("msg_num", 10);
+    send_sleep = config::instance().get_int_default("send_sleep", 100);
+    work_sleep = config::instance().get_int_default("work_sleep", 1);
+    send_buffer_size = config::instance().get_int_default("send_buffer_size", SEND_BUFF_SIZE);
+    recv_buffer_size = config::instance().get_int_default("recv_buffer_size", RECV_BUFF_SIZE);
 
 	//启动终端命令线程
 	//用于接收运行时用户输入的指令
