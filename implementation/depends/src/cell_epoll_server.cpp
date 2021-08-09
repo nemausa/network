@@ -22,7 +22,7 @@ bool cell_epoll_server::do_net_events() {
     
     int ret = ep_.wait(1);
     if (ret < 0) {
-         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "cell_epoll_server {} wait", id_);
+        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "cell_epoll_server {} wait", id_);
         return false;
     } else if (ret == 0) {
         return true;

@@ -64,7 +64,7 @@ public:
         }
         break;
         default:
-             SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "recv socket<{}> undefine msgtype, datalen: {}",
+            SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "recv socket<{}> undefine msgtype, datalen: {}",
                     pclient->sockfd(), header->length);
         break;
         }
@@ -93,7 +93,7 @@ int main(int argc, char *args[]) {
     int thread_num = config::instance().get_int_default("thread_num", 1);
 
     if (config::instance().has_key("-p")) {
-         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "has key -p");
+        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "has key -p");
     }
     MyServer server;
     server.init_socket();
@@ -106,15 +106,15 @@ int main(int argc, char *args[]) {
         char buf[256] = {};
         scanf("%s", buf);
         if (0 == strcmp(buf, "exit")) {
-             SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "exit thread");
+            SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "exit thread");
             server.close();
             break;
         } else {
-             SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "undefined commad");
+            SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "undefined commad");
         }
     }
 
-     SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "exit");
+    SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "exit");
     getchar();
     return 0;
 }

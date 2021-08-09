@@ -21,7 +21,7 @@
 
 using namespace std::chrono;
 
-// #define  SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), ...)       cell_log::info(__VA_ARGS__)
+// #define SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), ...)       cell_log::info(__VA_ARGS__)
 // #define  SPDLOG_LOGGER_WARN(spdlog::get(LOG_NAME), ...)       cell_log::warn(__VA_ARGS__)
 // #define  SPDLOG_LOGGER_ERROR(spdlog::get(LOG_NAME), ...)      cell_log::error(__VA_ARGS__)
 // #define spdlog::get(LOG_NAME)->debug(...)      cell_log::debug(__VA_ARGS__)

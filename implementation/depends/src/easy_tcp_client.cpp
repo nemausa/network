@@ -17,12 +17,12 @@ easy_tcp_client::~easy_tcp_client() {
 SOCKET easy_tcp_client::init_socket(int send_size, int recv_size) {
     cell_network::init();
     if (pclient_) {
-         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "warning close old socket<{}>...", (int)pclient_->sockfd());
+        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "warning close old socket<{}>...", (int)pclient_->sockfd());
         close();
     }
     SOCKET sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (INVALID_SOCKET == sock) {
-         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "create socket failed");
+        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "create socket failed");
     } else {
         cell_network::make_reuseadd(sock);
         pclient_ = new cell_client(sock, send_size, recv_size);

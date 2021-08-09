@@ -52,7 +52,7 @@ int cell_buffer::send_to_socket(SOCKET sockfd) {
     if (last_ > 0 && sockfd != INVALID_SOCKET) {
         ret = send(sockfd, data_, last_, 0);
         if (ret <= 0) {
-         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "send_to_socket:sockfd{} size<{}> last<{}> ret<{}>",
+        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "send_to_socket:sockfd{} size<{}> last<{}> ret<{}>",
             sockfd, size_, last_, ret);
             return SOCKET_ERROR; 
         }
@@ -71,8 +71,13 @@ int cell_buffer::recv_from_socket(SOCKET sockfd) {
     if (size_ - last_ > 0) {
         char *szrecv = data_ + last_;
         int len = (int)recv(sockfd, szrecv, size_ - last_, 0);
-        if (len <= 0) {
-             SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "send_to_socket:sockfd{} size<{}> last<{}> len<{}>",
+        if (len == 0) {
+            SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "send_to_socket:sockfd{} size<{}> last<{}> len<{}>",
+                sockfd, size_, last_, len);
+            return SOCKET_ERROR;
+        }
+        else if (len < 0) {
+            SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "send_to_socket:sockfd{} size<{}> last<{}> len<{}>",
                 sockfd, size_, last_, len);
             return len;
         }
@@ -121,13 +126,13 @@ bool cell_buffer::read_for_iocp(int nrecv) {
         last_ += nrecv;
         return true;
     }
-     SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "read_for_iocp:socket<{}> size<{}> last<{}> nrecv<{}>", iodata_.sockfd, size_, last_, nrecv);
+    SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "read_for_iocp:socket<{}> size<{}> last<{}> nrecv<{}>", iodata_.sockfd, size_, last_, nrecv);
     return false;
 }
 
 bool cell_buffer::write_to_iocp(int nsend) {
     if (last_ < nsend) {
-         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "write_to_iocp:sockfd<{}> size<{}> last<{}> nsend<{}>", iodata_.sockfd, size_, last_, nsend);
+        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "write_to_iocp:sockfd<{}> size<{}> last<{}> nsend<{}>", iodata_.sockfd, size_, last_, nsend);
         return false;
     }
     if (last_ == nsend) {

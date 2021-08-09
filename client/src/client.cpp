@@ -13,15 +13,15 @@ using namespace std;
 
 const char *ip = "127.0.0.1";
 uint16_t port  = 4567;
-int thread_num = 4;
-int client_num = 1000;
+int thread_num = 1;
+int client_num = 1;
 
 // 客户端每次发送几条消息
 int msg_num = 10;
 // 写入消息到缓冲区的时间
 int send_sleep = 1;
 // 工作休眠的时间
-int work_sleep = 1000;
+int work_sleep = 1;
 int send_buffer_size = SEND_BUFF_SIZE;
 int recv_buffer_size = RECV_BUFF_SIZE;
 
@@ -38,7 +38,7 @@ public:
         login_result *login = (login_result*)header;
         if (is_check_id_) {
             if (login->msg_id != recv_msg_id_) {
-                 SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "socket<{}> msg_id<{}> recv_id<{}> {}", pclient_->sockfd(), login->msg_id, recv_msg_id_, login->msg_id - recv_msg_id_);
+                SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "socket<{}> msg_id<{}> recv_id<{}> {}", pclient_->sockfd(), login->msg_id, recv_msg_id_, login->msg_id - recv_msg_id_);
             }
             ++recv_msg_id_;
         }
@@ -98,7 +98,7 @@ std::atomic_int ready_count(0);
 std::atomic_int connect_count(0); 
 
 void work_thread(cell_thread *pthread, int id) {
-     SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "thread<{}> start", id);
+    SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "thread<{}> start", id);
     vector<my_client*> clients(client_num);
     int begin = 0;
     int end = client_num;
@@ -122,7 +122,7 @@ void work_thread(cell_thread *pthread, int id) {
         cell_thread::sleep(0);
     }
 
-     SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "thread<{}> connect<begin={}, end={}, connect_count={}>", id, begin, end, (int)connect_count);
+    SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "thread<{}> connect<begin={}, end={}, connect_count={}>", id, begin, end, (int)connect_count);
     
     ready_count++;
     // 等待其他线程准备好再发送数据
@@ -173,7 +173,7 @@ void work_thread(cell_thread *pthread, int id) {
         clients[n]->close();
         delete clients[n];
     }
-     SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "thread<{}> exit", id);
+    SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "thread<{}> exit", id);
     --ready_count;
 }
 
@@ -233,7 +233,7 @@ int main(int argc, char *args[]) {
     while (tCmd.is_run()) {
         auto t = ts.second();
         if (t >= 1.0) {
-            SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), 
+           SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), 
                 "thread<{}> clients<{}> connect<{}> time<{:02.4f}> send<{}>",
                 thread_num, client_num, (int)connect_count, t, (int)send_count);
             send_count = 0;

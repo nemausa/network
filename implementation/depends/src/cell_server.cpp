@@ -73,7 +73,7 @@ void cell_server::on_run(cell_thread *pthread) {
         }
         do_msg();
     }
-     SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "cell_server{} on run exit", id_);
+    SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "cell_server{} on run exit", id_);
 }
 
 void cell_server::check_time() {

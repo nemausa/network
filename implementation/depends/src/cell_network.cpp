@@ -50,7 +50,7 @@ int cell_network::make_nonblock(SOCKET fd) {
 int cell_network::make_reuseadd(SOCKET fd) {
     int flag = 1;
     if (SOCKET_ERROR == setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (const char *)&flag, sizeof(flag))) {
-         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "setsockopt socket<{}> fail", int(fd));
+        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "setsockopt socket<{}> fail", int(fd));
         return SOCKET_ERROR;
     }
     return 0;
@@ -72,7 +72,7 @@ int cell_network::destory_socket(SOCKET sockfd) {
     int ret = close(sockfd);
 #endif
     if (ret < 0) {
-         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "destory sockfd<{}>", int(sockfd));
+        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "destory sockfd<{}>", int(sockfd));
     }
     return ret;
 }

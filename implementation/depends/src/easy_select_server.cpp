@@ -17,7 +17,7 @@ void easy_select_server::on_run(cell_thread *pthread) {
         int ret = select(sockfd() + 1, fd_read.fdset(), 0, 0, &t);
         if (ret < 0) {
             if (errno == EINTR) {
-                 SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "easy_select_server select EINTR");
+                SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "easy_select_server select EINTR");
                 continue;
             }
              SPDLOG_LOGGER_ERROR(spdlog::get(LOG_NAME), "easy_select_server.on_run select");
