@@ -28,7 +28,7 @@ void easy_iocp_server::on_run(cell_thread *pthread) {
         time4msg();
         int ret = iocp.wait(ioevent, 1);
         if (ret < 0) {
-            LOG_INFO("easy_iocp_server.on_run wait exit");
+             SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "easy_iocp_server.on_run wait exit");
             pthread->exit();
             break;
         }
@@ -45,13 +45,13 @@ void easy_iocp_server::on_run(cell_thread *pthread) {
 
 SOCKET easy_iocp_server::iocp_accept(SOCKET sock) {
    if (INVALID_SOCKET == sock) {
-       LOG_INFO("accept INVALID_SOCKET");
+        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "accept INVALID_SOCKET");
    } else {
        if (client_count_ < max_client_) {
            add_client_to_server(new cell_client(sock, SEND_BUFF_SIZE, RECV_BUFF_SIZE));
        } else {
            cell_network::destory_socket(sock);
-           LOG_INFO("accept to maxclient");           
+            SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "accept to maxclient");           
        }
    }
 }

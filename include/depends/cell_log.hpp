@@ -21,11 +21,11 @@
 
 using namespace std::chrono;
 
-#define LOG_INFO(...)       cell_log::info(__VA_ARGS__)
-#define LOG_WARN(...)       cell_log::warn(__VA_ARGS__)
-#define LOG_ERROR(...)      cell_log::error(__VA_ARGS__)
-#define LOG_DEBUG(...)      cell_log::debug(__VA_ARGS__)
-#define LOG_PERROR(...)     cell_log::perror(__VA_ARGS__)
+// #define  SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), ...)       cell_log::info(__VA_ARGS__)
+// #define  SPDLOG_LOGGER_WARN(spdlog::get(LOG_NAME), ...)       cell_log::warn(__VA_ARGS__)
+// #define  SPDLOG_LOGGER_ERROR(spdlog::get(LOG_NAME), ...)      cell_log::error(__VA_ARGS__)
+// #define spdlog::get(LOG_NAME)->debug(...)      cell_log::debug(__VA_ARGS__)
+// #define  SPDLOG_LOGGER_ERROR(spdlog::get(LOG_NAME), ...)     cell_log::perror(__VA_ARGS__)
 class cell_log {
 
 public:

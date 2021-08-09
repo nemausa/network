@@ -38,7 +38,7 @@ public:
             login *lg = (login*)header;
             if (check_msg_id_) {
                 if (lg->msg_id != pclient->recv_id) {
-                    LOG_ERROR("on_msg socket<%d> msg_id<%d> recv_msg_id<%d> %d",
+                     SPDLOG_LOGGER_ERROR(spdlog::get(LOG_NAME), "on_msg socket<{}> msg_id<{}> recv_msg_id<{}> {}",
                             pclient->sockfd(),lg->msg_id, pclient->recv_id,
                             lg->msg_id - pclient->recv_id);
                 }
@@ -49,7 +49,7 @@ public:
                 ret.msg_id = pclient->send_id;
                 if (SOCKET_ERROR == pclient->send_data(&ret)) {
                     if (send_full_) {
-                        LOG_WARN("socket<%d> send full", pclient->sockfd());
+                         SPDLOG_LOGGER_WARN(spdlog::get(LOG_NAME), "socket<{}> send full", pclient->sockfd());
                     }
                 } else {
                     ++pclient->send_id;
@@ -64,7 +64,7 @@ public:
         }
         break;
         default:
-            SPDLOG_INFO("recv socket<{}> undefine msgtype, datalen: {}",
+             SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "recv socket<{}> undefine msgtype, datalen: {}",
                     pclient->sockfd(), header->length);
         break;
         }
@@ -79,13 +79,21 @@ int main(int argc, char *args[]) {
 
     config::instance().load("server.conf");
     const char *ip = config::instance().get_string("ip");
-    cell_log::instance().set_path("server_log.txt", "w", false);
 
+    std::vector<spdlog::sink_ptr> sinks;
+    sinks.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
+    sinks.push_back(std::make_shared<spdlog::sinks::daily_file_sink_mt>("logfile.txt", 23, 59));
+    auto combined_logger = std::make_shared<spdlog::logger>("name", begin(sinks), end(sinks));
+    //register it if you need to access it globally
+    combined_logger->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%-6t] [%^%-6l%$] [%-5n] [%!] [%#]  %v"); 
+    spdlog::register_logger(combined_logger);
+    spdlog::flush_every(std::chrono::seconds(5));
+    combined_logger->info("Welecome to spdlog!");
     int port = config::instance().get_int_default("port", 4567);
     int thread_num = config::instance().get_int_default("thread_num", 1);
 
     if (config::instance().has_key("-p")) {
-        SPDLOG_INFO("has key -p");
+         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "has key -p");
     }
     MyServer server;
     server.init_socket();
@@ -98,15 +106,15 @@ int main(int argc, char *args[]) {
         char buf[256] = {};
         scanf("%s", buf);
         if (0 == strcmp(buf, "exit")) {
-            SPDLOG_INFO("exit thread");
+             SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "exit thread");
             server.close();
             break;
         } else {
-            SPDLOG_INFO("undefined commad");
+             SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "undefined commad");
         }
     }
 
-    SPDLOG_INFO("exit");
+     SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "exit");
     getchar();
     return 0;
 }

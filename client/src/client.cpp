@@ -9,8 +9,6 @@
 #include "utils/conf.hpp"
 // #define GLOG_NO_ABBREVIATED_SEVERITIES 
 // #include "glog/logging.h"
-
-
 using namespace std;
 
 const char *ip = "127.0.0.1";
@@ -40,7 +38,7 @@ public:
         login_result *login = (login_result*)header;
         if (is_check_id_) {
             if (login->msg_id != recv_msg_id_) {
-                // SPDLOG_INFO("socket<{}> msg_id<{}> recv_id<{}> {}", pclient_->sockfd(), login->msg_id, recv_msg_id_, login->msg_id - recv_msg_id_);
+                 SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "socket<{}> msg_id<{}> recv_id<{}> {}", pclient_->sockfd(), login->msg_id, recv_msg_id_, login->msg_id - recv_msg_id_);
             }
             ++recv_msg_id_;
         }
@@ -100,7 +98,7 @@ std::atomic_int ready_count(0);
 std::atomic_int connect_count(0); 
 
 void work_thread(cell_thread *pthread, int id) {
-    // SPDLOG_INFO("thread<{}> start", id);
+     SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "thread<{}> start", id);
     vector<my_client*> clients(client_num);
     int begin = 0;
     int end = client_num;
@@ -124,7 +122,7 @@ void work_thread(cell_thread *pthread, int id) {
         cell_thread::sleep(0);
     }
 
-    // SPDLOG_INFO("thread<{}> connect<begin={}, end={}, connect_count={}>", id, begin, end, (int)connect_count);
+     SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "thread<{}> connect<begin={}, end={}, connect_count={}>", id, begin, end, (int)connect_count);
     
     ready_count++;
     // 等待其他线程准备好再发送数据
@@ -175,11 +173,12 @@ void work_thread(cell_thread *pthread, int id) {
         clients[n]->close();
         delete clients[n];
     }
-    SPDLOG_INFO("thread<{}> exit", id);
+     SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "thread<{}> exit", id);
     --ready_count;
 }
 
 #include <memory>
+#include "spdlog/sinks/stdout_color_sinks.h"
 int main(int argc, char *args[]) {
     config::instance().load("client.conf");
     ip = config::instance().get_string("ip");
@@ -191,17 +190,15 @@ int main(int argc, char *args[]) {
     work_sleep = config::instance().get_int_default("work_sleep", 1);
     send_buffer_size = config::instance().get_int_default("send_buffer_size", SEND_BUFF_SIZE);
     recv_buffer_size = config::instance().get_int_default("recv_buffer_size", RECV_BUFF_SIZE);
-
+	spdlog::cfg::load_env_levels();
     std::vector<spdlog::sink_ptr> sinks;
-    sinks.push_back(std::make_shared<spdlog::sinks::stdout_sink_st>());
+    sinks.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
     sinks.push_back(std::make_shared<spdlog::sinks::daily_file_sink_mt>("logfile.txt", 23, 59));
-    auto combined_logger = std::make_shared<spdlog::logger>("name", begin(sinks), end(sinks));
+    auto combined_logger = std::make_shared<spdlog::logger>(LOG_NAME, begin(sinks), end(sinks));
     //register it if you need to access it globally
+    combined_logger->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%-6t] [%^%-6l%$] [%-5n] [%!] [%#]  %v"); 
     spdlog::register_logger(combined_logger);
     spdlog::flush_every(std::chrono::seconds(5));
-    combined_logger->info("Welecome to spdlog!");
-
-    // spdlog::warn("Welcome to spdlog!");
 	//启动终端命令线程
 	//用于接收运行时用户输入的指令
 	cell_thread tCmd;
@@ -236,7 +233,7 @@ int main(int argc, char *args[]) {
     while (tCmd.is_run()) {
         auto t = ts.second();
         if (t >= 1.0) {
-            combined_logger->info(
+            SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), 
                 "thread<{}> clients<{}> connect<{}> time<{:02.4f}> send<{}>",
                 thread_num, client_num, (int)connect_count, t, (int)send_count);
             send_count = 0;

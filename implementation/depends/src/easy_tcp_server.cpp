@@ -21,15 +21,15 @@ easy_tcp_server::~easy_tcp_server() {
 SOCKET easy_tcp_server::init_socket() {
     cell_network::init();
     if (INVALID_SOCKET != sockfd_) {
-        LOG_WARN("<socket=%d>close old socket...\n", (int)sockfd_);
+         SPDLOG_LOGGER_WARN(spdlog::get(LOG_NAME), "<socket={}>close old socket...", (int)sockfd_);
         close();
     }
     sockfd_ = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (INVALID_SOCKET == sockfd_) {
-        LOG_PERROR("error, create socket failed\n");
+         SPDLOG_LOGGER_ERROR(spdlog::get(LOG_NAME), "error, create socket failed");
     } else {
         cell_network::make_reuseadd(sockfd_);
-        LOG_INFO("create socket=<%d> succes\n", (int)sockfd_);
+         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "create socket=<{}> succes", (int)sockfd_);
     }
     return sockfd_;
 }
@@ -55,9 +55,9 @@ int easy_tcp_server::bind(const char *ip, unsigned short port) {
 
     int ret = ::bind(sockfd_, (sockaddr*)&sin, sizeof(sockaddr));
     if (SOCKET_ERROR == ret) {
-        LOG_PERROR("error, bind port<%d> failed\n", port);
+         SPDLOG_LOGGER_ERROR(spdlog::get(LOG_NAME), "error, bind port<{}> failed", port);
     } else {
-        LOG_INFO("bind port<%d> success\n", port);
+         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "bind port<{}> success", port);
     }
     return ret;
 }
@@ -66,9 +66,9 @@ int easy_tcp_server::listen(int n) {
     int ret = ::listen(sockfd_, n);
 
     if (SOCKET_ERROR == ret) {
-        LOG_PERROR("socket=<%d> error, listen port failed\n", sockfd_);
+         SPDLOG_LOGGER_ERROR(spdlog::get(LOG_NAME), "socket=<{}> error, listen port failed", sockfd_);
     } else {
-        LOG_INFO("socket=<%d> listen port success\n", sockfd_);
+         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "socket=<{}> listen port success", sockfd_);
     }
     return ret;
 }
@@ -83,14 +83,14 @@ SOCKET easy_tcp_server::accept() {
     c_sock = ::accept(sockfd_, (sockaddr*)&client_addr, (socklen_t*)&length);
 #endif
     if (INVALID_SOCKET == c_sock) {
-        LOG_PERROR("socket=<%d> error, accept invalid socket\n",(int)sockfd_);
+         SPDLOG_LOGGER_ERROR(spdlog::get(LOG_NAME), "socket=<{}> error, accept invalid socket\n",(int)sockfd_);
     } else {
         if (client_count_ < max_client_) {
             cell_network::make_reuseadd(c_sock);
             add_client_to_server(new cell_client(c_sock));
         } else {
             cell_network::destory_socket(c_sock);;
-            LOG_WARN("accept to max_client");
+             SPDLOG_LOGGER_WARN(spdlog::get(LOG_NAME), "accept to max_client");
         }
     }
     return c_sock;
@@ -107,7 +107,7 @@ void easy_tcp_server::add_client_to_server(cell_client *client) {
 }
 
 void easy_tcp_server::close() {
-    LOG_INFO("easy_tcp_server close begin");
+     SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "easy_tcp_server close begin");
     thread_.close();
     if (sockfd_ != INVALID_SOCKET) {
         for (auto s : cell_servers_) {
@@ -117,7 +117,7 @@ void easy_tcp_server::close() {
         cell_network::destory_socket(sockfd_);
         sockfd_ = INVALID_SOCKET;
     }
-    LOG_INFO("easy_tcp_server close end");
+     SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "easy_tcp_server close end");
 }
 
 void easy_tcp_server::on_join(cell_client *pclient) {
@@ -135,7 +135,7 @@ void easy_tcp_server::on_recv(cell_client *pclient) {
 void easy_tcp_server::time4msg() {
     auto t1 = time_.second();
     if (t1 >= 1.0f) {
-        SPDLOG_INFO("thread<{}>, time<{:02.4f}>, socket<{}>, client_count<{}>, recv_count<{}>, message<{}>",
+         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "thread<{}>, time<{:02.4f}>, socket<{}>, client_count<{}>, recv_count<{}>, message<{}>",
             cell_servers_.size(), t1, sockfd_, (int)client_count_, (int)recv_count_, (int)message_count_); 
         recv_count_  = 0;
         message_count_ = 0;

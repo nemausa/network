@@ -9,7 +9,7 @@ cell_iocp::~cell_iocp() {
 bool cell_iocp::create() {
     completion_port_ = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
     if (NULL == completion_port_) {
-        LOG_INFO("iocp create failed, CreateIoCompletionPort");
+         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "iocp create failed, CreateIoCompletionPort");
         return false;
     }
     return true;
@@ -28,7 +28,7 @@ bool cell_iocp::reg(SOCKET sockfd) {
             (ULONG_PTR)sockfd, 
             0);
     if (!ret) {
-        LOG_INFO("iocp reg sockfd failed, CreateIoCompletionPort");
+         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "iocp reg sockfd failed, CreateIoCompletionPort");
         return false;
     }
     return true;
@@ -40,7 +40,7 @@ bool cell_iocp::reg(SOCKET sockfd, void *ptr) {
             (ULONG_PTR)ptr, 
             0);
     if (!ret) {
-        LOG_INFO("iocp reg sockfd failed, CreateIoCompletionPort");
+         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "iocp reg sockfd failed, CreateIoCompletionPort");
         return false;
     }
     return true;
@@ -48,7 +48,7 @@ bool cell_iocp::reg(SOCKET sockfd, void *ptr) {
 
 bool cell_iocp::post_accept(io_data_base *p_io_data) {
     if (!acceptex_) {
-        LOG_INFO("error, post_accept acceptex_ is null");
+         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "error, post_accept acceptex_ is null");
         return false;
     } 
     p_io_data->io_type = io_type_e::ACCEPT;
@@ -63,7 +63,7 @@ bool cell_iocp::post_accept(io_data_base *p_io_data) {
             &p_io_data->overlapped)) {
         int err = WSAGetLastError();
         if (ERROR_IO_PENDING != err) {
-            LOG_INFO("acceptex failed with error %d", err);
+             SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "acceptex failed with error {}", err);
             return false;
         } 
     } 
@@ -87,7 +87,7 @@ bool cell_iocp::post_recv(io_data_base *p_io_data) {
             if (WSAECONNRESET == err) {
                 return false;
             }
-            LOG_INFO("WSARecv failed with error %d", err);
+             SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "WSARecv failed with error {}", err);
             return false;
         }
     }
@@ -111,7 +111,7 @@ bool cell_iocp::post_send(io_data_base *p_io_data) {
             if (WSAECONNRESET == err) {
                 return false;
             }
-            LOG_INFO("WSASend failed with error %d", err);
+             SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "WSASend failed with error {}", err);
             return false;
         }
     }
@@ -137,7 +137,7 @@ int cell_iocp::wait(io_event &io_event, int timeout) {
         if (ERROR_CONNECTION_ABORTED == err) {
             return 1;
         }
-        LOG_INFO(" GetQueuedCompletionStatus");
+         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), " GetQueuedCompletionStatus");
         return -1;
     }
     return 1;
@@ -145,11 +145,11 @@ int cell_iocp::wait(io_event &io_event, int timeout) {
 
 bool cell_iocp::load_accept(SOCKET listen_socket) {
     if (INVALID_SOCKET != sock_server_) {
-        LOG_INFO("load_accept sock_server_ != INVALID_SOCKET");
+         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "load_accept sock_server_ != INVALID_SOCKET");
         return false;
     }
     if (acceptex_) {
-        LOG_INFO("load_accept acceptex_ != NULL");
+         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "load_accept acceptex_ != NULL");
         return false;
     }
     sock_server_ = listen_socket;
@@ -163,7 +163,7 @@ bool cell_iocp::load_accept(SOCKET listen_socket) {
         NULL,
         NULL);
     if (result == SOCKET_ERROR) {
-        LOG_INFO("WSAIoctl failed with error: %u", WSAGetLastError());
+         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "WSAIoctl failed with error: {}", WSAGetLastError());
         return false;
     }    
     return true;

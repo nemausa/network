@@ -30,18 +30,18 @@ int cell_network::make_nonblock(SOCKET fd) {
 #ifdef _WIN32
     unsigned long noblock = 1;
     if (ioctlsocket(fd, FIONBIO, &noblock) == SOCKET_ERROR) {
-        LOG_WARN("fcntl(%d, F_GETFL)", (int)fd);
+         SPDLOG_LOGGER_WARN(spdlog::get(LOG_NAME), "fcntl({}, F_GETFL)", (int)fd);
         return -1;
     }
 #else
     int flags;
     if ((flags == fcntl(fd, F_GETFL, NULL)) <0) {
-        LOG_WARN("fcntl(%d, F_GETFL)", (int)fd);
+         SPDLOG_LOGGER_WARN(spdlog::get(LOG_NAME), "fcntl({}, F_GETFL)", (int)fd);
         return -1;
     }
     if (!(flags & O_NONBLOCK)) {
         if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1) {
-            LOG_WARN("fcntl(%d, FSETFL)", fd);
+             SPDLOG_LOGGER_WARN(spdlog::get(LOG_NAME), "fcntl({}, FSETFL)", fd);
             return -1;
         }
     }
@@ -50,7 +50,7 @@ int cell_network::make_nonblock(SOCKET fd) {
 int cell_network::make_reuseadd(SOCKET fd) {
     int flag = 1;
     if (SOCKET_ERROR == setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (const char *)&flag, sizeof(flag))) {
-        LOG_INFO("setsockopt socket<%d> fail", int(fd));
+         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "setsockopt socket<{}> fail", int(fd));
         return SOCKET_ERROR;
     }
     return 0;
@@ -59,7 +59,7 @@ int cell_network::make_reuseadd(SOCKET fd) {
 // int cell_network::make_nodelay(SOCKET fd) {
 //     int flag = 1;
 //     if (SOCKET_ERROR == setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (const char *)&flag, sizeof(flag))) {
-//         LOG_WARN("setsockopt socket<%d> IPPROTO_TCP TCP_NODELAY failed", (int)fd);
+//          SPDLOG_LOGGER_WARN(spdlog::get(LOG_NAME), "setsockopt socket<{}> IPPROTO_TCP TCP_NODELAY failed", (int)fd);
 //         return SOCKET_ERROR;
 //     }
 //     return 0;
@@ -72,7 +72,7 @@ int cell_network::destory_socket(SOCKET sockfd) {
     int ret = close(sockfd);
 #endif
     if (ret < 0) {
-        LOG_INFO("destory sockfd<%d>", int(sockfd));
+         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "destory sockfd<{}>", int(sockfd));
     }
     return ret;
 }

@@ -23,8 +23,8 @@ class syslog_sink : public base_sink<Mutex>
 public:
     syslog_sink(std::string ident, int syslog_option, int syslog_facility, bool enable_formatting)
         : enable_formatting_{enable_formatting}
-        , syslog_levels_{{/* spdlog::level::trace      */ LOG_DEBUG,
-              /* spdlog::level::debug      */ LOG_DEBUG,
+        , syslog_levels_{{/* spdlog::level::trace      */ spdlog::get(LOG_NAME)->debug,
+              /* spdlog::level::debug      */ spdlog::get(LOG_NAME)->debug,
               /* spdlog::level::info       */ LOG_INFO,
               /* spdlog::level::warn       */ LOG_WARNING,
               /* spdlog::level::err        */ LOG_ERR,

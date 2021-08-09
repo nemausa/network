@@ -29,32 +29,32 @@ void cell_config::made_cmd(char *cmd) {
         *val = '\0';
         val++;
         kv_[cmd] = val;
-        LOG_INFO("mode_cmd %s=%s", cmd, val);
+         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "mode_cmd {}={}", cmd, val);
     } else {
         kv_[cmd] = "";
-        LOG_INFO("made_cmd %s", cmd);
+         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "made_cmd {}", cmd);
     }
 }
 
 const char *cell_config::get_string(const char *arg_name, const char *def) {
     auto itr = kv_.find(arg_name);
     if (itr == kv_.end()) {
-        LOG_INFO("cell_config not found <%s>", arg_name);
+         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "cell_config not found <{}>", arg_name);
     } else {
         def = itr->second.c_str();
     }
-    LOG_INFO("%s=%s", arg_name, def);
+     SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "{}={}", arg_name, def);
     return def;
 }
 
 int cell_config::get_int(const char *arg_name, int def) {
     auto itr = kv_.find(arg_name);
     if (itr == kv_.end()) {
-        LOG_INFO("cell_config not found <%s>", arg_name);
+         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "cell_config not found <{}>", arg_name);
     } else {
         def = atoi(itr->second.c_str());
     }
-    LOG_INFO("%s=%d", arg_name, def);
+     SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "{}={}", arg_name, def);
     return def;
 }
 

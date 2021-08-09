@@ -13,13 +13,13 @@ cell_client::cell_client(SOCKET sockfd, int send_size, int recv_size):
 }
 
 cell_client::~cell_client() {
-    LOG_INFO("s=%d client%d\n", service_id_, id_);
+     SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "s={} client{}", service_id_, id_);
     destory();
 }
 
 void cell_client::destory() {
     if (INVALID_SOCKET != sockfd_) {
-        LOG_INFO("cell_client::destory sid=%d id=%d socket=%d", service_id_, id_, (int)sockfd_);
+         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "cell_client::destory sid={} id={} socket={}", service_id_, id_, (int)sockfd_);
         cell_network::destory_socket(sockfd_);
         sockfd_ = INVALID_SOCKET;
     }
@@ -77,7 +77,7 @@ void cell_client::reset_send_time() {
 bool cell_client::check_heart_time(time_t dt) {
     heart_time_ += dt;
     if (heart_time_ >= CLIENT_HEART_DEAD_TIME) {
-        LOG_INFO("check_heart_time dead: s=%d, time=%d\n", sockfd_, heart_time_);
+         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "check_heart_time dead: s={}, time={}\n", sockfd_, heart_time_);
         return true;
     }
     return false;
@@ -86,7 +86,7 @@ bool cell_client::check_heart_time(time_t dt) {
 bool cell_client::check_send_time(time_t dt) {
     send_time_ += dt;
     if (send_time_ >= CLIENT_SEND_BUFF_TIME) {
-        LOG_INFO("check_send_time:socket=%d, time=%d\n", sockfd_, send_time_);
+         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "check_send_time:socket={}, time={}\n", sockfd_, send_time_);
         send_data_real();
         reset_send_time();
         return true;
@@ -104,7 +104,7 @@ io_data_base *cell_client::make_recv_iodata() {
 
 void cell_client::recv_for_iocp(int nrecv) {
     if (!is_post_recv_) {
-        LOG_INFO("recv_for_iocp is+post_recv_ is false");
+         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "recv_for_iocp is+post_recv_ is false");
     }
     is_post_recv_ = false;
     recv_buffer_.read_for_iocp(nrecv);
@@ -119,7 +119,7 @@ io_data_base *cell_client::make_send_iodata() {
 
 void cell_client::send_to_iocp(int nsend) {
     if (!is_post_send_) {
-        LOG_INFO("send_to_iocp is_post_send_ is false");
+         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "send_to_iocp is_post_send_ is false");
     }
     is_post_send_ = false;
     send_buffer_.write_to_iocp(nsend);

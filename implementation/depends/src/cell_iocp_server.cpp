@@ -63,7 +63,7 @@ bool cell_iocp_server::do_net_events() {
 int cell_iocp_server::do_iocp_net_events() {
     int ret = iocp_.wait(io_event_, 1);
     if (ret < 0) {
-        LOG_INFO("cell_iocp_server%d.wait", id_);
+         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "cell_iocp_server{}.wait", id_);
         return ret;
     } else if (ret == 0) {
         return ret;
@@ -71,7 +71,7 @@ int cell_iocp_server::do_iocp_net_events() {
 
     if (io_type_e::RECV == io_event_.p_io_data->io_type) {
         if (io_event_.bytes_trans <= 0) {
-            LOG_INFO("rm_client sockfd=%d, RECV byte_trans = %d", io_event_.p_io_data->sockfd, io_event_.bytes_trans);
+             SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "rm_client sockfd={}, RECV byte_trans = {}", io_event_.p_io_data->sockfd, io_event_.bytes_trans);
             rm_client(io_event_);
             return ret;
         }
@@ -82,7 +82,7 @@ int cell_iocp_server::do_iocp_net_events() {
         }
     } else if (io_type_e::SEND == io_event_.p_io_data->io_type) {
         if (io_event_.bytes_trans <= 0) {
-            LOG_INFO("rm_client sockfd=%d, RECV byte_trans = %d", io_event_.p_io_data->sockfd, io_event_.bytes_trans);
+             SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "rm_client sockfd={}, RECV byte_trans = {}", io_event_.p_io_data->sockfd, io_event_.bytes_trans);
             rm_client(io_event_);
             return ret;
         }
@@ -91,7 +91,7 @@ int cell_iocp_server::do_iocp_net_events() {
             pclient->send_to_iocp(io_event_.bytes_trans);
         } 
     } else {
-        LOG_INFO("undefine io type");
+         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "undefine io type");
     }
     return ret;
 }

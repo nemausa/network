@@ -17,14 +17,14 @@ bool easy_select_client::on_run(int microseconds) {
             ret = select(_sock + 1, fd_read_.fdset(), nullptr, nullptr, &t);
         }
         if (ret < 0) {
-            LOG_INFO("socke=%d select exit", (int)_sock);
+             SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "socke={} select exit", (int)_sock);
             close();
             return false;
         }
 
         if (fd_read_.has(_sock)) {
             if (SOCKET_ERROR == recv_data()) {
-                LOG_INFO("socket=%d onrun select recv_data exit", (int)_sock);
+                 SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "socket={} onrun select recv_data exit", (int)_sock);
                 close();
                 return false;
             }
@@ -32,7 +32,7 @@ bool easy_select_client::on_run(int microseconds) {
 
         if (fd_write_.has(_sock)) {
             if (SOCKET_ERROR == pclient_->send_data_real()) {
-                LOG_INFO("socket=%d onrun select send_data_real exit", (int)_sock);
+                 SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "socket={} onrun select send_data_real exit", (int)_sock);
                 close();
                 return false;
             }

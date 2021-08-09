@@ -17,12 +17,12 @@ easy_tcp_client::~easy_tcp_client() {
 SOCKET easy_tcp_client::init_socket(int send_size, int recv_size) {
     cell_network::init();
     if (pclient_) {
-        LOG_INFO("warning close old socket<%d>...", (int)pclient_->sockfd());
+         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "warning close old socket<{}>...", (int)pclient_->sockfd());
         close();
     }
     SOCKET sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (INVALID_SOCKET == sock) {
-        LOG_INFO("create socket failed");
+         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "create socket failed");
     } else {
         cell_network::make_reuseadd(sock);
         pclient_ = new cell_client(sock, send_size, recv_size);
@@ -46,12 +46,12 @@ int easy_tcp_client::connect(const char *ip, unsigned short port) {
     sin.sin_addr.s_addr = inet_addr(ip);
 #endif
     // auto logger = spdlog::get("name");
-    // printf("socket=%d connecting server<%s:%d>\n", sock_, ip, port);
+    // printf("socket={} connecting server<%s:{}>\n", sock_, ip, port);
     int ret = ::connect(pclient_->sockfd(), (sockaddr*)&sin, sizeof(sockaddr_in));
     if (SOCKET_ERROR == ret) {
-        // logger->error("socket={} error, connect server<{}:{}> failed", (int)pclient_->sockfd(), ip, port);
+         SPDLOG_LOGGER_ERROR(spdlog::get(LOG_NAME), "socket={} error, connect server<{}:{}> failed", (int)pclient_->sockfd(), ip, port);
     } else  {
-        // printf("socket=%d connect server<%s:%d> success\n", sock_, ip, port);
+        // printf("socket={} connect server<%s:%d> success\n", sock_, ip, port);
         is_connect_ = true;
         on_connect();
     }
