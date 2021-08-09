@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.10)
 
 string(REGEX REPLACE ".*/(.*)" "\\1" CURRENT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR} ) 
-project(${CURRENT_FOLDER})
+project(${CURRENT_FOLDER} CXX)
 
 file(GLOB ${PROJECT_NAME}_SRC
 	"../implementation/depends/src/*.cpp"
@@ -17,6 +17,12 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	target_link_libraries(${PROJECT_NAME} ws2_32)
 endif (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
+# if (NOT TARGET spdlog)
+#     # Stand-alone build
+#     find_package(spdlog REQUIRED)
+# 	message(status " spdlog")
+# endif ()
+target_link_libraries(${PROJECT_NAME} PRIVATE spdlog::spdlog)
 install(TARGETS ${PROJECT_NAME}
 	LIBRARY DESTINATION lib  # 动态库安装路径
 	ARCHIVE DESTINATION lib  # 静态库安装路径

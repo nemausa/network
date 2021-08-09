@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.10)
 project (network)
 
 set (SERVER_NAME server)
@@ -56,16 +56,24 @@ if (MSVC)
 	message(using MSVC compiler)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 else()
-	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OS_CXX_FLAGS} -std=c++11 -pthread")
+	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OS_CXX_FLAGS} -pthread")
 endif()
 
 add_definitions(-w)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive -std=c++11 -pthread")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive -std=c++11 -pthread")
 set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/)
 
-#link_directories(
-	#lib
-#)
+link_directories(
+	lib
+)
+if (NOT TARGET spdlog)
+    # Stand-alone build
+    find_package(spdlog REQUIRED)
+endif ()
+
+# ---------------------------------------------------------------------------------------
+# Example of using pre-compiled library
+# ---------------------------------------------------------------------------------------
 
 add_subdirectory(server)
 add_subdirectory(client)

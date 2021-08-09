@@ -2,9 +2,9 @@
 #include "depends/easy_tcp_client.hpp"
 #include "depends/cell_network.hpp"
 
-#include "spdlog/spdlog.h"
-#include "spdlog/sinks/stdout_sinks.h"
-#include "spdlog/sinks/daily_file_sink.h"
+// #include "spdlog/spdlog.h"
+// #include "spdlog/sinks/stdout_sinks.h"
+// #include "spdlog/sinks/daily_file_sink.h"
 
 easy_tcp_client::easy_tcp_client() {
     is_connect_ = false;
@@ -45,11 +45,11 @@ int easy_tcp_client::connect(const char *ip, unsigned short port) {
 #else
     sin.sin_addr.s_addr = inet_addr(ip);
 #endif
-    auto logger = spdlog::get("name");
+    // auto logger = spdlog::get("name");
     // printf("socket=%d connecting server<%s:%d>\n", sock_, ip, port);
     int ret = ::connect(pclient_->sockfd(), (sockaddr*)&sin, sizeof(sockaddr_in));
     if (SOCKET_ERROR == ret) {
-        logger->error("socket={} error, connect server<{}:{}> failed", (int)pclient_->sockfd(), ip, port);
+        // logger->error("socket={} error, connect server<{}:{}> failed", (int)pclient_->sockfd(), ip, port);
     } else  {
         // printf("socket=%d connect server<%s:%d> success\n", sock_, ip, port);
         is_connect_ = true;

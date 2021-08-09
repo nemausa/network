@@ -3,7 +3,7 @@
 
 set start=%time%
 
-mkdir windows
+mkdir -p windows
 cd windows
 cmake -G "Unix Makefiles"  -DCMAKE_BUILD_TYPE=Debug  ..
 make VERBOSE=1 -j install
