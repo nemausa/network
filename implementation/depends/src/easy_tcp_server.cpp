@@ -87,7 +87,7 @@ SOCKET easy_tcp_server::accept() {
     } else {
         if (client_count_ < max_client_) {
             cell_network::make_reuseadd(c_sock);
-            add_client_to_server(new cell_client(c_sock));
+            add_client_to_server(new cell_client(c_sock, send_buffer_size_, recv_buffer_size_));
         } else {
             cell_network::destory_socket(c_sock);;
              SPDLOG_LOGGER_WARN(spdlog::get(LOG_NAME), "accept to max_client");

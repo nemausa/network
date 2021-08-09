@@ -15,7 +15,7 @@ void easy_iocp_server::on_run(cell_thread *pthread) {
     iocp.reg(sockfd());
     iocp.load_accept(sockfd());
 
-    const int len = 2014;
+    const int len = 1024;
     char buf[len] = {};
 
     io_data_base iodata = {};
@@ -48,7 +48,7 @@ SOCKET easy_iocp_server::iocp_accept(SOCKET sock) {
        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "accept INVALID_SOCKET");
    } else {
        if (client_count_ < max_client_) {
-           add_client_to_server(new cell_client(sock, SEND_BUFF_SIZE, RECV_BUFF_SIZE));
+           add_client_to_server(new cell_client(sock, send_buffer_size_, recv_buffer_size_));
        } else {
            cell_network::destory_socket(sock);
            SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "accept to maxclient");           
