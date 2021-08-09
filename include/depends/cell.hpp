@@ -44,6 +44,9 @@
 #include "cell_log.hpp"
 
 
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/stdout_sinks.h"
+#include "spdlog/sinks/daily_file_sink.h"
 #ifndef RECV_BUFF_SIZE
 #define RECV_BUFF_SIZE 8192
 #define SEND_BUFF_SIZE 10240

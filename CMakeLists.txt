@@ -29,13 +29,23 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	message(status "Linux")
     set (OS "LINUX")
     set (OS_CXX_FLAGS "")
+	# if (NOT TARGET spdlog)
+	# 	# Stand-alone build
+	# 	find_package(spdlog REQUIRED)
+	# endif ()
+	link_directories(
+		lib/linux
+	)
 endif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
-if (${CMAKE_SYSTEM_NAME} MATCHES "WIN32")
+if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	message(status "Windows")
 	set (OS "WIN32")
    	set (OS_CXX_FLAGS "")
-endif (${CMAKE_SYSTEM_NAME} MATCHES "WIN32")
+	link_directories(
+		lib/windows
+	)
+endif (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
 
 ################################################################################
@@ -63,13 +73,6 @@ add_definitions(-w)
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive -std=c++11 -pthread")
 set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/)
 
-link_directories(
-	lib
-)
-if (NOT TARGET spdlog)
-    # Stand-alone build
-    find_package(spdlog REQUIRED)
-endif ()
 
 # ---------------------------------------------------------------------------------------
 # Example of using pre-compiled library

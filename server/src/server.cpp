@@ -64,7 +64,7 @@ public:
         }
         break;
         default:
-            LOG_INFO("recv socket<%d> undefine msgtype, datalen: %d",
+            SPDLOG_INFO("recv socket<{}> undefine msgtype, datalen: {}",
                     pclient->sockfd(), header->length);
         break;
         }
@@ -85,7 +85,7 @@ int main(int argc, char *args[]) {
     int thread_num = config::instance().get_int_default("thread_num", 1);
 
     if (config::instance().has_key("-p")) {
-        LOG_INFO("has key -p");
+        SPDLOG_INFO("has key -p");
     }
     MyServer server;
     server.init_socket();
@@ -98,15 +98,15 @@ int main(int argc, char *args[]) {
         char buf[256] = {};
         scanf("%s", buf);
         if (0 == strcmp(buf, "exit")) {
-            LOG_INFO("exit thread\n");
+            SPDLOG_INFO("exit thread");
             server.close();
             break;
         } else {
-            LOG_INFO("undefined commad\n");
+            SPDLOG_INFO("undefined commad");
         }
     }
 
-    LOG_INFO("exit\n");
+    SPDLOG_INFO("exit");
     getchar();
     return 0;
 }

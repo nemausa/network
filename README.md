@@ -11,3 +11,8 @@ Part of my daily plan for studying network.
 
 #### linux 向外TCP最大連接只能打開28232個端口限制
 - echo "net.ipv4.ip_local_port_range = 1024 65000" >> /etc/sysctl.conf; sysctl -p
+
+#### compile spldlog in windows
+- git checkout v2.x
+- cmake -S . -B build -G "Unix Makefiles"
+- cmake --build build

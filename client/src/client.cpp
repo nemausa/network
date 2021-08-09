@@ -7,10 +7,9 @@
 #include "depends/cell_config.hpp"
 #include "depends/cell_thread.hpp"
 #include "utils/conf.hpp"
+// #define GLOG_NO_ABBREVIATED_SEVERITIES 
+// #include "glog/logging.h"
 
-#include "spdlog/spdlog.h"
-#include "spdlog/sinks/stdout_sinks.h"
-#include "spdlog/sinks/daily_file_sink.h"
 
 using namespace std;
 
@@ -41,7 +40,7 @@ public:
         login_result *login = (login_result*)header;
         if (is_check_id_) {
             if (login->msg_id != recv_msg_id_) {
-                SPDLOG_INFO("socket<{}> msg_id<{}> recv_id<{}> {}", pclient_->sockfd(), login->msg_id, recv_msg_id_, login->msg_id - recv_msg_id_);
+                // SPDLOG_INFO("socket<{}> msg_id<{}> recv_id<{}> {}", pclient_->sockfd(), login->msg_id, recv_msg_id_, login->msg_id - recv_msg_id_);
             }
             ++recv_msg_id_;
         }
@@ -101,7 +100,7 @@ std::atomic_int ready_count(0);
 std::atomic_int connect_count(0); 
 
 void work_thread(cell_thread *pthread, int id) {
-    SPDLOG_INFO("thread<{}> start", id);
+    // SPDLOG_INFO("thread<{}> start", id);
     vector<my_client*> clients(client_num);
     int begin = 0;
     int end = client_num;
@@ -125,7 +124,7 @@ void work_thread(cell_thread *pthread, int id) {
         cell_thread::sleep(0);
     }
 
-    SPDLOG_INFO("thread<{}> connect<begin={}, end={}, connect_count={}>", id, begin, end, (int)connect_count);
+    // SPDLOG_INFO("thread<{}> connect<begin={}, end={}, connect_count={}>", id, begin, end, (int)connect_count);
     
     ready_count++;
     // 等待其他线程准备好再发送数据
@@ -182,7 +181,6 @@ void work_thread(cell_thread *pthread, int id) {
 
 #include <memory>
 int main(int argc, char *args[]) {
-
     config::instance().load("client.conf");
     ip = config::instance().get_string("ip");
     port = config::instance().get_int_default("port", 4567);

@@ -135,7 +135,7 @@ void easy_tcp_server::on_recv(cell_client *pclient) {
 void easy_tcp_server::time4msg() {
     auto t1 = time_.second();
     if (t1 >= 1.0f) {
-        LOG_INFO("thread<%d>, time<%f>, socket<%d>, client_count<%d>, recv_count<%d>, message<%d>",
+        SPDLOG_INFO("thread<{}>, time<{:02.4f}>, socket<{}>, client_count<{}>, recv_count<{}>, message<{}>",
             cell_servers_.size(), t1, sockfd_, (int)client_count_, (int)recv_count_, (int)message_count_); 
         recv_count_  = 0;
         message_count_ = 0;

@@ -12,8 +12,9 @@ file(GLOB ${PROJECT_NAME}_SRC
 list (SORT ${PROJECT_NAME}_SRC)
 add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_SRC} )
 
+target_link_libraries(${PROJECT_NAME} spdlog)
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-	message(status "Windows")
+	message(status " Windows")
 	target_link_libraries(${PROJECT_NAME} ws2_32)
 endif (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 

@@ -3,10 +3,10 @@
 
 set start=%time%
 
-mkdir -p windows
+mkdir  windows
 cd windows
 cmake -G "Unix Makefiles"  -DCMAKE_BUILD_TYPE=Debug  ..
-make VERBOSE=1 -j install
+make VERBOSE=1  -j install
 cd ..
 
 set end=%time%

@@ -22,7 +22,8 @@ endif (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 #     find_package(spdlog REQUIRED)
 # 	message(status " spdlog")
 # endif ()
-target_link_libraries(${PROJECT_NAME} PRIVATE spdlog::spdlog)
+# target_link_libraries(${PROJECT_NAME} glog)
+target_link_libraries(${PROJECT_NAME} spdlog)
 install(TARGETS ${PROJECT_NAME}
 	LIBRARY DESTINATION lib  # 动态库安装路径
 	ARCHIVE DESTINATION lib  # 静态库安装路径
