@@ -193,7 +193,7 @@ int main(int argc, char *args[]) {
 	spdlog::cfg::load_env_levels();
     std::vector<spdlog::sink_ptr> sinks;
     sinks.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
-    sinks.push_back(std::make_shared<spdlog::sinks::daily_file_sink_mt>("logfile.txt", 23, 59));
+    sinks.push_back(std::make_shared<spdlog::sinks::daily_file_sink_mt>("logs/logfile.txt", 23, 59));
     auto combined_logger = std::make_shared<spdlog::logger>(LOG_NAME, begin(sinks), end(sinks));
     //register it if you need to access it globally
     combined_logger->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%-6t] [%^%-6l%$] [%-5n] [%!] [%#]  %v"); 

@@ -71,6 +71,10 @@ int easy_iocp_client::do_iocp_net_events(int microseconds) {
             close();
             return -1;
         }
+        cell_client *pclient = (cell_client*)ioevent_.data.ptr;
+        if (pclient) {
+            pclient->recv_for_iocp(ioevent_.bytes_trans);
+        }
     } else if (io_type_e::SEND == ioevent_.p_io_data->io_type) {
         if (ioevent_.bytes_trans <= 0) {
             SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "easy_ioco_client.do_iocp_net_events sockfd{} RECV bytes_trans={}", pclient_->sockfd(), ioevent_.bytes_trans);
@@ -82,7 +86,7 @@ int easy_iocp_client::do_iocp_net_events(int microseconds) {
             pclient->send_to_iocp(ioevent_.bytes_trans);
         }
     } else {
-        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "undefine io type.");
+        SPDLOG_LOGGER_WARN(spdlog::get(LOG_NAME), "undefine io type.");
     }
     return ret;
 }
