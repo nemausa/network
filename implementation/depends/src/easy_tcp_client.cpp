@@ -24,7 +24,7 @@ SOCKET easy_tcp_client::init_socket(int send_size, int recv_size) {
     if (INVALID_SOCKET == sock) {
         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "create socket failed");
     } else {
-        cell_network::make_reuseadd(sock);
+        cell_network::make_reuseaddr(sock);
         pclient_ = new cell_client(sock, send_size, recv_size);
         on_init_socket();
     }

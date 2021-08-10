@@ -5,7 +5,7 @@ set start=%time%
 
 mkdir  windows
 cd windows
-cmake -G "Unix Makefiles"  -DCMAKE_BUILD_TYPE=Debug  ..
+cmake -G "Unix Makefiles"  -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
 make VERBOSE=1  -j install
 cd ..
 

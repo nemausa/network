@@ -23,7 +23,7 @@
 #define SEND_BUFF_SIZE RECV_BUFF_SIZE
 #endif
 
-#define CLIENT_HEART_DEAD_TIME  1000000
+#define CLIENT_HEART_DEAD_TIME  20000
 #define CLIENT_SEND_BUFF_TIME   200
 
 class cell_client {
@@ -52,8 +52,8 @@ public:
     bool is_post_action();
 #endif
 public:
-    int id_;
-    int service_id_;
+    int id_ = -1;
+    int service_id_ = -1;
     int recv_id = 1;
     int send_id = 1;
 private:

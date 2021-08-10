@@ -1,6 +1,5 @@
 #ifdef _WIN32
 
-
 #include "depends/cell_iocp_server.hpp"
 
 cell_iocp_server::cell_iocp_server() {
@@ -63,7 +62,8 @@ bool cell_iocp_server::do_net_events() {
 int cell_iocp_server::do_iocp_net_events() {
     int ret = iocp_.wait(io_event_, 1);
     if (ret < 0) {
-        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "cell_iocp_server{}.wait", id_);
+        SPDLOG_LOGGER_ERROR(spdlog::get(LOG_NAME), 
+                "cell_iocp_server{}.wait", id_);
         return ret;
     } else if (ret == 0) {
         return ret;
@@ -71,7 +71,9 @@ int cell_iocp_server::do_iocp_net_events() {
 
     if (io_type_e::RECV == io_event_.p_io_data->io_type) {
         if (io_event_.bytes_trans <= 0) {
-            SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "rm_client sockfd={}, RECV byte_trans = {}", io_event_.p_io_data->sockfd, io_event_.bytes_trans);
+            SPDLOG_LOGGER_ERROR(spdlog::get(LOG_NAME), 
+                    "rm_client sockfd={}, RECV byte_trans = {}", 
+                    io_event_.p_io_data->sockfd, io_event_.bytes_trans);
             rm_client(io_event_);
             return ret;
         }
@@ -82,7 +84,9 @@ int cell_iocp_server::do_iocp_net_events() {
         }
     } else if (io_type_e::SEND == io_event_.p_io_data->io_type) {
         if (io_event_.bytes_trans <= 0) {
-            SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "rm_client sockfd={}, RECV byte_trans = {}", io_event_.p_io_data->sockfd, io_event_.bytes_trans);
+            SPDLOG_LOGGER_ERROR(spdlog::get(LOG_NAME), 
+                    "rm_client sockfd={}, RECV byte_trans = {}", 
+                    io_event_.p_io_data->sockfd, io_event_.bytes_trans);
             rm_client(io_event_);
             return ret;
         }

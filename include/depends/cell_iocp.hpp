@@ -22,7 +22,6 @@
 #include <mswsock.h>
 #include <stdio.h>
 
-#include "cell_log.hpp"
 
 enum io_type_e {
     ACCEPT = 10,

@@ -1,4 +1,3 @@
-
 #include "depends/cell_semaphore.hpp"
 
 cell_semaphore::cell_semaphore() {

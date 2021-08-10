@@ -1,9 +1,7 @@
-
 #include "depends/cell_client.hpp"
 
 cell_client::cell_client(SOCKET sockfd, int send_size, int recv_size):
-    send_buffer_(send_size),
-    recv_buffer_(recv_size) {
+    send_buffer_(send_size), recv_buffer_(recv_size) {
     static int n = 1;
     sockfd_ = sockfd;
     id_ = n++;
@@ -13,13 +11,13 @@ cell_client::cell_client(SOCKET sockfd, int send_size, int recv_size):
 }
 
 cell_client::~cell_client() {
-    SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "s={} client{}", service_id_, id_);
+    // SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "s={} client{}", service_id_, id_);
     destory();
 }
 
 void cell_client::destory() {
     if (INVALID_SOCKET != sockfd_) {
-        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "cell_client::destory sid={} id={} socket={}", service_id_, id_, (int)sockfd_);
+        // SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "cell_client::destory sid={} id={} socket={}", service_id_, id_, (int)sockfd_);
         cell_network::destory_socket(sockfd_);
         sockfd_ = INVALID_SOCKET;
     }
@@ -77,7 +75,9 @@ void cell_client::reset_send_time() {
 bool cell_client::check_heart_time(time_t dt) {
     heart_time_ += dt;
     if (heart_time_ >= CLIENT_HEART_DEAD_TIME) {
-        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "check_heart_time dead: s={}, time={}\n", sockfd_, heart_time_);
+        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), 
+        "check_heart_time dead: s={}, time={}", 
+        sockfd_, heart_time_);
         return true;
     }
     return false;
@@ -86,7 +86,9 @@ bool cell_client::check_heart_time(time_t dt) {
 bool cell_client::check_send_time(time_t dt) {
     send_time_ += dt;
     if (send_time_ >= CLIENT_SEND_BUFF_TIME) {
-        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "check_send_time:socket={}, time={}\n", sockfd_, send_time_);
+        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), 
+        "check_send_time:socket={}, time={}", 
+        sockfd_, send_time_);
         send_data_real();
         reset_send_time();
         return true;

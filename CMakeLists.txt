@@ -24,53 +24,39 @@ if(NOT CMAKE_BUILD_TYPE)
    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
 endif()
 
-#OS
-if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-	message(status "Linux")
-    set (OS "LINUX")
-    set (OS_CXX_FLAGS "")
-	# if (NOT TARGET spdlog)
-	# 	# Stand-alone build
-	# 	find_package(spdlog REQUIRED)
-	# endif ()
-	link_directories(
-		lib/linux
-	)
-endif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-
-if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-	message(status "Windows")
+IF (WIN32)
+	message(status " Windows")
 	set (OS "WIN32")
    	set (OS_CXX_FLAGS "")
 	link_directories(
 		lib/windows
 	)
-endif (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-
-
-################################################################################
-# Options
-################################################################################
-
-
-
-################################################################################
-# Directories
-################################################################################
+ELSEIF (APPLE)
+	message(status " Apple")
+    link_directories(
+        lib/apple
+    )
+ELSEIF (UNIX)
+	message(status " Linux")
+    set (OS "LINUX")
+    set (OS_CXX_FLAGS "")
+	link_directories(
+		lib/linux
+	)
+ENDIF ()
 
 include_directories(
 	include
 )
+set(OS_CXX_FLAGS "${OS_CXX_FLAGS} -fpermissive -std=c++14 -pthread -O -Wreturn-type")
 
 if (MSVC)
 	message(using MSVC compiler)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 else()
-	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OS_CXX_FLAGS} -pthread")
+	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OS_CXX_FLAGS}")
 endif()
 
-add_definitions(-w)
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive -std=c++11 -pthread")
 set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/)
 
 

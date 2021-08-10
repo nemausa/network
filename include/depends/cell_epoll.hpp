@@ -18,7 +18,6 @@
 
 #include "cell.hpp"
 #include "cell_client.hpp"
-#include "cell_log.hpp"
 #include <sys/epoll.h>
 #include "cell_network.hpp"
 #define EPOLL_ERROR             (-1)

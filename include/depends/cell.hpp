@@ -20,8 +20,7 @@
     #define _WINSOCK_DEPRECATED_NO_WARNINGS
     #include <windows.h>
     #include <winsock2.h>
-    #pragma comment(lib, "ws2_32.lig")
-    #include <mswsock.h>
+    // #pragma comment(lib, "ws2_32.lib")
 #else
 #ifdef __APPLE__
     #define _DARWIN_UNLIMITED_SELECT
@@ -34,15 +33,13 @@
 
     #define SOCKET int
     #define INVALID_SOCKET  (SOCKET)(~0)
-    #define SOCKET_ERROR    (SOCKET)(-1)
+    #define SOCKET_ERROR            (-1)
     
 #endif
 
-#include <stdio.h>
 #include "message_header.hpp"
-#include "obersver.hpp"
-#include "cell_log.hpp"
-
+#include "cell_timestamp.hpp"
+#include "cell_task.hpp"
 
 #include "spdlog/spdlog.h"
 #include "spdlog/cfg/env.h" // for loading levels from the environment variable
@@ -54,7 +51,7 @@
 #define LOG_NAME "name"
 #endif
 #ifndef RECV_BUFF_SIZE
-#define RECV_BUFF_SIZE 8192
+#define RECV_BUFF_SIZE 10240
 #define SEND_BUFF_SIZE 10240
 #endif
 

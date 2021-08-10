@@ -1,21 +1,18 @@
 #include <functional>
 
 #include "depends/cell.hpp"
-
 #include "depends/cell_client.hpp"
-
 #include "depends/cell_server.hpp"
-
 #include "depends/net_event.hpp"
 
-int observer::static_number_ = 0;
 
 cell_server::cell_server() {
-
 }
 
 cell_server::~cell_server() {
+    SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "id={}", id_);
     close();
+    SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "id={}", id_);
 }
 
 void cell_server::set_id(int id) {
@@ -28,8 +25,10 @@ void cell_server::set_event(net_event *event) {
 }
 
 void cell_server::close() {
+    SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "close id={}", id_);
     task_server_.close();
     thread_.close();
+    SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "close id={}", id_);
 }
 
 void cell_server::start() {
@@ -46,7 +45,7 @@ void cell_server::start() {
 
 void cell_server::on_run(cell_thread *pthread) {
     while (pthread->is_run()) {
-        if (clients_buff_.size() > 0) {
+        if (!clients_buff_.empty()) {
             std::lock_guard<std::mutex> lock(mutex_);
             for (auto pclient : clients_buff_){
                 clients_[pclient->sockfd()] = pclient;
@@ -73,7 +72,8 @@ void cell_server::on_run(cell_thread *pthread) {
         }
         do_msg();
     }
-    SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "cell_server{} on run exit", id_);
+    SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), 
+            "cell_server{} on run exit", id_);
 }
 
 void cell_server::check_time() {
@@ -84,7 +84,7 @@ void cell_server::check_time() {
     for (auto iter = clients_.begin(); iter != clients_.end(); ) {
         pclient = iter->second;
         if (pclient->check_heart_time(dt)) {
-#if _WIN32
+#ifdef _WIN32
             if (pclient->is_post_action()) {
                 pclient->destory();
             } else {

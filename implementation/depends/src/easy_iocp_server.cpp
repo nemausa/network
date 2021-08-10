@@ -1,8 +1,6 @@
 #ifdef _WIN32
 
-
 #include "depends/easy_iocp_server.hpp" 
-
 #include "depends/cell_network.hpp"
 
 void easy_iocp_server::start(int n) {
@@ -28,7 +26,8 @@ void easy_iocp_server::on_run(cell_thread *pthread) {
         time4msg();
         int ret = iocp.wait(ioevent, 1);
         if (ret < 0) {
-            SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "easy_iocp_server.on_run wait exit");
+            SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), 
+                    "easy_iocp_server.on_run wait exit");
             pthread->exit();
             break;
         }
@@ -48,12 +47,17 @@ SOCKET easy_iocp_server::iocp_accept(SOCKET sock) {
        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "accept INVALID_SOCKET");
    } else {
        if (client_count_ < max_client_) {
-           add_client_to_server(new cell_client(sock, send_buffer_size_, recv_buffer_size_));
+           cell_client *client = new cell_client(sock, send_buffer_size_, recv_buffer_size_);
+           if (!client) {
+                SPDLOG_LOGGER_ERROR(spdlog::get(LOG_NAME), "new client error");           
+           }
+           add_client_to_server(client);
        } else {
            cell_network::destory_socket(sock);
            SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "accept to maxclient");           
        }
    }
+   return sock;
 }
 
 #endif

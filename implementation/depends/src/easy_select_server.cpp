@@ -20,7 +20,7 @@ void easy_select_server::on_run(cell_thread *pthread) {
                 SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "easy_select_server select EINTR");
                 continue;
             }
-             SPDLOG_LOGGER_ERROR(spdlog::get(LOG_NAME), "easy_select_server.on_run select");
+            SPDLOG_LOGGER_ERROR(spdlog::get(LOG_NAME), "easy_select_server.on_run select");
             pthread->exit();
             break;
         }

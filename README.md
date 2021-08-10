@@ -16,3 +16,5 @@ Part of my daily plan for studying network.
 - git checkout v2.x
 - cmake -S . -B build -G "Unix Makefiles"
 - cmake --build build
+
+#### 编译release版本，有返回值的必须返回，不然可能访问没有权限访问的默认寄存器

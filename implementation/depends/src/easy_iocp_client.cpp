@@ -1,9 +1,7 @@
 #ifdef _WIN32
 
-
 #include "depends/easy_iocp_client.hpp" 
 
-#include "depends/cell_log.hpp"
 
 void easy_iocp_client::on_init_socket() {
     iocp_.create();

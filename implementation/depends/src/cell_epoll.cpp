@@ -72,6 +72,7 @@ int cell_epoll::wait(int timeout) {
         }
         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "epoll_wait");
     }
+    return ret;
 }
 
 epoll_event *cell_epoll::events() {

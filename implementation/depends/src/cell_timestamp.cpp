@@ -1,4 +1,3 @@
-
 #include "depends/cell_timestamp.hpp"
 
 cell_timestamp::cell_timestamp() {

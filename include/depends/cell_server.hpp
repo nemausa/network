@@ -28,7 +28,7 @@
 #include "net_event.hpp"
 
 
-class cell_server : public subject {
+class cell_server {
 public:
     cell_server();
     virtual ~cell_server();
@@ -50,8 +50,8 @@ public:
     void clear_client();
 protected:
     std::map<SOCKET, cell_client*> clients_;
-    int id_;
-    bool client_change_;
+    int id_ = -1;
+    bool client_change_ = true;
 private:
     std::vector<cell_client*> clients_buff_;
     std::mutex mutex_;

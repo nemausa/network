@@ -23,7 +23,6 @@
 class cell_task_server {
 typedef std::function<void()> cell_task;
 public:
-    cell_task_server(){}
     void add_task(cell_task task);
     void start();
     void close();
@@ -35,7 +34,7 @@ private:
     std::mutex mutex_;
     cell_thread thread_;
 public:
-    int service_id_;
+    int service_id_ = -1;
 };
 
 #endif // CELL_TASK

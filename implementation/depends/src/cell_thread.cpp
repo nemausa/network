@@ -1,4 +1,3 @@
-
 #include "depends/cell_thread.hpp"
 
 cell_thread::cell_thread() {
@@ -17,8 +16,8 @@ void cell_thread::start(event_call on_create,
             on_run_ = on_run;
         if (on_destory)
             on_destory_ = on_destory;
-
-        std::thread(std::mem_fn(&cell_thread::on_work), this).detach();
+        std::thread t(std::mem_fn(&cell_thread::on_work), this);
+        t.detach();
     }
 }
 
@@ -31,8 +30,8 @@ void cell_thread::close() {
 }
 
 void cell_thread::exit() {
-    std::lock_guard<std::mutex> lock(mutex_);
     if (is_run_) {
+        std::lock_guard<std::mutex> lock(mutex_);
         is_run_ = false;
     }
 }
@@ -50,6 +49,7 @@ void cell_thread::on_work() {
         on_destory_(this);
 
     sem_.wake_up();
+    is_run_ = false;
 }
 
 void cell_thread::sleep(time_t _t) {

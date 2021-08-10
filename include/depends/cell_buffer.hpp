@@ -34,10 +34,10 @@ public:
     bool write_to_iocp(int nsend);
 #endif
 private:
-    char *data_;
-    int last_;
-    int size_;
-    int full_count_;
+    char *data_ = nullptr;
+    int last_ = 0;
+    int size_ = 0;
+    int full_count_ = 0;
 #ifdef _WIN32
     io_data_base iodata_ = {};
 #endif

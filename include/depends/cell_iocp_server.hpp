@@ -14,7 +14,7 @@
 #ifndef CELL_IOCP_SERVER
 #define CELL_IOCP_SERVER
 
-#if _WIN32
+#ifdef _WIN32
 
 #include "cell_server.hpp"
 #include "cell_iocp.hpp"

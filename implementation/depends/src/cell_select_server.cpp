@@ -1,4 +1,3 @@
-
 #include "depends/cell_select_server.hpp"
 
 cell_select_server::~cell_select_server() {
@@ -47,7 +46,7 @@ bool cell_select_server::do_net_events() {
 }
 
 void cell_select_server::write_data() {
-#if _WIN32
+#ifdef _WIN32
     auto pfdset = fd_read_.fdset();
     for (int n = 0; n < pfdset->fd_count; n++) {
         auto iter = clients_.find(pfdset->fd_array[n]);

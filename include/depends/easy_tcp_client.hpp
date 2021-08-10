@@ -24,9 +24,7 @@
 #include <atomic>
 
 #include "message_header.hpp"
-#ifndef RECV_BUFF_SIZE
-#define RECV_BUFF_SIZE 10240
-#endif
+
 class easy_tcp_client {
 public:
     easy_tcp_client();
