@@ -1,7 +1,7 @@
 #include <thread>
 #include <cstring>
 
-#include "depends/easy_server_mgr.hpp"
+#include "depends/tcp_mgr.hpp"
 
 #include "utils/conf.hpp"
 //#include "spdlog/spdlog.h"
@@ -12,7 +12,7 @@ const char *VERSION_INFO = "version: 0.0.1";
 #endif
 
 
-class MyServer : public easy_server_mgr {
+class MyServer : public tcp_mgr {
 public:
     MyServer() {
         send_back_ = config::instance().has_key("sendback");
@@ -20,17 +20,17 @@ public:
         check_msg_id_ = config::instance().has_key("check_msg_id");
     }
 
-    virtual void on_join(cell_client *pclient) {
-        easy_server_mgr::on_join(pclient);
+    virtual void on_join(client *pclient) {
+        tcp_mgr::on_join(pclient);
     }
 
-    virtual void on_leave(cell_client *pclient) {
-        easy_server_mgr::on_leave(pclient);
+    virtual void on_leave(client *pclient) {
+        tcp_mgr::on_leave(pclient);
     }
 
-    virtual void on_msg(cell_server *server, cell_client *pclient, 
+    virtual void on_msg(server *server, client *pclient, 
             data_header *header) {
-        easy_tcp_server::on_msg(server, pclient, header);
+        tcp_server::on_msg(server, pclient, header);
         switch(header->cmd) {
         case CMD_LOGIN: {
             pclient->reset_heart_time();

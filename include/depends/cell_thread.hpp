@@ -11,11 +11,11 @@
 * @contact: tappanmorris@outlook.com
 *
 */
-#ifndef CELL_THREAD
-#define CELL_THREAD
+#ifndef THREAD
+#define THREAD
 
 #include <functional>
-#include "cell_semaphore.hpp"
+#include "semaphore.hpp"
 
 class cell_thread {
 private:
@@ -36,8 +36,8 @@ private:
     event_call on_run_;
     event_call on_destory_;
     std::mutex mutex_;
-    cell_semaphore sem_;
+    semaphore sem_;
     bool is_run_ = false;
 };
 
-#endif // CELL_THREAD
+#endif // THREAD

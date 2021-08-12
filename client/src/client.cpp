@@ -2,8 +2,8 @@
 #include <list>
 #include <vector>
 
-#include "depends/easy_server_mgr.hpp"
-#include "depends/cell_timestamp.hpp"
+#include "depends/tcp_mgr.hpp"
+#include "depends/timestamp.hpp"
 
 #include "depends/cell_thread.hpp"
 #include "utils/conf.hpp"
@@ -25,7 +25,7 @@ int work_sleep = 1;
 int send_buffer_size = SEND_BUFF_SIZE;
 int recv_buffer_size = RECV_BUFF_SIZE;
 
-class my_client : public easy_client_mgr {
+class my_client : public tcp_client_mgr {
 public:
     my_client() {
         is_check_id_ = config::instance().has_key("check_id");
@@ -100,7 +100,7 @@ std::atomic_int ready_count(0);
 std::atomic_int connect_count(0); 
 
 void work_thread(cell_thread *pthread, int id) {
-    SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "thread<{}> start", id);
+    SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "cell_thread<{}> start", id);
     vector<my_client*> clients(client_num);
     int begin = 0;
     int end = client_num;
@@ -126,7 +126,7 @@ void work_thread(cell_thread *pthread, int id) {
     }
 
     SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), 
-            "thread<{}> connect<begin={}, end={}, connect_count={}>", 
+            "cell_thread<{}> connect<begin={}, end={}, connect_count={}>", 
             id, begin, end, (int)connect_count);
     
     ready_count++;
@@ -139,13 +139,13 @@ void work_thread(cell_thread *pthread, int id) {
     strcpy(lg.user_name, "nemausa");
     strcpy(lg.password, "nemausa password");
     
-    auto t2 = cell_timestamp::now_milliseconds();
+    auto t2 = timestamp::now_milliseconds();
     auto t0 = t2;
     auto dt = t0;
 
-    cell_timestamp t_time;
+    timestamp t_time;
     while (pthread->is_run()) {
-        t0 = cell_timestamp::now_milliseconds();
+        t0 = timestamp::now_milliseconds();
         dt = t0 -t2;
         t2 = t0;
         
@@ -178,7 +178,7 @@ void work_thread(cell_thread *pthread, int id) {
         clients[n]->close();
         delete clients[n];
     }
-    SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "thread<{}> exit", id);
+    SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "cell_thread<{}> exit", id);
     --ready_count;
 }
 
@@ -239,12 +239,12 @@ int main(int argc, char *args[]) {
         threads.push_back(t);
     }
 
-    cell_timestamp ts;
+    timestamp ts;
     while (tCmd.is_run()) {
         auto t = ts.second();
         if (t >= 1.0) {
            SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), 
-                "thread<{}> clients<{}> connect<{}> time<{:02.4f}> send<{}>",
+                "cell_thread<{}> clients<{}> connect<{}> time<{:02.4f}> send<{}>",
                 thread_num, client_num, (int)connect_count, t, (int)send_count);
             send_count = 0;
             ts.update();

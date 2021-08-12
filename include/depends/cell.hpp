@@ -38,8 +38,8 @@
 #endif
 
 #include "message_header.hpp"
-#include "cell_timestamp.hpp"
-#include "cell_task.hpp"
+#include "timestamp.hpp"
+#include "task.hpp"
 
 #include "spdlog/spdlog.h"
 #include "spdlog/cfg/env.h" // for loading levels from the environment variable

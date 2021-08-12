@@ -14,16 +14,16 @@
 #ifndef NET_EVENT
 #define NET_EVENT
 
-class cell_client;
-class cell_server;
+class client;
+class server;
 class data_header;
 
 class net_event {
 public:
-    virtual void on_join(cell_client *pclient) = 0;
-    virtual void on_leave(cell_client *pclient) = 0;
-    virtual void on_msg(cell_server *pserver, cell_client *pclient, data_header *header) = 0;
-    virtual void on_recv(cell_client *pclient) = 0;
+    virtual void on_join(client *pclient) = 0;
+    virtual void on_leave(client *pclient) = 0;
+    virtual void on_msg(server *pserver, client *pclient, data_header *header) = 0;
+    virtual void on_recv(client *pclient) = 0;
 };
 
 #endif // NET_EVENT
