@@ -1,8 +1,6 @@
 #include <thread>
 #include <cstring>
 
-
-
 #include "depends/easy_server_mgr.hpp"
 
 #include "utils/conf.hpp"
@@ -30,7 +28,8 @@ public:
         easy_server_mgr::on_leave(pclient);
     }
 
-    virtual void on_msg(cell_server *server, cell_client *pclient, data_header *header) {
+    virtual void on_msg(cell_server *server, cell_client *pclient, 
+            data_header *header) {
         easy_tcp_server::on_msg(server, pclient, header);
         switch(header->cmd) {
         case CMD_LOGIN: {
@@ -38,7 +37,8 @@ public:
             login *lg = (login*)header;
             if (check_msg_id_) {
                 if (lg->msg_id != pclient->recv_id) {
-                     SPDLOG_LOGGER_ERROR(spdlog::get(LOG_NAME), "on_msg socket<{}> msg_id<{}> recv_msg_id<{}> {}",
+                     SPDLOG_LOGGER_ERROR(spdlog::get(LOG_NAME), 
+                            "on_msg socket<{}> msg_id<{}> recv_msg_id<{}> {}",
                             pclient->sockfd(),lg->msg_id, pclient->recv_id,
                             lg->msg_id - pclient->recv_id);
                 }
@@ -49,7 +49,8 @@ public:
                 ret.msg_id = pclient->send_id;
                 if (SOCKET_ERROR == pclient->send_data(&ret)) {
                     if (send_full_) {
-                         SPDLOG_LOGGER_WARN(spdlog::get(LOG_NAME), "socket<{}> send full", pclient->sockfd());
+                         SPDLOG_LOGGER_WARN(spdlog::get(LOG_NAME), 
+                         "socket<{}> send full", pclient->sockfd());
                     }
                 } else {
                     ++pclient->send_id;
@@ -64,7 +65,8 @@ public:
         }
         break;
         default:
-            SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "recv socket<{}> undefine msgtype, datalen: {}",
+            SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), 
+                    "recv socket<{}> undefine msgtype, datalen: {}",
                     pclient->sockfd(), header->length);
         break;
         }
@@ -82,10 +84,13 @@ int main(int argc, char *args[]) {
 
     std::vector<spdlog::sink_ptr> sinks;
     sinks.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
-    sinks.push_back(std::make_shared<spdlog::sinks::daily_file_sink_mt>("logs/server.txt", 23, 59));
-    auto combined_logger = std::make_shared<spdlog::logger>("name", begin(sinks), end(sinks));
+    sinks.push_back(std::make_shared<spdlog::sinks::daily_file_sink_mt>
+            ("logs/server.txt", 23, 59));
+    auto combined_logger = 
+            std::make_shared<spdlog::logger>("name", begin(sinks), end(sinks));
     //register it if you need to access it globally
-    combined_logger->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%-6t] [%^%-6l%$] [%-5n] [%!] [%#]  %v"); 
+    combined_logger->set_pattern(
+            "[%Y-%m-%d %H:%M:%S.%e] [%-6t] [%^%-6l%$] [%-5n] [%!] [%#]  %v"); 
     spdlog::register_logger(combined_logger);
     spdlog::flush_every(std::chrono::seconds(5));
     combined_logger->info("Welecome to spdlog!");

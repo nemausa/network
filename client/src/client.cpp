@@ -38,27 +38,29 @@ public:
         login_result *login = (login_result*)header;
         if (is_check_id_) {
             if (login->msg_id != recv_msg_id_) {
-                SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "socket<{}> msg_id<{}> recv_id<{}> {}", pclient_->sockfd(), login->msg_id, recv_msg_id_, login->msg_id - recv_msg_id_);
+                SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), 
+                "socket<{}> msg_id<{}> recv_id<{}> {}", 
+                pclient_->sockfd(), login->msg_id, recv_msg_id_, 
+                login->msg_id - recv_msg_id_);
             }
             ++recv_msg_id_;
         }
-        // printf("socket=%d CMD_LOGIN_RESULT, data length=%d\n", pclient_->sockfd(), header->length);
     }
     break;
     case CMD_LOGOUT_RESULT: {
-        // printf("socket=%d CMD_LOGOUT_RESULT, data length=%d\n", pclient_->sockfd(), header->length);
     }
     break;
     case CMD_NEW_JOIN: {
-        // printf("socket=%d CMD_NEW_JOIN, data length=%d\n", pclient_->sockfd(), header->length);
     }
     break;
     case CMD_ERROR: {
-        printf("socket=%d CMD_ERROR, data length=%d\n", pclient_->sockfd(), header->length);
+        printf("socket=%d CMD_ERROR, data length=%d\n", 
+                pclient_->sockfd(), header->length);
     }
     break;
     default: {
-        printf("socket=%d undefined command, data length=%d\n", pclient_->sockfd(), header->length);
+        printf("socket=%d undefined command, data length=%d\n", 
+        pclient_->sockfd(), header->length);
     }
     }
     }
@@ -112,7 +114,8 @@ void work_thread(cell_thread *pthread, int id) {
         if (!pthread->is_run()) {
             break;
         }
-        if (INVALID_SOCKET == clients[n]->init_socket(send_buffer_size, recv_buffer_size)) {
+        if (INVALID_SOCKET == clients[n]->init_socket(
+                    send_buffer_size, recv_buffer_size)) {
             break;
         }
         if (SOCKET_ERROR == clients[n]->connect(ip, port)) {
@@ -122,7 +125,9 @@ void work_thread(cell_thread *pthread, int id) {
         cell_thread::sleep(0);
     }
 
-    SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "thread<{}> connect<begin={}, end={}, connect_count={}>", id, begin, end, (int)connect_count);
+    SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), 
+            "thread<{}> connect<begin={}, end={}, connect_count={}>", 
+            id, begin, end, (int)connect_count);
     
     ready_count++;
     // 等待其他线程准备好再发送数据
@@ -188,15 +193,20 @@ int main(int argc, char *args[]) {
     msg_num = config::instance().get_int_default("msg_num", 10);
     send_sleep = config::instance().get_int_default("send_sleep", 100);
     work_sleep = config::instance().get_int_default("work_sleep", 1);
-    send_buffer_size = config::instance().get_int_default("send_buffer_size", SEND_BUFF_SIZE);
-    recv_buffer_size = config::instance().get_int_default("recv_buffer_size", RECV_BUFF_SIZE);
+    send_buffer_size = config::instance().get_int_default(
+            "send_buffer_size", SEND_BUFF_SIZE);
+    recv_buffer_size = config::instance().get_int_default(
+            "recv_buffer_size", RECV_BUFF_SIZE);
 	spdlog::cfg::load_env_levels();
     std::vector<spdlog::sink_ptr> sinks;
     sinks.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
-    sinks.push_back(std::make_shared<spdlog::sinks::daily_file_sink_mt>("logs/client.txt", 23, 59));
-    auto combined_logger = std::make_shared<spdlog::logger>(LOG_NAME, begin(sinks), end(sinks));
+    sinks.push_back(std::make_shared<spdlog::sinks::daily_file_sink_mt>(
+            "logs/client.txt", 23, 59));
+    auto combined_logger = std::make_shared<spdlog::logger>(
+            LOG_NAME, begin(sinks), end(sinks));
     //register it if you need to access it globally
-    combined_logger->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%-6t] [%^%-6l%$] [%-5n] [%!] [%#]  %v"); 
+    combined_logger->set_pattern(
+            "[%Y-%m-%d %H:%M:%S.%e] [%-6t] [%^%-6l%$] [%-5n] [%!] [%#]  %v"); 
     spdlog::register_logger(combined_logger);
     spdlog::flush_every(std::chrono::seconds(5));
 	//启动终端命令线程
