@@ -1,7 +1,9 @@
-#ifdef _WIN32
-
 #include "depends/tcp_iocp_client.hpp" 
 
+namespace nemausa {
+namespace io {
+
+#ifdef _WIN32
 
 void tcp_iocp_client::on_init_socket() {
     iocp_.create();
@@ -90,3 +92,6 @@ int tcp_iocp_client::do_iocp_net_events(int microseconds) {
 }
 
 #endif
+
+} // namespace io 
+} // namespace nemausa

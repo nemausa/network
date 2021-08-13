@@ -20,6 +20,9 @@
 #include <functional>
 #include "cell_thread.hpp"
 
+namespace nemausa {
+namespace io {
+
 class task_server {
 typedef std::function<void()> task;
 public:
@@ -36,5 +39,8 @@ private:
 public:
     int service_id_ = -1;
 };
+
+} // namespace io 
+} // namespace nemausa
 
 #endif // TASK

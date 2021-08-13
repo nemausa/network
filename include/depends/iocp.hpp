@@ -22,6 +22,8 @@
 #include <mswsock.h>
 #include <stdio.h>
 
+namespace nemausa {
+namespace io {
 
 enum io_type_e {
     ACCEPT = 10,
@@ -65,6 +67,8 @@ private:
     SOCKET sock_server_ = INVALID_SOCKET;
 };
 
-#endif // __WIN32
+} // namespace io 
+} // namespace nemausa
 
+#endif // __WIN32
 #endif // IOCP

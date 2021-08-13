@@ -4,12 +4,11 @@
 
 #include "depends/tcp_mgr.hpp"
 #include "depends/timestamp.hpp"
-
 #include "depends/cell_thread.hpp"
 #include "utils/conf.hpp"
-// #define GLOG_NO_ABBREVIATED_SEVERITIES 
-// #include "glog/logging.h"
+
 using namespace std;
+using namespace nemausa::io;
 
 const char *ip = "127.0.0.1";
 uint16_t port  = 4567;

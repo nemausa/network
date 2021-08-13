@@ -1,5 +1,8 @@
 #include "depends/timestamp.hpp"
 
+namespace nemausa {
+namespace io {
+
 timestamp::timestamp() {
     update();
 }
@@ -23,3 +26,6 @@ double timestamp::millsecond() {
 long long timestamp::microsecond() {
     return duration_cast<microseconds>(high_resolution_clock::now() - begin_).count();
 }
+
+} // namespace io 
+} // namespace nemausa

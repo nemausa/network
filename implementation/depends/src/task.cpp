@@ -1,5 +1,8 @@
 #include "depends/task.hpp"
 
+namespace nemausa {
+namespace io {
+
 void task_server::add_task(task task) {
     std::lock_guard<std::mutex> lock(mutex_);
     task_buff_.push_back(task);
@@ -40,3 +43,6 @@ void task_server::on_run(cell_thread *pthread) {
     }
 }
 
+
+} // namespace io 
+} // namespace nemausa

@@ -19,6 +19,9 @@
 #include "tcp_client.hpp"
 #include "iocp.hpp"
 
+namespace nemausa {
+namespace io {
+
 class tcp_iocp_client : public tcp_client {
 public:
     void on_init_socket();
@@ -31,6 +34,8 @@ protected:
     io_event ioevent_ = {};
 };
 
-#endif
+} // namespace io 
+} // namespace nemausa
 
+#endif // _WIN32
 #endif // EASY_IOCP_CLIENT

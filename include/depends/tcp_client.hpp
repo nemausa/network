@@ -25,6 +25,9 @@
 
 #include "message_header.hpp"
 
+namespace nemausa {
+namespace io {
+
 class tcp_client {
 public:
     tcp_client();
@@ -45,5 +48,8 @@ protected:
     client* pclient_ = nullptr;
     bool is_connect_ = false;
 };
+
+} // namespace io 
+} // namespace nemausa
 
 #endif // EASY_TCP_CLIENT

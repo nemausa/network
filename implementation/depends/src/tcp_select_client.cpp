@@ -1,5 +1,7 @@
-
 #include "depends/tcp_select_client.hpp"
+
+namespace nemausa {
+namespace io {
 
 bool tcp_select_client::on_run(int microseconds) {
     if (is_run()) {
@@ -42,3 +44,6 @@ bool tcp_select_client::on_run(int microseconds) {
     }
     return false;
 }
+
+} // namespace io 
+} // namespace nemausa

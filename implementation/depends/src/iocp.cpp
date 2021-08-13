@@ -1,13 +1,16 @@
-#ifdef _WIN32
-
 #include "depends/cell.hpp"
 #include "depends/iocp.hpp"
 
+#ifdef _WIN32
 #include<windows.h>
+
 #include<WinSock2.h>
 #pragma comment(lib,"ws2_32.lib")
 #include<mswsock.h>
 #include<stdio.h>
+
+namespace nemausa {
+namespace io {
 
 iocp::~iocp() {
     destory();
@@ -186,5 +189,8 @@ bool iocp::load_accept(SOCKET listen_socket) {
     }    
     return true;
 }
+
+} // namespace io 
+} // namespace nemausa
 
 #endif 

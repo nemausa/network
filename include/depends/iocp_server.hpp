@@ -19,6 +19,9 @@
 #include "server.hpp"
 #include "iocp.hpp"
 
+namespace nemausa {
+namespace io {
+
 class iocp_server : public server {
 public:
     iocp_server();
@@ -33,6 +36,8 @@ private:
     io_event io_event_ = {};    
 };
 
-#endif
+} // namespace io 
+} // namespace nemausa
 
+#endif // _WIN32
 #endif // IOCP_SERVER

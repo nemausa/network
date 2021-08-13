@@ -17,11 +17,17 @@
 #include "tcp_server.hpp"
 #include "fdset.hpp"
 
+namespace nemausa {
+namespace io {
+
 class tcp_select_server : public tcp_server {
 public:
     void start(int n);
 protected:
     void on_run(cell_thread *pthread);
 };
+
+} // namespace io 
+} // namespace nemausa
 
 #endif // EASY_SELECT_SERVER

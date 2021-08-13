@@ -22,6 +22,9 @@
 #include "network.hpp"
 #define EPOLL_ERROR             (-1)
 
+namespace nemausa {
+namespace io {
+
 class epoll {
 public:
     ~epoll();
@@ -39,6 +42,8 @@ private:
 };
 
 
-#endif
+} // namespace io
+} // namesapce nemausa
 
+#endif // __linux__
 #endif // EPOLL

@@ -26,6 +26,9 @@
 #define CLIENT_HEART_DEAD_TIME  20000
 #define CLIENT_SEND_BUFF_TIME   200
 
+namespace nemausa {
+namespace io {
+
 class client {
 public:
     client(SOCKET sockfd = INVALID_SOCKET, int send_size = SEND_BUFF_SIZE, int recv_size = RECV_BUFF_SIZE);
@@ -67,5 +70,8 @@ private:
     bool is_post_recv_ = false;
     bool is_post_send_ = false;
 };
+
+} // namespace io
+} // namesapce nemausa
 
 #endif // CLIENT

@@ -1,8 +1,9 @@
-#if __linux__
-
-
 #include "depends/epoll_server.hpp"
 
+namespace nemausa {
+namespace io {
+
+#if __linux__
 epoll_server::epoll_server() {
     ep_.create(10240);
 }
@@ -63,3 +64,6 @@ void epoll_server::on_join(client *pclient) {
 }
 
 #endif
+
+} // namespace io 
+} // namespace nemausa

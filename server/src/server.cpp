@@ -2,16 +2,13 @@
 #include <cstring>
 
 #include "depends/tcp_mgr.hpp"
-
 #include "utils/conf.hpp"
-//#include "spdlog/spdlog.h"
-//#include "spdlog/sinks/basic_file_sink.h"
-//#include "spdlog/sinks/daily_file_sink.h"
+
 #ifndef VERSION
 const char *VERSION_INFO = "version: 0.0.1";
 #endif
 
-
+using namespace nemausa::io;
 class MyServer : public tcp_mgr {
 public:
     MyServer() {

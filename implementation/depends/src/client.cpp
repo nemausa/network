@@ -1,5 +1,8 @@
 #include "depends/client.hpp"
 
+namespace nemausa {
+namespace io {
+
 client::client(SOCKET sockfd, int send_size, int recv_size):
     send_buffer_(send_size), recv_buffer_(recv_size) {
     static int n = 1;
@@ -132,3 +135,6 @@ bool client::is_post_action() {
 }
 
 #endif
+
+} // namespace io 
+} // namespace nemausa

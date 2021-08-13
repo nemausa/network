@@ -1,6 +1,7 @@
-
 #include "depends/fdset.hpp"
 
+namespace nemausa {
+namespace io {
 
 cell_fdset::cell_fdset() {
     int socket_num = AMX_FD;
@@ -55,3 +56,6 @@ fd_set *cell_fdset::fdset() {
 void cell_fdset::copy(cell_fdset &set) {
     memcpy(pfdset_, set.fdset(), set.fdsize_);
 }
+
+} // namespace io 
+} // namespace nemausa

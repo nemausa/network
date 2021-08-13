@@ -27,6 +27,8 @@
 #include "buffer.hpp"
 #include "net_event.hpp"
 
+namespace nemausa {
+namespace io {
 
 class server {
 public:
@@ -60,5 +62,8 @@ private:
     time_t old_clock_ = timestamp::now_milliseconds();
     cell_thread thread_;
 };
+
+} // namespace io 
+} // namespace nemausa
 
 #endif // SERVER

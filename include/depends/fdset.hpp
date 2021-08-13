@@ -18,6 +18,9 @@
 
 #define AMX_FD 102400 
 
+namespace nemausa {
+namespace io {
+
 class cell_fdset {
 public:
     cell_fdset();
@@ -32,5 +35,8 @@ private:
     fd_set *pfdset_;
     size_t fdsize_;
 };
+
+} // namespace io 
+} // namespace nemausa
 
 #endif // FDSET

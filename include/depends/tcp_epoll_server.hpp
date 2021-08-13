@@ -20,6 +20,9 @@
 #include "epoll_server.hpp"
 #include "epoll.hpp"
 
+namespace nemausa {
+namespace io {
+
 class tcp_epoll_server : public tcp_server {
 public:
     void start(int n);
@@ -27,6 +30,8 @@ protected:
     void on_run(cell_thread *pthread);
 };
 
-#endif
+} // namespace io 
+} // namespace nemausa
 
+#endif // __linux__
 #endif // ESAY_EPOLL_SERVER

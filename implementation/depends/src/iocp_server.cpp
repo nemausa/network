@@ -1,6 +1,9 @@
-#ifdef _WIN32
-
 #include "depends/iocp_server.hpp"
+
+namespace nemausa {
+namespace io {
+
+#ifdef _WIN32
 
 iocp_server::iocp_server() {
     iocp_.create();
@@ -122,4 +125,8 @@ void iocp_server::on_join(client *pclient) {
         iocp_.post_recv(p_iodata);
     }
 }
+
 #endif
+
+} // namespace io 
+} // namespace nemausa

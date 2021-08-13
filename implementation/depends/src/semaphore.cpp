@@ -1,5 +1,8 @@
 #include "depends/semaphore.hpp"
 
+namespace nemausa {
+namespace io {
+
 semaphore::semaphore() {
     wait_ = 0;
     wakeup_ = 0; 
@@ -22,3 +25,6 @@ void semaphore::wake_up() {
         cv_.notify_one();
     }
 }
+
+} // namespace io 
+} // namespace nemausa

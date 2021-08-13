@@ -1,7 +1,9 @@
-#if __linux__
-
-
 #include "depends/tcp_epoll_server.hpp"
+
+namespace nemausa {
+namespace io {
+
+#if __linux__
 
 void tcp_epoll_server::start(int n) {
     tcp_server::start<epoll_server>(n);
@@ -33,3 +35,6 @@ void tcp_epoll_server::on_run(cell_thread *pthread) {
 }
 
 #endif
+
+} // namespace io 
+} // namespace nemausa

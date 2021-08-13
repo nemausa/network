@@ -17,6 +17,9 @@
 #include <chrono>
 using namespace std::chrono;
 
+namespace nemausa {
+namespace io {
+
 class timestamp {
 public:
     timestamp();
@@ -33,5 +36,8 @@ public:
 private:
     time_point<high_resolution_clock> begin_;
 };
+
+} // namespace io 
+} // namespace nemausa
 
 #endif // TIMESTAMP

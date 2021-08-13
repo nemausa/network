@@ -18,6 +18,9 @@
 #include <thread>
 #include <chrono>
 
+namespace nemausa {
+namespace io {
+
 class semaphore {
 public:
     semaphore();
@@ -29,5 +32,8 @@ private:
     int wait_;
     int wakeup_;
 };
+
+} // namespace io 
+} // namespace nemausa
 
 #endif // SEMAPHORE

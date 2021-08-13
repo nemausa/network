@@ -17,6 +17,9 @@
 #include "server.hpp"
 #include "fdset.hpp"
 
+namespace nemausa {
+namespace io {
+
 class select_server : public server {
 public:
     ~select_server();
@@ -29,5 +32,8 @@ private:
     cell_fdset fd_read_bak_;
     SOCKET max_socket_;
 };
+
+} // namespace io 
+} // namespace nemausa
 
 #endif // SELECT_SERVER

@@ -5,6 +5,8 @@
 #include "depends/server.hpp"
 #include "depends/net_event.hpp"
 
+namespace nemausa {
+namespace io {
 
 server::server() {
 }
@@ -163,3 +165,6 @@ void server::clear_client() {
 size_t server::client_count() {
     return clients_.size() + clients_buff_.size();
 }
+
+} // namespace io 
+} // namespace nemausa

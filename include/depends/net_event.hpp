@@ -14,6 +14,9 @@
 #ifndef NET_EVENT
 #define NET_EVENT
 
+namespace nemausa {
+namespace io {
+
 class client;
 class server;
 class data_header;
@@ -25,5 +28,8 @@ public:
     virtual void on_msg(server *pserver, client *pclient, data_header *header) = 0;
     virtual void on_recv(client *pclient) = 0;
 };
+
+} // namespace io 
+} // namespace nemausa
 
 #endif // NET_EVENT

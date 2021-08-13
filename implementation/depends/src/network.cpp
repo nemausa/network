@@ -5,6 +5,9 @@
 #include <stdlib.h>
 #endif
 
+namespace nemausa {
+namespace io {
+
 network::network() {
 #ifdef _WIN32
     WORD ver = MAKEWORD(2, 2);
@@ -86,3 +89,6 @@ int network::destory_socket(SOCKET sockfd) {
     }
     return ret;
 }
+
+} // namespace io 
+} // namespace nemausa

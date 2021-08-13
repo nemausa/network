@@ -6,7 +6,7 @@ cd build
 mkdir  windows
 cd windows
 cmake -G "Unix Makefiles"  -DCMAKE_BUILD_TYPE=Release ../..
-make VERBOSE=1  install
+make VERBOSE=1 -j install
 cd ..
 
 set end=%time%

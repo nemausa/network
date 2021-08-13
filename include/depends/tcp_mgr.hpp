@@ -23,6 +23,9 @@
 #include "tcp_select_client.hpp"
 
 
+namespace nemausa {
+namespace io {
+
 #ifdef _WIN32
     typedef tcp_iocp_server tcp_mgr;
     typedef tcp_iocp_client tcp_client_mgr;
@@ -34,5 +37,7 @@
     typedef tcp_select_client tcp_client_mgr;
 #endif
 
+} // namespace io 
+} // namespace nemausa
 
 #endif // EASY_SERVER_MGR

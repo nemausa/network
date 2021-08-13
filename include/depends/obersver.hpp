@@ -20,6 +20,9 @@
 #include <list>
 #include <atomic>
 
+namespace nemausa {
+namespace io {
+
 class i_observer {
 public:
     virtual ~i_observer(){};
@@ -154,6 +157,7 @@ private:
     int number_;
 };
 
-
+} // namespace io 
+} // namespace nemausa
 
 #endif // OBERSVER

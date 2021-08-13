@@ -1,7 +1,8 @@
-
 #include "depends/tcp_select_server.hpp"
-
 #include "depends/select_server.hpp"
+
+namespace nemausa {
+namespace io {
 
 void tcp_select_server::start(int n) {
     tcp_server::start<select_server>(n);
@@ -29,3 +30,6 @@ void tcp_select_server::on_run(cell_thread *pthread) {
         }
     }
 }
+
+} // namespace io 
+} // namespace nemausa

@@ -17,6 +17,9 @@
 #include "fdset.hpp"
 #include "tcp_client.hpp"
 
+namespace nemausa {
+namespace io {
+
 class tcp_select_client : public tcp_client {
 public:
     bool on_run(int microseconds = 1);
@@ -24,5 +27,8 @@ protected:
     cell_fdset fd_read_;
     cell_fdset fd_write_;
 };
+
+} // namespace io 
+} // namespace nemausa
 
 #endif // EASY_SELECT_CLIENT

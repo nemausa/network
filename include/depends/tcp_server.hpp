@@ -21,6 +21,9 @@
 #include "cell_thread.hpp"
 #include "net_event.hpp"
 
+namespace nemausa {
+namespace io {
+
 class tcp_server : public net_event {
 public:
     tcp_server();
@@ -67,5 +70,8 @@ protected:
     std::atomic_int message_count_;
     std::atomic_int client_count_;
 };
+
+} // namespace io 
+} // namespace nemausa
 
 #endif // EASY_TCP_SERVER

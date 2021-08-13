@@ -1,7 +1,9 @@
-#if __linux__
-
-
 #include "depends/tcp_epoll_client.hpp"
+
+namespace nemausa {
+namespace io {
+
+#if __linux__
 
 void tcp_epoll_client::on_init_socket() {
     ep_.create(1);
@@ -51,5 +53,7 @@ bool tcp_epoll_client::on_run(int microseconds) {
     return false;
 }
 
-
 #endif
+
+} // namespace io 
+} // namespace nemausa

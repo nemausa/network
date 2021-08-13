@@ -16,6 +16,10 @@
 
 #include "iocp.hpp"
 #include "task.hpp"
+
+namespace nemausa {
+namespace io {
+
 class buffer {
 public:
     buffer(int size = 8192);
@@ -42,5 +46,8 @@ private:
     io_data_base iodata_ = {};
 #endif
 };
+
+} // namespace io 
+} // namespace nemausa
 
 #endif // BUFFER

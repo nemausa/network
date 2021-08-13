@@ -19,6 +19,9 @@
 #include "server.hpp"
 #include "epoll.hpp"
 
+namespace nemausa {
+namespace io {
+
 class epoll_server : public server {
 public:
     epoll_server();
@@ -30,6 +33,8 @@ private:
     epoll ep_;
 };
 
-#endif // EPOLL_SERVER
+} // namespace io
+} // namesapce nemausa
 
-#endif
+#endif // __linux__
+#endif // EPOLL_SERVER

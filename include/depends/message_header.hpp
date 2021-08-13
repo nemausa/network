@@ -14,6 +14,9 @@
 #ifndef MESSAGE_HEADER
 #define MESSAGE_HEADER
 
+namespace nemausa {
+namespace io {
+
 enum cmd_type_e{
     CMD_LOGIN = 10,
     CMD_LOGIN_RESULT,
@@ -97,5 +100,8 @@ struct s2c_heart : public data_header {
         cmd = CMD_C2S_HEART;
     }
 };
+
+} // namespace io 
+} // namespace nemausa
 
 #endif // MESSAGE_HEADER

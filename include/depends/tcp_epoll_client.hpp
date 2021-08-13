@@ -19,6 +19,9 @@
 #include "tcp_client.hpp"
 #include "epoll.hpp"
 
+namespace nemausa {
+namespace io {
+
 class tcp_epoll_client : public tcp_client {
 public:
     virtual void on_init_socket();
@@ -27,6 +30,9 @@ public:
 protected:
     epoll ep_;
 };
-#endif
 
+} // namespace io 
+} // namespace nemausa
+
+#endif // __linux__
 #endif // EASY_EPOLL_CLIENT

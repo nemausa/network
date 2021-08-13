@@ -20,6 +20,9 @@
 #include "iocp.hpp"
 #include "iocp_server.hpp"
 
+namespace nemausa {
+namespace io {
+
 class tcp_iocp_server : public tcp_server {
 public:
     void start(int n);
@@ -27,6 +30,9 @@ protected:
     void on_run(cell_thread *pthread);
     SOCKET iocp_accept(SOCKET sock);
 };
-#endif
 
+} // namespace io 
+} // namespace nemausa
+
+#endif // _WIN32
 #endif // EASY_IOCP_SERVER

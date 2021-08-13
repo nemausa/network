@@ -17,6 +17,9 @@
 #include <functional>
 #include "semaphore.hpp"
 
+namespace nemausa {
+namespace io {
+
 class cell_thread {
 private:
     typedef std::function<void(cell_thread*)> event_call;
@@ -39,5 +42,8 @@ private:
     semaphore sem_;
     bool is_run_ = false;
 };
+
+} // namespace io 
+} // namespace nemausa
 
 #endif // THREAD

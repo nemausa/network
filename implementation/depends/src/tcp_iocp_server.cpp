@@ -1,7 +1,10 @@
-#ifdef _WIN32
-
 #include "depends/tcp_iocp_server.hpp" 
 #include "depends/network.hpp"
+
+namespace nemausa {
+namespace io {
+
+#ifdef _WIN32
 
 void tcp_iocp_server::start(int n) {
     tcp_server::start<iocp_server>(n);
@@ -61,3 +64,6 @@ SOCKET tcp_iocp_server::iocp_accept(SOCKET sock) {
 }
 
 #endif
+
+} // namespace io 
+} // namespace nemausa

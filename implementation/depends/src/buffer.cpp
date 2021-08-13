@@ -1,6 +1,9 @@
 #include "depends/cell.hpp"
 #include "depends/buffer.hpp"
 
+namespace nemausa {
+namespace io {
+
 buffer::buffer(int size) {
     size_ = size;
     data_ = new char[size];
@@ -142,3 +145,6 @@ bool buffer::write_to_iocp(int nsend) {
 }
 
 #endif
+
+} // namespace io 
+} // namespace nemausa

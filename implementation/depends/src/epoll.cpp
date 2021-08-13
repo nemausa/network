@@ -1,7 +1,9 @@
-#if __linux__
-
 #include "depends/epoll.hpp"
 
+namespace nemausa {
+namespace io {
+
+#if __linux__
 
 epoll::~epoll() {
     destory();
@@ -78,4 +80,8 @@ int epoll::wait(int timeout) {
 epoll_event *epoll::events() {
     return pevents_;
 }
+
 #endif
+
+} // namespace io 
+} // namespace nemausa

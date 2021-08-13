@@ -1,10 +1,8 @@
-
 #include "depends/tcp_client.hpp"
 #include "depends/network.hpp"
 
-// #include "spdlog/spdlog.h"
-// #include "spdlog/sinks/stdout_sinks.h"
-// #include "spdlog/sinks/daily_file_sink.h"
+namespace nemausa {
+namespace io {
 
 tcp_client::tcp_client() {
     is_connect_ = false;
@@ -109,3 +107,6 @@ void tcp_client::on_init_socket() {
 void tcp_client::on_connect() {
 
 }
+
+} // namespace io 
+} // namespace nemausa

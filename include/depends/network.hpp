@@ -16,6 +16,9 @@
 
 #include "cell.hpp"
 
+namespace nemausa {
+namespace io {
+
 class network {
 private:
     network();
@@ -27,5 +30,8 @@ public:
     static int make_nodelay(SOCKET fd);
     static int destory_socket(SOCKET sockfd);
 };
+
+} // namespace io 
+} // namespace nemausa
 
 #endif // NETWORK

@@ -1,5 +1,8 @@
 #include "depends/select_server.hpp"
 
+namespace nemausa {
+namespace io {
+
 select_server::~select_server() {
 
 }
@@ -103,3 +106,6 @@ void select_server::read_data() {
     }
 #endif
 }
+
+} // namespace io 
+} // namespace nemausa

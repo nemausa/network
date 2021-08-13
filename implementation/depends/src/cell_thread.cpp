@@ -1,5 +1,8 @@
 #include "depends/cell_thread.hpp"
 
+namespace nemausa {
+namespace io {
+
 cell_thread::cell_thread() {
 
 }
@@ -56,3 +59,6 @@ void cell_thread::sleep(time_t _t) {
     std::chrono::milliseconds t(_t);
     std::this_thread::sleep_for(t);
 }
+
+} // namespace io 
+} // namespace nemausa

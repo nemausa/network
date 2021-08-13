@@ -2,6 +2,9 @@
 #include "depends/network.hpp"
 #include "utils/conf.hpp"
 
+namespace nemausa {
+namespace io {
+
 tcp_server::tcp_server() {
     sockfd_ = INVALID_SOCKET;
     recv_count_ = 0;
@@ -155,3 +158,6 @@ void tcp_server::time4msg() {
 int tcp_server::sockfd() {
     return sockfd_;
 }
+
+} // namespace io 
+} // namespace nemausa
