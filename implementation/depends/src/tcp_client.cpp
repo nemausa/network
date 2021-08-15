@@ -12,13 +12,15 @@ tcp_client::~tcp_client() {
     close();
 }
 
-SOCKET tcp_client::init_socket(int send_size, int recv_size) {
+SOCKET tcp_client::init_socket(int af, int send_size, int recv_size) {
     network::init();
     if (pclient_) {
-        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "warning close old socket<{}>...", (int)pclient_->sockfd());
+        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), 
+                "warning close old socket<{}>...", (int)pclient_->sockfd());
         close();
     }
-    SOCKET sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    af_ = af;
+    SOCKET sock = socket(af_, SOCK_STREAM, IPPROTO_TCP);
     if (INVALID_SOCKET == sock) {
         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "create socket failed");
     } else {
@@ -31,25 +33,35 @@ SOCKET tcp_client::init_socket(int send_size, int recv_size) {
 
 int tcp_client::connect(const char *ip, unsigned short port) {
     if (!pclient_) {
-        if (INVALID_SOCKET == init_socket()) {
-            return SOCKET_ERROR;
-        }
+        return SOCKET_ERROR;
     }
-    sockaddr_in sin = {};
-    sin.sin_family = AF_INET;
-    sin.sin_port = htons(port);
-#ifdef _WIN32
-    sin.sin_addr.S_un.S_addr = inet_addr(ip);
-#else
-    sin.sin_addr.s_addr = inet_addr(ip);
-#endif
-    // auto logger = spdlog::get("name");
-    // printf("socket={} connecting server<%s:{}>\n", sock_, ip, port);
-    int ret = ::connect(pclient_->sockfd(), (sockaddr*)&sin, sizeof(sockaddr_in));
+    int ret = SOCKET_ERROR;
+    if (AF_INET == af_) {
+        sockaddr_in sin = {};
+        sin.sin_family = AF_INET;
+        sin.sin_port = htons(port);
+    #ifdef _WIN32
+        sin.sin_addr.S_un.S_addr = inet_addr(ip);
+    #else
+        sin.sin_addr.s_addr = inet_addr(ip);
+    #endif
+        ret = ::connect(pclient_->sockfd(), (sockaddr*)&sin, sizeof(sockaddr_in));
+
+    } else if (AF_INET6 == af_) {
+        sockaddr_in6 sin = {};
+        sin.sin6_scope_id = if_nametoindex(scope_id_name_.c_str());
+        sin.sin6_family = AF_INET6;
+        sin.sin6_port = htons(port);
+        inet_pton(AF_INET6, ip, &sin.sin6_addr);
+        ret = ::connect(pclient_->sockfd(), (sockaddr*)&sin, sizeof(sockaddr_in6));
+    } else {
+        SPDLOG_LOGGER_ERROR(spdlog::get(LOG_NAME), "connect error");
+    }
     if (SOCKET_ERROR == ret) {
-         SPDLOG_LOGGER_ERROR(spdlog::get(LOG_NAME), "socket={} error, connect server<{}:{}> failed", (int)pclient_->sockfd(), ip, port);
+        SPDLOG_LOGGER_ERROR(spdlog::get(LOG_NAME), 
+                "socket={} error, connect server<{}:{}> failed", 
+                (int)pclient_->sockfd(), ip, port);
     } else  {
-        // printf("socket={} connect server<%s:%d> success\n", sock_, ip, port);
         is_connect_ = true;
         on_connect();
     }
@@ -98,6 +110,10 @@ int tcp_client::send_data(const char *data, int length) {
         return pclient_->send_data(data, length);
     }
     return SOCKET_ERROR;
+}
+
+void tcp_client::set_scope_id_name(std::string scope_id_name) {
+    scope_id_name_ = scope_id_name;
 }
 
 void tcp_client::on_init_socket() {

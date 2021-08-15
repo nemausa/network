@@ -100,6 +100,11 @@ std::atomic_int connect_count(0);
 
 void work_thread(cell_thread *pthread, int id) {
     SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "cell_thread<{}> start", id);
+    if (config::instance().has_key("ipv6")) {
+        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "ipv6");
+    } else {
+        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "ipv4");
+    }
     vector<my_client*> clients(client_num);
     int begin = 0;
     int end = client_num;
@@ -113,9 +118,17 @@ void work_thread(cell_thread *pthread, int id) {
         if (!pthread->is_run()) {
             break;
         }
-        if (INVALID_SOCKET == clients[n]->init_socket(
-                    send_buffer_size, recv_buffer_size)) {
-            break;
+        if (config::instance().has_key("ipv6")) {
+            clients[n]->set_scope_id_name(config::instance().get_string("scope_id_name"));
+            if (INVALID_SOCKET == clients[n]->init_socket(AF_INET6,
+                        send_buffer_size, recv_buffer_size)) {
+                break;
+            }
+        } else {
+            if (INVALID_SOCKET == clients[n]->init_socket(AF_INET,
+                        send_buffer_size, recv_buffer_size)) {
+                break;
+            }
         }
         if (SOCKET_ERROR == clients[n]->connect(ip, port)) {
             break;

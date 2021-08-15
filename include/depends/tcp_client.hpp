@@ -22,6 +22,7 @@
 
 #include <stdio.h>
 #include <atomic>
+#include <string>
 
 #include "message_header.hpp"
 
@@ -32,7 +33,7 @@ class tcp_client {
 public:
     tcp_client();
     virtual ~tcp_client();
-    SOCKET init_socket(int send_size = SEND_BUFF_SIZE, int redv_size = RECV_BUFF_SIZE);
+    SOCKET init_socket(int af, int send_size, int redv_size);
     int connect(const char *ip, unsigned short port);
     virtual void close();
     virtual bool on_run(int microseconds = 1) = 0;
@@ -42,10 +43,13 @@ public:
     virtual void on_msg(data_header *header) = 0;
     int send_data(data_header *header);
     int send_data(const char *data, int length);
+    void set_scope_id_name(std::string scope_id_name);
     virtual void on_init_socket();
     virtual void on_connect();
 protected:
     client* pclient_ = nullptr;
+    int af_ = AF_INET;
+    std::string scope_id_name_;
     bool is_connect_ = false;
 };
 

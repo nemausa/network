@@ -23,7 +23,7 @@ void tcp_iocp_server::on_run(cell_thread *pthread) {
     iodata.wsabuff.buf = buf;
     iodata.wsabuff.len = len;
 
-    iocp.post_accept(&iodata);
+    iocp.post_accept(&iodata, af_);
     io_event ioevent = {};
     while (pthread->is_run()) {
         time4msg();
@@ -39,28 +39,20 @@ void tcp_iocp_server::on_run(cell_thread *pthread) {
         }
 
         if (io_type_e::ACCEPT == ioevent.p_io_data->io_type) {
-            iocp_accept(ioevent.p_io_data->sockfd);
-            iocp.post_accept(&iodata);
+            char *ip = iocp.get_accept_addrs(ioevent.p_io_data, af_);
+            iocp_accept(ioevent.p_io_data->sockfd, ip);
+            iocp.post_accept(&iodata, af_);
         }
     }
 }
 
-SOCKET tcp_iocp_server::iocp_accept(SOCKET sock) {
-   if (INVALID_SOCKET == sock) {
-       SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "accept INVALID_SOCKET");
-   } else {
-       if (client_count_ < max_client_) {
-           client *pclient = new client(sock, send_buffer_size_, recv_buffer_size_);
-           if (!pclient) {
-                SPDLOG_LOGGER_ERROR(spdlog::get(LOG_NAME), "new client error");           
-           }
-           add_client_to_server(pclient);
-       } else {
-           network::destory_socket(sock);
-           SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "accept to maxclient");           
-       }
-   }
-   return sock;
+SOCKET tcp_iocp_server::iocp_accept(SOCKET csock, char *ip) {
+    if (INVALID_SOCKET == csock) {
+        SPDLOG_LOGGER_ERROR(spdlog::get(LOG_NAME), "accept invalid socket");
+    } else {
+        accept_client(csock, ip);
+    }
+    return csock;
 }
 
 #endif

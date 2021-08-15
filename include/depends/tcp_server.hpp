@@ -28,10 +28,13 @@ class tcp_server : public net_event {
 public:
     tcp_server();
     ~tcp_server();
-    SOCKET init_socket();
+    SOCKET init_socket(int af);
     int bind(const char* ip, unsigned short port);
     int listen(int n);
     SOCKET accept();
+    SOCKET accept_ipv4();
+    SOCKET accept_ipv6();
+    void accept_client(SOCKET csock, char *ip);
     void add_client_to_server(client *client);
     void close();
     bool is_run();
@@ -49,6 +52,7 @@ public:
                 on_run(pthread);
             });
     }
+    virtual client* make_client(SOCKET csock);
     virtual void on_join(client *pclient);
     virtual void on_leave(client *pclient);
     virtual void on_msg(server *pserver, client *pclient, data_header *header);
@@ -63,12 +67,14 @@ private:
     SOCKET sockfd_;
     timestamp time_;
 protected:
+    int af_ = AF_INET;
     int send_buffer_size_;
     int recv_buffer_size_;
     int max_client_;
     std::atomic_int recv_count_;
     std::atomic_int message_count_;
-    std::atomic_int client_count_;
+    std::atomic_int client_join_;
+    std::atomic_int client_accept_;
 };
 
 } // namespace io 

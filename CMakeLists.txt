@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project (network)
+# project (network)
 
 set (SERVER_NAME server)
 set (CLIENT_NAME client)
@@ -48,7 +48,7 @@ ENDIF ()
 include_directories(
 	include
 )
-set(OS_CXX_FLAGS "${OS_CXX_FLAGS} -fpermissive -std=c++14 -pthread -O -Wreturn-type")
+set(OS_CXX_FLAGS "${OS_CXX_FLAGS} -fpermissive -g -std=c++14 -pthread -O -Wreturn-type")
 
 if (MSVC)
 	message(using MSVC compiler)

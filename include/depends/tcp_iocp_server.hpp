@@ -28,7 +28,7 @@ public:
     void start(int n);
 protected:
     void on_run(cell_thread *pthread);
-    SOCKET iocp_accept(SOCKET sock);
+    SOCKET iocp_accept(SOCKET csock, char *ip);
 };
 
 } // namespace io 

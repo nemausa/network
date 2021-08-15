@@ -56,13 +56,17 @@ public:
     void destory();
     bool reg(SOCKET sockfd);
     bool reg(SOCKET sockfd, void *ptr);
-    bool post_accept(io_data_base *p_io_data);
+    bool post_accept(io_data_base *p_io_data, int af);
     bool post_recv(io_data_base *p_io_data);
     bool post_send(io_data_base *p_io_data);
     int wait(io_event &io_event, int timeout);   
     bool load_accept(SOCKET listen_socket);
+    char *get_accept_addrs(io_data_base *ip_io_data, int af);
+    char *get_accept_ipv4(io_data_base *p_io_data);
+    char *get_accept_ipv6(io_data_base *p_io_data);
 private:
     LPFN_ACCEPTEX   acceptex_ = NULL;  
+    LPFN_GETACCEPTEXSOCKADDRS accept_addrs_ = NULL;
     HANDLE completion_port_ = NULL;
     SOCKET sock_server_ = INVALID_SOCKET;
 };

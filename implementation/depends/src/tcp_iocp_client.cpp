@@ -59,7 +59,9 @@ bool tcp_iocp_client::on_run(int microseconds) {
 int tcp_iocp_client::do_iocp_net_events(int microseconds) {
     int ret = iocp_.wait(ioevent_, microseconds);
     if (ret <0) {
-        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "tcp_iocp_client.do_iocp_net_events.wait clientid<{}> sockfd<{}>", pclient_->id_, (int)pclient_->sockfd());
+        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), 
+            "tcp_iocp_client.do_iocp_net_events.wait clientid<{}> sockfd<{}>", 
+            pclient_->id_, (int)pclient_->sockfd());
         return ret;
     } else if (ret == 0) {
         return ret;
@@ -67,7 +69,9 @@ int tcp_iocp_client::do_iocp_net_events(int microseconds) {
 
     if (io_type_e::RECV == ioevent_.p_io_data->io_type) {
         if (ioevent_.bytes_trans <= 0) {
-            SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "tcp_ioco_client.do_iocp_net_events sockfd{} RECV bytes_trans={}", pclient_->sockfd(), ioevent_.bytes_trans);
+            SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), 
+            "tcp_ioco_client.do_iocp_net_events sockfd{} RECV bytes_trans={}", 
+            pclient_->sockfd(), ioevent_.bytes_trans);
             close();
             return -1;
         }
@@ -77,7 +81,9 @@ int tcp_iocp_client::do_iocp_net_events(int microseconds) {
         }
     } else if (io_type_e::SEND == ioevent_.p_io_data->io_type) {
         if (ioevent_.bytes_trans <= 0) {
-            SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "tcp_ioco_client.do_iocp_net_events sockfd{} RECV bytes_trans={}", pclient_->sockfd(), ioevent_.bytes_trans);
+            SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), 
+            "tcp_ioco_client.do_iocp_net_events sockfd{} RECV bytes_trans={}", 
+            pclient_->sockfd(), ioevent_.bytes_trans);
             close();
             return -1;
         }

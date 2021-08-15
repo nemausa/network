@@ -47,6 +47,8 @@ public:
     void reset_send_time();
     bool check_heart_time(time_t dt);
     bool check_send_time(time_t dt);
+    void setip(char *ip);
+    char* getip();
 #ifdef _WIN32
     io_data_base *make_recv_iodata();
     void recv_for_iocp(int nrecv);
@@ -62,11 +64,10 @@ public:
 private:
     buffer recv_buffer_;
     buffer send_buffer_;
-    time_t heart_time_;
-    time_t send_time_;
-    SOCKET sockfd_;
-    int last_pos_;
-    int last_send_pos_;
+    time_t heart_time_ = 0;
+    time_t send_time_ = 0;
+    SOCKET sockfd_ = INVALID_SOCKET;
+    char ip_[INET6_ADDRSTRLEN] = {};
     bool is_post_recv_ = false;
     bool is_post_send_ = false;
 };

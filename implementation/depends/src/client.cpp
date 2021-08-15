@@ -99,6 +99,16 @@ bool client::check_send_time(time_t dt) {
     return false;
 }
 
+void client::setip(char *ip) {
+    if (ip) {
+        strncpy(ip_, ip, INET6_ADDRSTRLEN);
+    }
+}
+
+char* client::getip() {
+    return ip_;
+}
+
 #ifdef _WIN32
 io_data_base *client::make_recv_iodata() {
     if (is_post_recv_)

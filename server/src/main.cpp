@@ -98,9 +98,15 @@ int main(int argc, char *args[]) {
         SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "has key -p");
     }
     MyServer server;
-    server.init_socket();
+    if (config::instance().has_key("ipv6")) {
+        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "ipv6");
+        server.init_socket(AF_INET6);
+    } else {
+        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "ipv4");
+        server.init_socket(AF_INET);
+    }
     server.bind(ip, port);
-    server.listen(64);
+    server.listen(SOMAXCONN);
     server.start(thread_num);
 
 
