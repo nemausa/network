@@ -59,7 +59,7 @@ bool tcp_iocp_client::on_run(int microseconds) {
 int tcp_iocp_client::do_iocp_net_events(int microseconds) {
     int ret = iocp_.wait(ioevent_, microseconds);
     if (ret <0) {
-        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), 
+        SPDLOG_LOGGER_INFO(spdlog::get(FILE_SINK), 
             "tcp_iocp_client.do_iocp_net_events.wait clientid<{}> sockfd<{}>", 
             pclient_->id_, (int)pclient_->sockfd());
         return ret;
@@ -69,7 +69,7 @@ int tcp_iocp_client::do_iocp_net_events(int microseconds) {
 
     if (io_type_e::RECV == ioevent_.p_io_data->io_type) {
         if (ioevent_.bytes_trans <= 0) {
-            SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), 
+            SPDLOG_LOGGER_INFO(spdlog::get(FILE_SINK), 
             "tcp_ioco_client.do_iocp_net_events sockfd{} RECV bytes_trans={}", 
             pclient_->sockfd(), ioevent_.bytes_trans);
             close();
@@ -81,7 +81,7 @@ int tcp_iocp_client::do_iocp_net_events(int microseconds) {
         }
     } else if (io_type_e::SEND == ioevent_.p_io_data->io_type) {
         if (ioevent_.bytes_trans <= 0) {
-            SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), 
+            SPDLOG_LOGGER_INFO(spdlog::get(FILE_SINK), 
             "tcp_ioco_client.do_iocp_net_events sockfd{} RECV bytes_trans={}", 
             pclient_->sockfd(), ioevent_.bytes_trans);
             close();
@@ -92,7 +92,7 @@ int tcp_iocp_client::do_iocp_net_events(int microseconds) {
             pclient->send_to_iocp(ioevent_.bytes_trans);
         }
     } else {
-        SPDLOG_LOGGER_WARN(spdlog::get(LOG_NAME), "undefine io type.");
+        SPDLOG_LOGGER_WARN(spdlog::get(FILE_SINK), "undefine io type.");
     }
     return ret;
 }

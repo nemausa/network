@@ -39,7 +39,7 @@ bool select_server::do_net_events() {
         ret = select(max_socket_ + 1, fd_read_.fdset(), nullptr, nullptr, &t);
     }
     if (ret < 0) {
-        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "");
+        SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "");
     } else if (ret == 0) {
         return true;
     }
@@ -59,7 +59,8 @@ void select_server::write_data() {
                 clients_.erase(iter);
             }
         } else {
-            SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "error iter != clients_.end()");
+            SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
+                    "error iter != clients_.end()");
         }
     }
 #else

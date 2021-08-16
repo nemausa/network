@@ -18,12 +18,7 @@
 #include "buffer.hpp"
 #include "network.hpp"
 
-#ifndef RECV_BUFF_SIZE
-#define RECV_BUFF_SIZE 10240
-#define SEND_BUFF_SIZE RECV_BUFF_SIZE
-#endif
-
-#define CLIENT_HEART_DEAD_TIME  20000
+#define CLIENT_HEART_DEAD_TIME  200000
 #define CLIENT_SEND_BUFF_TIME   200
 
 namespace nemausa {
@@ -31,7 +26,9 @@ namespace io {
 
 class client {
 public:
-    client(SOCKET sockfd = INVALID_SOCKET, int send_size = SEND_BUFF_SIZE, int recv_size = RECV_BUFF_SIZE);
+    client(SOCKET sockfd = INVALID_SOCKET, 
+           int send_size = SEND_BUFF_SIZE, 
+           int recv_size = RECV_BUFF_SIZE);
     ~client();
     void destory();
     SOCKET sockfd();

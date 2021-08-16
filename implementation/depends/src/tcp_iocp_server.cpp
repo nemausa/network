@@ -29,7 +29,7 @@ void tcp_iocp_server::on_run(cell_thread *pthread) {
         time4msg();
         int ret = iocp.wait(ioevent, 1);
         if (ret < 0) {
-            SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), 
+            SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
                     "tcp_iocp_server.on_run wait exit");
             pthread->exit();
             break;
@@ -48,7 +48,7 @@ void tcp_iocp_server::on_run(cell_thread *pthread) {
 
 SOCKET tcp_iocp_server::iocp_accept(SOCKET csock, char *ip) {
     if (INVALID_SOCKET == csock) {
-        SPDLOG_LOGGER_ERROR(spdlog::get(LOG_NAME), "accept invalid socket");
+        SPDLOG_LOGGER_ERROR(spdlog::get(FILE_SINK), "accept invalid socket");
     } else {
         accept_client(csock, ip);
     }

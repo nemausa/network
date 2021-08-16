@@ -24,7 +24,7 @@ bool tcp_epoll_client::on_run(int microseconds) {
        }
        int ret = ep_.wait(microseconds);
        if (ret < 0) {
-           SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), 
+           SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
                     "epoll_client.on_run.wait");
            return false;
        } else if (ret == 0) {
@@ -36,7 +36,7 @@ bool tcp_epoll_client::on_run(int microseconds) {
            if (pclient) {
                 if (events[i].events & EPOLLIN) {
                     if (SOCKET_ERROR == recv_data()) {
-                        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), 
+                        SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
                                 "socket<{}>on_run.epoll recv_data exit", 
                                 pclient->sockfd());
                         close();
@@ -45,7 +45,7 @@ bool tcp_epoll_client::on_run(int microseconds) {
                 }
                 if (events[i].events & EPOLLOUT) {
                     if (SOCKET_ERROR == pclient->send_data_real()) {
-                        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), 
+                        SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
                                 "socket<{}>on_run.epoll sen_data_real exit", 
                                 pclient->sockfd());
                         close();

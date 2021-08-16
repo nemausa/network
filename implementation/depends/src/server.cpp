@@ -12,9 +12,9 @@ server::server() {
 }
 
 server::~server() {
-    SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "id={}", id_);
+    SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "id={}", id_);
     close();
-    SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "id={}", id_);
+    SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "id={}", id_);
 }
 
 void server::set_id(int id) {
@@ -27,10 +27,10 @@ void server::set_event(net_event *event) {
 }
 
 void server::close() {
-    SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "close id={}", id_);
+    SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "close id={}", id_);
     task_server_.close();
     thread_.close();
-    SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "close id={}", id_);
+    SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "close id={}", id_);
 }
 
 void server::start() {
@@ -74,7 +74,7 @@ void server::on_run(cell_thread *pthread) {
         }
         do_msg();
     }
-    SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), 
+    SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
             "server{} on run exit", id_);
 }
 

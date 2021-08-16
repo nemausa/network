@@ -52,8 +52,10 @@
 #include "spdlog/sinks/daily_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 
-#ifndef LOG_NAME
-#define LOG_NAME "name"
+#ifndef MULTI_SINKS
+#define MULTI_SINKS     "multi_sinks"
+#define CONSOLE_SINK    "console_sink"
+#define FILE_SINK       "file_sink"
 #endif
 #ifndef RECV_BUFF_SIZE
 #define RECV_BUFF_SIZE 10240

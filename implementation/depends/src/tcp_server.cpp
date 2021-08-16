@@ -25,18 +25,18 @@ tcp_server::~tcp_server() {
 SOCKET tcp_server::init_socket(int af) {
     network::init();
     if (INVALID_SOCKET != sockfd_) {
-        SPDLOG_LOGGER_WARN(spdlog::get(LOG_NAME), 
+        SPDLOG_LOGGER_WARN(spdlog::get(MULTI_SINKS), 
                 "<socket={}>close old socket...", (int)sockfd_);
         close();
     }
     af_ = af;
     sockfd_ = socket(af, SOCK_STREAM, IPPROTO_TCP);
     if (INVALID_SOCKET == sockfd_) {
-        SPDLOG_LOGGER_ERROR(spdlog::get(LOG_NAME), 
+        SPDLOG_LOGGER_ERROR(spdlog::get(FILE_SINK), 
                 "error, create socket failed");
     } else {
         network::make_reuseaddr(sockfd_);
-        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), 
+        SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
                 "create socket=<{}> success", (int)sockfd_);
     }
     return sockfd_;
@@ -73,15 +73,15 @@ int tcp_server::bind(const char *ip, unsigned short port) {
         }
         ret = ::bind(sockfd_, (sockaddr*)&sin, sizeof(sin));
     } else {
-        SPDLOG_LOGGER_ERROR(spdlog::get(LOG_NAME), 
+        SPDLOG_LOGGER_ERROR(spdlog::get(FILE_SINK), 
                 "bind port,addres family{} failed...", af_);
     }
 
     if (SOCKET_ERROR == ret) {
-        SPDLOG_LOGGER_ERROR(spdlog::get(LOG_NAME), 
+        SPDLOG_LOGGER_ERROR(spdlog::get(FILE_SINK), 
                 "error, bind port<{}> failed", port);
     } else {
-        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), 
+        SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
                 "bind port<{}> success", port);
     }
     return ret;
@@ -91,10 +91,10 @@ int tcp_server::listen(int n) {
     int ret = ::listen(sockfd_, n);
 
     if (SOCKET_ERROR == ret) {
-        SPDLOG_LOGGER_ERROR(spdlog::get(LOG_NAME), 
+        SPDLOG_LOGGER_ERROR(spdlog::get(FILE_SINK), 
             "socket=<{}> error, listen port failed", sockfd_);
     } else {
-        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME),
+        SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS),
                 "socket=<{}> listen port success", sockfd_);
     }
     return ret;
@@ -117,7 +117,7 @@ SOCKET tcp_server::accept_ipv4() {
     csock = ::accept(sockfd_, (sockaddr*)&addr, (socklen_t*)&len);
 #endif
     if (INVALID_SOCKET == csock) {
-        SPDLOG_LOGGER_ERROR(spdlog::get(LOG_NAME), "accept invalid socket...");
+        SPDLOG_LOGGER_ERROR(spdlog::get(FILE_SINK), "accept invalid socket");
     } else {
         char *ip = inet_ntoa(addr.sin_addr);
         accept_client(csock, ip);
@@ -135,7 +135,7 @@ SOCKET tcp_server::accept_ipv6() {
     csock = ::accept(sockfd_, (sockaddr*)&addr, (socklen_t*)&len);
 #endif
     if (INVALID_SOCKET == csock) {
-        SPDLOG_LOGGER_ERROR(spdlog::get(LOG_NAME), "accept invalid socket...");
+        SPDLOG_LOGGER_ERROR(spdlog::get(FILE_SINK), "accept invalid socket...");
     } else {
         static char ip[INET6_ADDRSTRLEN] = {};
         inet_ntop(AF_INET6, &addr.sin6_addr, ip, INET6_ADDRSTRLEN - 1);
@@ -146,7 +146,7 @@ SOCKET tcp_server::accept_ipv6() {
 
 void tcp_server::accept_client(SOCKET csock, char *ip) {
     network::make_reuseaddr(csock);
-    SPDLOG_LOGGER_DEBUG(spdlog::get(LOG_NAME), "accpet ip:{} {}", ip, csock);
+    SPDLOG_LOGGER_DEBUG(spdlog::get(MULTI_SINKS), "accpet ip:{} {}", ip, csock);
     if (client_accept_ < max_client_) {
         client_accept_++;
         auto c = make_client(csock);
@@ -154,7 +154,7 @@ void tcp_server::accept_client(SOCKET csock, char *ip) {
         add_client_to_server(c);
     } else {
         network::destory_socket(csock);
-        SPDLOG_LOGGER_WARN(spdlog::get(LOG_NAME), "accept to max_client");
+        SPDLOG_LOGGER_WARN(spdlog::get(MULTI_SINKS), "accept to max_client");
     }
 }
 
@@ -173,7 +173,7 @@ void tcp_server::add_client_to_server(client *client) {
 }
 
 void tcp_server::close() {
-    SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "tcp_server close begin");
+    SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "tcp_server close begin");
     thread_.close();
     if (sockfd_ != INVALID_SOCKET) {
         for (auto s : servers_) {
@@ -183,7 +183,7 @@ void tcp_server::close() {
         network::destory_socket(sockfd_);
         sockfd_ = INVALID_SOCKET;
     }
-    SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), "tcp_server close end");
+    SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "tcp_server close end");
 }
 
 void tcp_server::on_join(client *pclient) {
@@ -202,7 +202,7 @@ void tcp_server::on_recv(client *pclient) {
 void tcp_server::time4msg() {
     auto t1 = time_.second();
     if (t1 >= 1.0f) {
-        SPDLOG_LOGGER_INFO(spdlog::get(LOG_NAME), 
+        SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
             "cell_thread<{}>, time<{:02.4f}>, socket<{}>, accept<{}>," 
             "client_count<{}>, recv_count<{}>, message<{}>",
             servers_.size(), t1, sockfd_, (int)client_accept_, 
