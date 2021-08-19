@@ -21,16 +21,16 @@ bool iocp_server::do_net_events() {
             auto p_io_data = pclient->make_send_iodata();
             if (p_io_data) {
                 if (!iocp_.post_send(p_io_data)) {
-                    on_leave(pclient);
-                    iter = clients_.erase(iter);
+                    pclient->post_send_complete();
+                    pclient->on_close();
                     continue;
                 }
             }
             p_io_data = pclient->make_recv_iodata();
             if (p_io_data) {
                 if (!iocp_.post_recv(p_io_data)) {
-                    on_leave(pclient);
-                    iter = clients_.erase(iter);
+                    pclient->post_recv_complete();
+                    pclient->on_close();
                     continue;
                 }
             }
@@ -38,8 +38,8 @@ bool iocp_server::do_net_events() {
             auto p_io_data = pclient->make_recv_iodata();
             if (p_io_data) {
                 if (!iocp_.post_recv(p_io_data)) {
-                    on_leave(pclient);
-                    iter = clients_.erase(iter);
+                    pclient->post_recv_complete();
+                    pclient->on_close();
                     continue;
                 }
             }
@@ -73,57 +73,36 @@ int iocp_server::do_iocp_net_events() {
     }
 
     if (io_type_e::RECV == io_event_.p_io_data->io_type) {
-        if (io_event_.bytes_trans <= 0) {
-            SPDLOG_LOGGER_ERROR(spdlog::get(FILE_SINK), 
-                    "rm_client sockfd={}, RECV byte_trans = {}", 
-                    io_event_.p_io_data->sockfd, io_event_.bytes_trans);
-            rm_client(io_event_);
-            return ret;
-        }
         client *pclient = (client*)io_event_.data.ptr;
         if (pclient) {
+            if (io_event_.bytes_trans <= 0) {
+                // SPDLOG_LOGGER_ERROR(spdlog::get(FILE_SINK), 
+                //         "rm_client sockfd={}, RECV byte_trans = {}", 
+                //         io_event_.p_io_data->sockfd, io_event_.bytes_trans);
+                pclient->post_recv_complete();
+                pclient->on_close();
+                return ret;
+            }
             pclient->recv_for_iocp(io_event_.bytes_trans);
             on_recv(pclient);
         }
     } else if (io_type_e::SEND == io_event_.p_io_data->io_type) {
-        if (io_event_.bytes_trans <= 0) {
-            SPDLOG_LOGGER_ERROR(spdlog::get(FILE_SINK), 
-                    "rm_client sockfd={}, RECV byte_trans = {}", 
-                    io_event_.p_io_data->sockfd, io_event_.bytes_trans);
-            rm_client(io_event_);
-            return ret;
-        }
         client *pclient = (client*)io_event_.data.ptr;
         if (pclient) {
+            if (io_event_.bytes_trans <= 0) {
+                // SPDLOG_LOGGER_ERROR(spdlog::get(FILE_SINK), 
+                //         "rm_client sockfd={}, RECV byte_trans = {}", 
+                //         io_event_.p_io_data->sockfd, io_event_.bytes_trans);
+                pclient->post_send_complete();
+                pclient->on_close();
+                return ret;
+            }
             pclient->send_to_iocp(io_event_.bytes_trans);
         } 
     } else {
         SPDLOG_LOGGER_WARN(spdlog::get(MULTI_SINKS), "undefine io type");
     }
     return ret;
-}
-
-void iocp_server::rm_client(client *pclient) {
-    auto iter = clients_.find(pclient->sockfd());
-    if (iter != clients_.end()) {
-        clients_.erase(iter);
-    }
-    on_leave(pclient);
-}
-
-void iocp_server::rm_client(io_event &_ioevent) {
-    client *pclient = (client*)io_event_.data.ptr;
-    if (pclient) {
-        rm_client(pclient);
-    }
-}
-
-void iocp_server::on_join(client *pclient) {
-    iocp_.reg(pclient->sockfd(), pclient);
-    auto p_iodata = pclient->make_recv_iodata();
-    if (p_iodata) {
-        iocp_.post_recv(p_iodata);
-    }
 }
 
 #endif

@@ -1,12 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 # project (network)
 
-set (SERVER_NAME server)
-set (CLIENT_NAME client)
-set (POOL_NAME pool)
-set (EPOLL_NAME epoll)
-set (IOCP_NAME iocp)
-
 set (NETWORK_MAJOR_VERSION 0)
 set (NETWORK_MINOR_VERSION 0)
 set (NETWORK_PATCH_VERSION 0)
@@ -64,8 +58,7 @@ set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/)
 # Example of using pre-compiled library
 # ---------------------------------------------------------------------------------------
 
-add_subdirectory(server)
-add_subdirectory(client)
-# add_subdirectory(epoll)
-# add_subdirectory(pool)
-# add_subdirectory(iocp)
+#add_subdirectory(tcp_server)
+#add_subdirectory(tcp_client)
+add_subdirectory(http_server)
+add_subdirectory(http_client)

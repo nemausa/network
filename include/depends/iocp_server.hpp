@@ -26,11 +26,8 @@ class iocp_server : public server {
 public:
     iocp_server();
     ~iocp_server();
-    bool do_net_events();
+    virtual bool do_net_events();
     int do_iocp_net_events();
-    void rm_client(client *pclient);
-    void rm_client(io_event &_io_event);
-    void on_join(client *pclient);
 private:
     iocp iocp_;
     io_event io_event_ = {};    

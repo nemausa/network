@@ -6,7 +6,7 @@ namespace io {
 
 buffer::buffer(int size) {
     size_ = size;
-    data_ = new char[size];
+    data_ = new char[size + 1];
 }
 
 buffer::~buffer() {
@@ -18,6 +18,18 @@ buffer::~buffer() {
 
 char *buffer::data() {
     return data_;
+}
+
+int buffer::length() {
+    return last_;
+}
+
+int buffer::size() {
+    return size_;
+}
+
+bool buffer::can_write(int size) {
+    return size < size_ - last_;
 }
 
 bool buffer::push(const char *data, int length) {

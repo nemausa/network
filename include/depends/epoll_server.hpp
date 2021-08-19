@@ -26,7 +26,7 @@ class epoll_server : public server {
 public:
     epoll_server();
     ~epoll_server() noexcept;
-    bool do_net_events();
+    virtual bool do_net_events();
     void rm_client(client *pclient);
     void on_join(client *pclient);
 private:

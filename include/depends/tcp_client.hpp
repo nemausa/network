@@ -46,6 +46,7 @@ public:
     void set_scope_id_name(std::string scope_id_name);
     virtual void on_init_socket();
     virtual void on_connect();
+    virtual void on_disconnect();
 protected:
     client* pclient_ = nullptr;
     int af_ = AF_INET;

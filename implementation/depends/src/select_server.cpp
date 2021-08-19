@@ -48,7 +48,7 @@ bool select_server::do_net_events() {
     return true;
 }
 
-void select_server::write_data() {
+void select_server::read_data() {
 #ifdef _WIN32
     auto pfdset = fd_read_.fdset();
     for (int n = 0; n < pfdset->fd_count; n++) {
@@ -80,13 +80,13 @@ void select_server::write_data() {
 #endif 
 }
 
-void select_server::read_data() {
+void select_server::write_data() {
 #ifdef _WIN32
     auto pfdset = fd_read_.fdset();
     for (int n = 0; n < pfdset->fd_count; n++) {
         auto iter = clients_.find(pfdset->fd_array[n]);
         if (iter != clients_.end()) {
-            if (-1 == iter->second->send_data_real()) {
+            if (SOCKET_ERROR == iter->second->send_data_real()) {
                 on_leave(iter->second);
                 clients_.erase(iter);
             }

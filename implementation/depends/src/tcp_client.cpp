@@ -72,8 +72,9 @@ void tcp_client::close() {
     if (pclient_) {
         delete pclient_;
         pclient_ = nullptr;
+        is_connect_ = false;
+        on_disconnect();
     }
-    is_connect_ = false;
 }
 
 bool tcp_client::is_run() {
@@ -121,6 +122,10 @@ void tcp_client::on_init_socket() {
 }
 
 void tcp_client::on_connect() {
+
+}
+
+void tcp_client::on_disconnect() {
 
 }
 

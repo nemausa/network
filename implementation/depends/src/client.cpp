@@ -20,9 +20,9 @@ client::~client() {
 
 void client::destory() {
     if (INVALID_SOCKET != sockfd_) {
-        SPDLOG_LOGGER_INFO(spdlog::get(FILE_SINK), 
-                "client::destory sid={} id={} socket={}", 
-                service_id_, id_, (int)sockfd_);
+        // SPDLOG_LOGGER_INFO(spdlog::get(FILE_SINK), 
+        //         "client::destory sid={} id={} socket={}", 
+        //         service_id_, id_, (int)sockfd_);
         network::destory_socket(sockfd_);
         sockfd_ = INVALID_SOCKET;
     }
@@ -55,7 +55,14 @@ bool client::need_write() {
 
 int client::send_data_real() {
     reset_send_time();
+    if (send_buffer_.length() ==0) {
+        on_send_complete();
+    }
     return send_buffer_.send_to_socket(sockfd_);
+}
+
+void client::on_send_complete() {
+
 }
 
 int client::send_data(data_header *data) {
@@ -91,9 +98,9 @@ bool client::check_heart_time(time_t dt) {
 bool client::check_send_time(time_t dt) {
     send_time_ += dt;
     if (send_time_ >= CLIENT_SEND_BUFF_TIME) {
-        SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
-        "check_send_time:socket={}, time={}", 
-        sockfd_, send_time_);
+        // SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
+        // "check_send_time:socket={}, time={}", 
+        // sockfd_, send_time_);
         send_data_real();
         reset_send_time();
         return true;
@@ -111,6 +118,21 @@ char* client::getip() {
     return ip_;
 }
 
+client_state_e client::state() {
+    return state_;
+}
+
+void client::state(client_state_e _state) {
+    state_ = _state;
+}
+
+void client::on_close() {
+    state(client_state_e::close);
+}
+
+bool client::is_close() {
+    return state_ == client_state_e::close;
+}
 #ifdef _WIN32
 io_data_base *client::make_recv_iodata() {
     if (is_post_recv_)
@@ -120,11 +142,7 @@ io_data_base *client::make_recv_iodata() {
 }
 
 void client::recv_for_iocp(int nrecv) {
-    if (!is_post_recv_) {
-        SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
-                "recv_for_iocp is+post_recv_ is false");
-    }
-    is_post_recv_ = false;
+    post_recv_complete(); 
     recv_buffer_.read_for_iocp(nrecv);
 }
 
@@ -136,12 +154,24 @@ io_data_base *client::make_send_iodata() {
 }
 
 void client::send_to_iocp(int nsend) {
-    if (!is_post_send_) {
-        SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
-                "send_to_iocp is_post_send_ is false");
-    }
-    is_post_send_ = false;
+    post_send_complete();
     send_buffer_.write_to_iocp(nsend);
+    if (send_buffer_.length() == 0) {
+        on_send_complete();
+    }
+}
+
+void client::post_recv_complete() {
+    if (!is_post_recv_) {
+        SPDLOG_LOGGER_ERROR(spdlog::get(MULTI_SINKS), "");
+    }
+    is_post_recv_ = false;
+}
+
+void client::post_send_complete() {
+    if (!is_post_send_)
+        SPDLOG_LOGGER_ERROR(spdlog::get(MULTI_SINKS), "");
+    is_post_send_ = false;
 }
 
 bool client::is_post_action() {

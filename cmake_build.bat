@@ -2,11 +2,13 @@
 @setlocal
 
 set start=%time%
+mkdir build
 cd build
 mkdir  windows
 cd windows
 cmake -G "Unix Makefiles"  -DCMAKE_BUILD_TYPE=Debug ../..
-make VERBOSE=1 -j install
+@REM make VERBOSE=1  install
+make VERBOSE=1  -j install
 cd ..
 
 set end=%time%

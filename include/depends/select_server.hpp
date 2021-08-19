@@ -23,7 +23,7 @@ namespace io {
 class select_server : public server {
 public:
     ~select_server();
-    bool do_net_events();
+    virtual bool do_net_events();
     void write_data();
     void read_data();
 private:

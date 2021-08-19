@@ -25,6 +25,9 @@ public:
     buffer(int size = 8192);
     ~buffer();
     char *data();
+    int length();
+    int size();
+    bool can_write(int size);
     bool push(const char *data, int length);
     void pop(int length);
     int send_to_socket(SOCKET sockfd);

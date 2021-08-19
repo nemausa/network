@@ -108,7 +108,7 @@ bool iocp::post_recv(io_data_base *p_io_data) {
             NULL)) {
         int err = WSAGetLastError();
         if (ERROR_IO_PENDING != err) {
-            if (WSAECONNRESET == err) {
+            if (WSAECONNRESET == err || WSAECONNABORTED == err) {
                 return false;
             }
             SPDLOG_LOGGER_ERROR(spdlog::get(FILE_SINK), 

@@ -35,6 +35,7 @@
 	#include <sys/socket.h>
     #include <netinet/tcp.h>
     #include <net/if.h>
+    #include <netdb.h>
 
     #define SOCKET int
     #define INVALID_SOCKET  (SOCKET)(~0)

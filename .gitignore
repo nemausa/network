@@ -11,4 +11,3 @@ logs
 *.json
 server_log.txt
 config.txt
-*.txt
