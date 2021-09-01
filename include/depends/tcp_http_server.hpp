@@ -20,7 +20,7 @@
 namespace nemausa {
 namespace io {
 
-class tcp_http_server : public tcp_select_server  {
+class tcp_http_server : public tcp_mgr  {
     virtual client * make_client(SOCKET csock);
     virtual void on_msg(server *pserver, client *pclient, data_header *header);
     virtual void on_msg_http(server *pserver, http_clients *pclient);

@@ -82,7 +82,7 @@ void select_server::read_data() {
 
 void select_server::write_data() {
 #ifdef _WIN32
-    auto pfdset = fd_read_.fdset();
+    auto pfdset = fd_write_.fdset();
     for (int n = 0; n < pfdset->fd_count; n++) {
         auto iter = clients_.find(pfdset->fd_array[n]);
         if (iter != clients_.end()) {
