@@ -186,6 +186,8 @@ void tcp_http_client::url_to_get(const char *host, const char *path, const char 
     msg += host;
     msg += "\r\n";
 
+    msg += "\r\n";
+
     send_data(msg.c_str(), msg.length());
 }
 
@@ -237,7 +239,7 @@ bool tcp_http_client::connect_to_ip(int af, const char *ip, unsigned short port)
     if (!ip) 
         return false;
     
-    if (INVALID_SOCKET == init_socket(af, 20140, 102400))
+    if (INVALID_SOCKET == init_socket(af, 10240, 102400))
         return false;
     
     if (SOCKET_ERROR == connect(ip, port))
