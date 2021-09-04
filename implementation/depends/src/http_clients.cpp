@@ -68,10 +68,13 @@ bool http_clients::request_info() {
     if (header_len_ <= 0) {
         return false;
     }
-    header_map_.clear();
+
+    char *pp = recv_buffer_.data();
+    pp[header_len_ - 1] = '\0';
 
     split_string ss;
     ss.set(recv_buffer_.data());
+    // 请求示例"GET /login.php?a=5 HTTP/1.1\r\n"
     char *temp = ss.get("\r\n");
     if (temp) {
         header_map_["request_line"] = temp;
@@ -151,7 +154,7 @@ bool http_clients::request_args(char *request_line) {
 
 void http_clients::pop_msg() {    
     if (header_len_ > 0) {
-        recv_buffer_.pop(header_len_);
+        recv_buffer_.pop(header_len_ + body_len_);
         header_len_ = 0;
         body_len_ = 0;
         args_map_.clear();

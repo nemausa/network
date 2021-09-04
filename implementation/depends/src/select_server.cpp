@@ -8,6 +8,9 @@ select_server::~select_server() {
 }
 
 bool select_server::do_net_events() {
+    if (clients_.empty())
+        return true;
+
     if (client_change_) {
         client_change_ = false;
         fd_read_.zero();

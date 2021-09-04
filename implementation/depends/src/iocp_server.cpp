@@ -15,7 +15,7 @@ iocp_server::~iocp_server() noexcept {
 
 bool iocp_server::do_net_events() {
     client *pclient = nullptr;
-    for (auto iter = clients_.begin(); iter != clients_.end();) {
+    for (auto iter = clients_.begin(); iter != clients_.end(); iter++) {
         pclient = iter->second;
         if (pclient->need_write()) {
             auto p_io_data = pclient->make_send_iodata();
@@ -31,7 +31,6 @@ bool iocp_server::do_net_events() {
                 if (!iocp_.post_recv(p_io_data)) {
                     pclient->post_recv_complete();
                     pclient->on_close();
-                    continue;
                 }
             }
         } else {
@@ -40,11 +39,9 @@ bool iocp_server::do_net_events() {
                 if (!iocp_.post_recv(p_io_data)) {
                     pclient->post_recv_complete();
                     pclient->on_close();
-                    continue;
                 }
             }
         }
-        iter++;
     }
     while (true) {
         int ret = do_iocp_net_events();
