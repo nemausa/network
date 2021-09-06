@@ -4,7 +4,7 @@ namespace nemausa {
 namespace io {
 
 select_server::~select_server() {
-
+    close();
 }
 
 bool select_server::do_net_events() {
@@ -42,7 +42,12 @@ bool select_server::do_net_events() {
         ret = select(max_socket_ + 1, fd_read_.fdset(), nullptr, nullptr, &t);
     }
     if (ret < 0) {
+        if (errno == EINTR) {
+            SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "");
+            return true;
+        }
         SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "");
+        return false;
     } else if (ret == 0) {
         return true;
     }
@@ -51,13 +56,19 @@ bool select_server::do_net_events() {
     return true;
 }
 
+void select_server::set_client_num(int socket_num) {
+    fd_read_.create(socket_num);
+    fd_write_.create(socket_num);
+    fd_read_bak_.create(socket_num);
+}
+
 void select_server::read_data() {
 #ifdef _WIN32
     auto pfdset = fd_read_.fdset();
     for (int n = 0; n < pfdset->fd_count; n++) {
         auto iter = clients_.find(pfdset->fd_array[n]);
         if (iter != clients_.end()) {
-            if (-1 == recv_data(iter->second)) {
+            if (SOCKET_ERROR == recv_data(iter->second)) {
                 on_leave(iter->second);
                 clients_.erase(iter);
             }
@@ -67,7 +78,6 @@ void select_server::read_data() {
         }
     }
 #else
-    auto pfdset = fd_read_.fdset();
     for (auto iter = clients_.begin(); iter != clients_.end();) {
         if (fd_read_.has(iter->second->sockfd())) {
             if (SOCKET_ERROR == recv_data(iter->second)) {

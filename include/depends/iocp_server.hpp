@@ -28,6 +28,7 @@ public:
     ~iocp_server();
     virtual bool do_net_events();
     int do_iocp_net_events();
+    void on_join(client *pclient);
 private:
     iocp iocp_;
     io_event io_event_ = {};    

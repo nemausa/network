@@ -4,8 +4,9 @@ namespace nemausa {
 namespace io {
 
 http_clientc::http_clientc(SOCKET sockfd, 
-        int send_buffer_size, 
-        int recv_buffer_size) {
+        int send_size, 
+        int recv_size):
+        client(sockfd, send_size, recv_size) {
     
 }
 
@@ -116,7 +117,7 @@ void http_clientc::split_url_args(char *args) {
 
 void http_clientc::pop_msg() {    
     if (header_len_ > 0) {
-        recv_buffer_.pop(header_len_);
+        recv_buffer_.pop(header_len_ + body_len_);
         header_len_ = 0;
         body_len_ = 0;
         args_map_.clear();
@@ -153,7 +154,7 @@ const char * http_clientc::header_str(const char *arg_name, const char *def) {
     return def;
 }
 
-void http_clientc::on_recv_complete() {
+void http_clientc::on_send_complete() {
     if (!keep_alive_)
         this->on_close();
 }

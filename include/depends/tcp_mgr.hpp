@@ -27,7 +27,8 @@ namespace nemausa {
 namespace io {
 
 #ifdef _WIN32
-    typedef tcp_select_server tcp_mgr;
+    // typedef tcp_select_server tcp_mgr;
+    typedef tcp_iocp_server tcp_mgr;
     typedef tcp_iocp_client tcp_client_mgr;
 #elif __linux__
     typedef tcp_epoll_server tcp_mgr; 

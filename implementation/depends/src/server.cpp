@@ -22,6 +22,10 @@ void server::set_id(int id) {
     task_server_.service_id_ = id;
 }
 
+void server::set_client_num(int socket_num) {
+
+}
+
 void server::set_event(net_event *event) {
     p_net_event_ = event;
 }

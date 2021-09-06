@@ -43,6 +43,7 @@ public:
         for (int n = 0; n < server_count; n++) {
             auto server = new T();
             server->set_id(n);
+            server->set_client_num(max_client_ / server_count + 1);
             servers_.push_back(server);
             server->set_event(this);
             server->start();

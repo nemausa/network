@@ -25,6 +25,7 @@ class cell_fdset {
 public:
     cell_fdset();
     ~cell_fdset();
+    void create(int max_fd);
     void add(SOCKET s);
     void del(SOCKET s);
     void zero();
@@ -34,6 +35,7 @@ public:
 private:
     fd_set *pfdset_;
     size_t fdsize_;
+    int max_sockfd_ = 0;
 };
 
 } // namespace io 

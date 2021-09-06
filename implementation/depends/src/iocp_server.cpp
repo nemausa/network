@@ -102,6 +102,10 @@ int iocp_server::do_iocp_net_events() {
     return ret;
 }
 
+void iocp_server::on_join(client *pclient)  {
+    iocp_.reg(pclient->sockfd(), pclient);
+}
+
 #endif
 
 } // namespace io 

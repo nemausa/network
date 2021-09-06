@@ -66,6 +66,13 @@ int epoll::ctl(int op, client *pclient, uint32_t events) {
 }
 
 int epoll::wait(int timeout) {
+        //epfd epoll对象的描述符
+        //events 用于接收检测到的网络事件的数组
+        //maxevents 接收数组的大小，能够接收的事件数量
+        //timeout
+        //		t=-1 直到有事件发生才返回
+        //		t= 0 立即返回 std::map
+        //		t> 0 如果没有事件那么等待t毫秒后返回
     int ret = epoll_wait(epfd_, pevents_, max_events_, timeout);
     if (EPOLL_ERROR == ret) {
         if (errno == EINTR) {

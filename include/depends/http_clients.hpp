@@ -47,7 +47,7 @@ public:
     int args_int(const char *name, int def);
     const char * args_str(const char *agr_name, const char *def);
     const char * header_str(const char *arg_name, const char *def);
-    void on_send_complete();
+    virtual void on_send_complete();
 protected:
     int header_len_ = 0;
     int body_len_ = 0;

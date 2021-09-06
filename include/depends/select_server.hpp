@@ -24,6 +24,7 @@ class select_server : public server {
 public:
     ~select_server();
     virtual bool do_net_events();
+    virtual void set_client_num(int socket_num);
     void write_data();
     void read_data();
 private:

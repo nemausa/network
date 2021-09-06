@@ -55,10 +55,11 @@ bool client::need_write() {
 
 int client::send_data_real() {
     reset_send_time();
+    int ret = send_buffer_.send_to_socket(sockfd_);
     if (send_buffer_.length() ==0) {
         on_send_complete();
     }
-    return send_buffer_.send_to_socket(sockfd_);
+    return ret; 
 }
 
 void client::on_send_complete() {
@@ -85,11 +86,14 @@ void client::reset_send_time() {
 }
 
 bool client::check_heart_time(time_t dt) {
+    if (is_close())
+        return true;
+
     heart_time_ += dt;
     if (heart_time_ >= CLIENT_HEART_DEAD_TIME) {
         SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
-        "check_heart_time dead: s={}, time={}", 
-        sockfd_, heart_time_);
+                "check_heart_time dead: s={}, time={}", 
+                sockfd_, heart_time_);
         return true;
     }
     return false;
@@ -135,7 +139,7 @@ bool client::is_close() {
 }
 #ifdef _WIN32
 io_data_base *client::make_recv_iodata() {
-    if (is_post_recv_)
+    if (is_post_recv_ || is_close() || sockfd_ == INVALID_SOCKET)
         return nullptr;
     is_post_recv_ = true;
     return recv_buffer_.make_recv_iodata(sockfd_);
@@ -147,7 +151,7 @@ void client::recv_for_iocp(int nrecv) {
 }
 
 io_data_base *client::make_send_iodata() {
-    if (is_post_send_)
+    if (is_post_send_ || is_close() || sockfd_ == INVALID_SOCKET)
         return nullptr;
     is_post_send_ = true;
     return send_buffer_.make_send_iodata(sockfd_);

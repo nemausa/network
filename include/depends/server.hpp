@@ -35,6 +35,7 @@ public:
     server();
     virtual ~server();
     void set_id(int id);
+    virtual void set_client_num(int socket_num);
     void set_event(net_event *event);
     virtual void on_msg(client *client, data_header *header);
     void close();

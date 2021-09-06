@@ -61,11 +61,17 @@ int buffer::send_to_socket(SOCKET sockfd) {
     int ret  = 0;
     if (last_ > 0 && sockfd != INVALID_SOCKET) {
         ret = send(sockfd, data_, last_, 0);
-        if (ret <= 0) {
+        if (ret == 0) {
+            SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
+            "send_to_socket closed:sockfd{} size<{}> last<{}> ret<{}>",
+            sockfd, size_, last_, ret);
+            return SOCKET_ERROR; 
+        } else if (ret < 0) {
             SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
             "send_to_socket:sockfd{} size<{}> last<{}> ret<{}>",
             sockfd, size_, last_, ret);
             return SOCKET_ERROR; 
+
         }
         if (ret == last_) {
             last_ = 0;
@@ -89,6 +95,7 @@ int buffer::recv_from_socket(SOCKET sockfd) {
             return SOCKET_ERROR;
         }
         last_ += len;
+        data_[last_] = 0;
         return len;
     }
     return 0;
@@ -131,19 +138,20 @@ io_data_base *buffer::make_send_iodata(SOCKET sockfd) {
 bool buffer::read_for_iocp(int nrecv) {
     if (nrecv > 0 && size_ - last_ >= nrecv) {
         last_ += nrecv;
+        data_[last_] = 0;
         return true;
     }
     SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
-    "read_for_iocp:socket<{}> size<{}> last<{}> nrecv<{}>", 
-    iodata_.sockfd, size_, last_, nrecv);
+            "read_for_iocp:socket<{}> size<{}> last<{}> nrecv<{}>", 
+            iodata_.sockfd, size_, last_, nrecv);
     return false;
 }
 
 bool buffer::write_to_iocp(int nsend) {
     if (last_ < nsend) {
         SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
-        "write_to_iocp:sockfd<{}> size<{}> last<{}> nsend<{}>", 
-        iodata_.sockfd, size_, last_, nsend);
+                "write_to_iocp:sockfd<{}> size<{}> last<{}> nsend<{}>", 
+                iodata_.sockfd, size_, last_, nsend);
         return false;
     }
     if (last_ == nsend) {

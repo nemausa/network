@@ -8,7 +8,7 @@ mkdir  windows
 cd windows
 cmake -G "Unix Makefiles"  -DCMAKE_BUILD_TYPE=Debug ../..
 @REM make VERBOSE=1  install
-make VERBOSE=1  -j install
+make  install
 cd ..
 
 set end=%time%

@@ -30,11 +30,7 @@ void tcp_http_client::on_msg(data_header *header) {
         on_resp_call_(pclient);
         on_resp_call_ = nullptr;
     }
-    pclient->on_recv_complete();
 
-    if (!event_queue_.empty())
-        event_queue_.pop();
-    
     next_request_ = true;
 }
 

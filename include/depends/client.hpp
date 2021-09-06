@@ -18,7 +18,7 @@
 #include "buffer.hpp"
 #include "network.hpp"
 
-#define CLIENT_HEART_DEAD_TIME  200000
+#define CLIENT_HEART_DEAD_TIME  120000
 #define CLIENT_SEND_BUFF_TIME   200
 
 namespace nemausa {

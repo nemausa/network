@@ -26,8 +26,8 @@ namespace io {
 class http_clientc : public client {
 public:
     http_clientc(SOCKET sockfd = INVALID_SOCKET, 
-                 int send_buffer_szie = SEND_BUFF_SIZE, 
-                 int recv_buffer_size = RECV_BUFF_SIZE);
+                 int send_szie = SEND_BUFF_SIZE, 
+                 int recv_size = RECV_BUFF_SIZE);
     virtual bool has_msg();
     int check_response();
     bool get_response_info();
@@ -38,7 +38,7 @@ public:
     int args_int(const char *name, int def);
     const char * args_str(const char *agr_name, const char *def);
     const char * header_str(const char *arg_name, const char *def);
-    void on_recv_complete();
+    virtual void on_send_complete();
     const char *content();
 protected:
     int header_len_ = 0;

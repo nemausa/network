@@ -4,14 +4,6 @@ namespace nemausa {
 namespace io {
 
 cell_fdset::cell_fdset() {
-    int socket_num = AMX_FD;
-#ifdef _WIN32   
-    fdsize_ = sizeof(u_int) + (sizeof(SOCKET)*socket_num);
-#else
-    fdsize_ = socket_num / (8 * sizeof(char));
-#endif
-    pfdset_ = (fd_set*)new char[fdsize_];
-    memset(pfdset_, 0, fdsize_);
 }
 
 cell_fdset::~cell_fdset() {
@@ -21,11 +13,27 @@ cell_fdset::~cell_fdset() {
     }
 }
 
+void cell_fdset::create(int max_fd) {
+    int socket_num = AMX_FD;
+#ifdef _WIN32   
+    if (socket_num < 64)
+        socket_num = 64;
+    fdsize_ = sizeof(u_int) + (sizeof(SOCKET)*socket_num);
+#else
+    if (socket_num < 65535)
+        socket_num = 65535;
+    fdsize_ = socket_num / (8 * sizeof(char));
+#endif
+    pfdset_ = (fd_set*)new char[fdsize_];
+    memset(pfdset_, 0, fdsize_);
+    max_sockfd_ = socket_num;
+}
+
 void cell_fdset::add(SOCKET s) {
 #ifdef _WIN32
     FD_SET(s, pfdset_);
 #else
-    if (s < AMX_FD) {
+    if (s < max_sockfd_) {
         FD_SET(s, pfdset_);
     } else {
         SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
