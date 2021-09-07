@@ -69,7 +69,7 @@ set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/)
 # Example of using pre-compiled library
 # ---------------------------------------------------------------------------------------
 
-#add_subdirectory(tcp_server)
-#add_subdirectory(tcp_client)
+add_subdirectory(tcp_server)
+add_subdirectory(tcp_client)
 add_subdirectory(http_server)
 add_subdirectory(http_client)

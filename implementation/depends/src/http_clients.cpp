@@ -100,7 +100,7 @@ bool http_clients::request_info() {
         split_url_args(recv_buffer_.data() + header_len_);
     }
     const char *str = header_str("Connection", "");
-    keep_alive_ = (0 == strcmp("keep-alive", str)); 
+    keep_alive_ = (0 == strcmp("keep-alive", str) || 0 == strcmp("Keep-Alive", str));
 
     return true;
 }

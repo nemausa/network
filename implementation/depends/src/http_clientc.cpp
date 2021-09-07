@@ -92,7 +92,7 @@ bool http_clientc:: get_response_info() {
     }
 
     const char *str = header_str("Connection", "");
-    keep_alive_ = (0 == strcmp("keep-alive", str)); 
+    keep_alive_ = (0 == strcmp("keep-alive", str) || 0 == strcmp("Keep-Alive", str));
 
     return true;
 }
