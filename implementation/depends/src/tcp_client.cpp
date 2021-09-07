@@ -25,7 +25,7 @@ SOCKET tcp_client::init_socket(int af, int send_size, int recv_size) {
         SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "create socket failed");
     } else {
         network::make_reuseaddr(sock);
-        pclient_ = new client(sock, send_size, recv_size);
+        pclient_ = make_client(sock, send_size, recv_size); 
         on_init_socket();
     }
     return sock;
@@ -115,6 +115,10 @@ int tcp_client::send_data(const char *data, int length) {
 
 void tcp_client::set_scope_id_name(std::string scope_id_name) {
     scope_id_name_ = scope_id_name;
+}
+
+client * tcp_client::make_client(SOCKET csock, int send_size, int recv_size) {
+    return new client(csock, send_size, recv_size);
 }
 
 void tcp_client::on_init_socket() {

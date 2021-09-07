@@ -44,6 +44,7 @@ public:
     int send_data(data_header *header);
     int send_data(const char *data, int length);
     void set_scope_id_name(std::string scope_id_name);
+    virtual client * make_client(SOCKET csock, int send_size, int recv_size);
     virtual void on_init_socket();
     virtual void on_connect();
     virtual void on_disconnect();

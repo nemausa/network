@@ -18,7 +18,6 @@
     #define FD_SETSIZE      65535
     #define WIN32_LEAN_AND_MEAN
     #define _WINSOCK_DEPRECATED_NO_WARNINGS
-    // #define _WIN32_WINNT    0x0601
     #include <windows.h>
     #include <winsock2.h>
     #include <ws2ipdef.h>
@@ -42,9 +41,16 @@
     #define SOCKET_ERROR            (-1)
 #endif
 
-#include "message_header.hpp"
-#include "timestamp.hpp"
-#include "task.hpp"
+#ifndef MULTI_SINKS
+#define MULTI_SINKS     "multi_sinks"
+#define CONSOLE_SINK    "console_sink"
+#define FILE_SINK       "file_sink"
+#endif
+
+#ifndef RECV_BUFF_SIZE
+#define RECV_BUFF_SIZE 10240
+#define SEND_BUFF_SIZE 10240
+#endif
 
 #include "spdlog/spdlog.h"
 #include "spdlog/cfg/env.h" // for loading levels from the environment variable
@@ -52,15 +58,9 @@
 #include "spdlog/sinks/daily_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 
-#ifndef MULTI_SINKS
-#define MULTI_SINKS     "multi_sinks"
-#define CONSOLE_SINK    "console_sink"
-#define FILE_SINK       "file_sink"
-#endif
-#ifndef RECV_BUFF_SIZE
-#define RECV_BUFF_SIZE 10240
-#define SEND_BUFF_SIZE 10240
-#endif
+#include "message_header.hpp"
+#include "timestamp.hpp"
+#include "task.hpp"
 
 
 #endif // CELL

@@ -39,7 +39,6 @@ private:
     std::queue<event> event_queue_;
     bool next_request_  = false;
 public:
-    virtual bool on_run(int microseconds = 1);
     virtual void on_msg(data_header *header);
     virtual void on_disconnect();
     void get(const char *http_url, event_call on_resp_call);

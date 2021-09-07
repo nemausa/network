@@ -12,12 +12,6 @@ client * tcp_http_client::make_client(SOCKET csock,
     return new http_clientc(csock, send_size, recv_size);
 }
 
-bool tcp_http_client::on_run(int microseconds) {
-    if (next_request_)
-        next_request();
-    return tcp_client_mgr::on_run(microseconds);
-}
-
 void tcp_http_client::on_msg(data_header *header) {
     http_clientc *pclient = dynamic_cast<http_clientc*>(pclient_);
     if (!pclient)
@@ -30,8 +24,7 @@ void tcp_http_client::on_msg(data_header *header) {
         on_resp_call_(pclient);
         on_resp_call_ = nullptr;
     }
-
-    next_request_ = true;
+    next_request();
 }
 
 void tcp_http_client::on_disconnect() {
@@ -39,25 +32,29 @@ void tcp_http_client::on_disconnect() {
         on_resp_call_(nullptr);
         on_resp_call_ = nullptr;
     }
-    next_request_ = true;
+    next_request(); 
 }
 
 void tcp_http_client::get(const char *http_url, event_call on_resp_call) {
-    event e;
-    e.http_url = http_url;
-    e.on_resp_call = on_resp_call;
-    e.is_get = true;
-    event_queue_.push(e);
-    next_request_ = true;
+    if (on_resp_call_) {
+        event_queue_.push({http_url, on_resp_call, true});
+    } else {
+        on_resp_call_ = on_resp_call;
+        deatch_http_url(http_url);       
+        if (0 == hostname_to_ip(host_.c_str(), port_.c_str()))
+            url_to_get(host_.c_str(), path_.c_str(), args_.c_str());
+    }
 }
 
 void tcp_http_client::post(const char *http_url, event_call on_resp_call) {
-    event e;
-    e.http_url = http_url;
-    e.on_resp_call = on_resp_call;
-    e.is_get = false;
-    event_queue_.push(e);
-    next_request_ = true;
+    if (on_resp_call_) {
+        event_queue_.push({http_url, on_resp_call, false});
+    } else {
+        on_resp_call_ = on_resp_call;
+        deatch_http_url(http_url);       
+        if (0 == hostname_to_ip(host_.c_str(), port_.c_str()))
+            url_to_post(host_.c_str(), path_.c_str(), args_.c_str());
+    }
 }
 
 void tcp_http_client::post(const char *http_url, 
@@ -71,11 +68,13 @@ void tcp_http_client::post(const char *http_url,
 
 int tcp_http_client::hostname_to_ip(const char *hostname, const char *port) {
     if (!hostname) {
-        SPDLOG_LOGGER_WARN(spdlog::get(MULTI_SINKS), "");
+        SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "");
+        return -1;
     }
 
     if (!port) {
         SPDLOG_LOGGER_WARN(spdlog::get(MULTI_SINKS), "");
+        return -1;
     }
 
     unsigned short port_ = 80;
@@ -130,29 +129,13 @@ int tcp_http_client::hostname_to_ip(const char *hostname, const char *port) {
 }
 
 void tcp_http_client::next_request() {
-    next_request_ = false;
     if (!event_queue_.empty()) {
-        event& e = event_queue_.front();
-        ++e.count;
-        if (e.count > e.max_count) {
-            event_queue_.pop();
-            next_request_ = true;
-            return;
-        }
-
-        if (e.is_get) {
-            deatch_http_url(e.http_url);
-            if (0 ==  hostname_to_ip(host_.c_str(), port_.c_str())) {
-                url_to_get(host_.c_str(), path_.c_str(), args_.c_str());
-                on_resp_call_ = e.on_resp_call;
-            }
-        } else {
-            deatch_http_url(e.http_url);
-            if (0 ==  hostname_to_ip(host_.c_str(), port_.c_str())) {
-                url_to_post(host_.c_str(), path_.c_str(), args_.c_str());
-                on_resp_call_ = e.on_resp_call;
-            }
-        }
+        event &e = event_queue_.front();
+        if (e.is_get)
+            get(e.http_url.c_str(), e.on_resp_call);
+        else
+            post(e.http_url.c_str(), e.on_resp_call);
+        event_queue_.pop();
     }
 }
 

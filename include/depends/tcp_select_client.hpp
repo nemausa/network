@@ -22,6 +22,7 @@ namespace io {
 
 class tcp_select_client : public tcp_client {
 public:
+    tcp_select_client();
     bool on_run(int microseconds = 1);
 protected:
     cell_fdset fd_read_;

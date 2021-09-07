@@ -10,6 +10,7 @@ void tcp_select_server::start(int n) {
 
 void tcp_select_server::on_run(cell_thread *pthread) {
     cell_fdset fd_read;
+    fd_read.create(max_client_);
     while (pthread->is_run()) {
         time4msg();
         fd_read.zero();

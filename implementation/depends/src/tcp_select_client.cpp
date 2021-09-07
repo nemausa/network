@@ -2,6 +2,10 @@
 
 namespace nemausa {
 namespace io {
+tcp_select_client::tcp_select_client() {
+    fd_read_.create(1);
+    fd_write_.create(1);
+}
 
 bool tcp_select_client::on_run(int microseconds) {
     if (is_run()) {
