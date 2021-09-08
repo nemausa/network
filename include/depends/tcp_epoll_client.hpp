@@ -26,7 +26,7 @@ class tcp_epoll_client : public tcp_client {
 public:
     virtual void on_init_socket();
     void close();
-    bool on_run(int microseconds = 1);
+    virtual bool on_run(int microseconds = 1);
 protected:
     epoll ep_;
 };

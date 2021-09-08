@@ -33,20 +33,20 @@ int http_clientc::check_response() {
         temp[2] == 'T' &&
         temp[3] == 'P') {
         char *p1 = strstr(recv_buffer_.data(), "Content-Length: ");
-        if (!p1)
-            return -2;
-        p1 += 16;
-        char *p2 = strchr(p1, '\r');
-        if (!p2)
-            return -2;
-        int n = p2 - p1;
-        if (n > 6)
-            return -2;
-        char len[7] = {};
-        strncpy(len, p1, n);
-        body_len_ = atoi(len);
-        if (body_len_ < 0)
-            return -2;
+        if (p1) {
+            p1 += 16;
+            char *p2 = strchr(p1, '\r');
+            if (!p2)
+                return -2;
+            int n = p2 - p1;
+            if (n > 6)
+                return -2;
+            char len[7] = {};
+            strncpy(len, p1, n);
+            body_len_ = atoi(len);
+            if (body_len_ < 0)
+                return -2;
+        }
         if (header_len_ + body_len_ > recv_buffer_.size())
             return -2;
         if (header_len_ + body_len_ > recv_buffer_.length())
@@ -92,7 +92,9 @@ bool http_clientc:: get_response_info() {
     }
 
     const char *str = header_str("Connection", "");
-    keep_alive_ = (0 == strcmp("keep-alive", str) || 0 == strcmp("Keep-Alive", str));
+    keep_alive_ = (0 == strcmp("keep-alive", str) || 
+                   0 == strcmp("Keep-Alive", str) ||
+                   0 == strcmp("Upgrade", str));
 
     return true;
 }
@@ -154,7 +156,7 @@ const char * http_clientc::header_str(const char *arg_name, const char *def) {
     return def;
 }
 
-void http_clientc::on_send_complete() {
+void http_clientc::on_recv_complete() {
     if (!keep_alive_)
         this->on_close();
 }

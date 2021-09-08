@@ -96,6 +96,10 @@ void tcp_client::do_msg() {
     while (pclient_->has_msg()) {
         on_msg(pclient_->front_msg());
         pclient_->pop_msg();
+        if (pclient_->is_close()) {
+            close();
+            return;
+        }
     }
 }
 

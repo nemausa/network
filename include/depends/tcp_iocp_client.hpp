@@ -26,7 +26,7 @@ class tcp_iocp_client : public tcp_client {
 public:
     void on_init_socket();
     void close();
-    bool on_run(int microseconds = 1);
+    virtual bool on_run(int microseconds = 1);
 protected:
     int do_iocp_net_events(int microseconds);
 protected:
