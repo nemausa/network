@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-# project (network)
+project (network)
 
 set (NETWORK_MAJOR_VERSION 0)
 set (NETWORK_MINOR_VERSION 0)

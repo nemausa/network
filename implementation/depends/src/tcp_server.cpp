@@ -146,7 +146,7 @@ SOCKET tcp_server::accept_ipv6() {
 
 void tcp_server::accept_client(SOCKET csock, char *ip) {
     network::make_reuseaddr(csock);
-    SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "accpet ip:{} {}", ip, csock);
+    // SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "accpet ip:{} {}", ip, csock);
     if (client_accept_ < max_client_) {
         client_accept_++;
         auto c = make_client(csock);

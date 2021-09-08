@@ -11,7 +11,7 @@ public:
             return;
         char req_buff[256] = {};
         if (i % 100 > 66) {
-            sprintf(req_buff, "http://127.0.0.1:4567/add?a=%d&b=1", i);
+            sprintf(req_buff, "http://localhost:4567/add?a=%d&b=1", i);
             this->get(req_buff, [this](http_clientc *p_http_client) {
                 if (p_http_client) {
                     SPDLOG_LOGGER_INFO(spdlog::get(CONSOLE_SINK), 
@@ -25,7 +25,7 @@ public:
                 test();
             });   
         } else if (i % 100 > 33) {
-            sprintf(req_buff, "http://127.0.0.1:4567/sub?a=%d&b=1", i);
+            sprintf(req_buff, "http://localhost:4567/sub?a=%d&b=1", i);
             this->get(req_buff, [this](http_clientc *p_http_client) {
                 if (p_http_client) {
                     SPDLOG_LOGGER_INFO(spdlog::get(CONSOLE_SINK), 
@@ -40,7 +40,7 @@ public:
             });   
         } else {
             sprintf(req_buff, "token=abc123&json={\"a\":%d, \"b\":32}", i);
-            this->post("http://127.0.0.1:4567/jsonTest", req_buff, 
+            this->post("http://localhost:4567/jsonTest", req_buff, 
                 [this](http_clientc *p_http_client) {
                 if (p_http_client) {
                     SPDLOG_LOGGER_INFO(spdlog::get(CONSOLE_SINK), 

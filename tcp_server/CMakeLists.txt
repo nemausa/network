@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 2.8.12)
 
 string(REGEX REPLACE ".*/(.*)" "\\1" CURRENT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR} ) 
-project(${CURRENT_FOLDER} CXX)
+project(${CURRENT_FOLDER})
 
 file(GLOB ${PROJECT_NAME}_SRC
 	"../implementation/depends/src/*.cpp"
@@ -14,6 +14,7 @@ add_executable(${PROJECT_NAME} ${${PROJECT_NAME}_SRC} )
 
 target_link_libraries(${PROJECT_NAME} spdlog)
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+	message(status " Windows")
 	target_link_libraries(${PROJECT_NAME} ws2_32)
 	target_link_libraries(${PROJECT_NAME} iphlpapi)
 endif (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
