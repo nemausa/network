@@ -67,7 +67,7 @@ public:
 
         char *buff = new char[size];
         auto read_size = fread(buff, 1, size, file);
-        if (!read_size != size) {
+        if (read_size != size) {
             SPDLOG_LOGGER_WARN(spdlog::get(MULTI_SINKS), "url={}", file_path);
             delete[] buff;
             fclose(file);
