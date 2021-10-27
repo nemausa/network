@@ -46,8 +46,8 @@ public:
                 ret.msg_id = pclient->send_id;
                 if (SOCKET_ERROR == pclient->send_data(&ret)) {
                     if (send_full_) {
-                         SPDLOG_LOGGER_WARN(spdlog::get(MULTI_SINKS), 
-                         "socket<{}> send full", pclient->sockfd());
+                        //  SPDLOG_LOGGER_WARN(spdlog::get(MULTI_SINKS), 
+                        //  "socket<{}> send full", pclient->sockfd());
                     }
                 } else {
                     ++pclient->send_id;
