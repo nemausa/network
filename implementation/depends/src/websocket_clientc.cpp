@@ -2,9 +2,8 @@
 
 namespace nemausa {
 namespace io {
-websocket_clientc::websocket_clientc(SOCKET sockfd = INVALID_SOCKET,
-        int send_size = SEND_BUFF_SIZE,
-        int recv_size = RECV_BUFF_SIZE):
+websocket_clientc::websocket_clientc(SOCKET sockfd, 
+        int send_size, int recv_size):
         http_clientc(sockfd, send_size, recv_size)
 {
 
