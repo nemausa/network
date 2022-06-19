@@ -74,12 +74,12 @@ void tcp_http_client::post(const char *http_url,
 
 int tcp_http_client::hostname_to_ip(const char *hostname, const char *port) {
     if (!hostname) {
-        SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "");
+        //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "");
         return -1;
     }
 
     if (!port) {
-        SPDLOG_LOGGER_WARN(spdlog::get(MULTI_SINKS), "");
+        // SPDLOG_LOGGER_WARN(spdlog::get(MULTI_SINKS), "");
         return -1;
     }
 
@@ -99,7 +99,7 @@ int tcp_http_client::hostname_to_ip(const char *hostname, const char *port) {
     addrinfo *addr_list = nullptr;
     int ret = getaddrinfo(hostname, nullptr, &hints, &addr_list);
     if (0 != ret) {
-        SPDLOG_LOGGER_ERROR(spdlog::get(MULTI_SINKS), "{}", hostname);
+        // SPDLOG_LOGGER_ERROR(spdlog::get(MULTI_SINKS), "{}", hostname);
         freeaddrinfo(addr_list);
         return ret;
     }
@@ -109,18 +109,18 @@ int tcp_http_client::hostname_to_ip(const char *hostname, const char *port) {
         ret = getnameinfo(addr->ai_addr, addr->ai_addrlen, ip, 255, 
                 nullptr, 0, NI_NUMERICHOST);
         if (0 != ret) {
-            SPDLOG_LOGGER_ERROR(spdlog::get(MULTI_SINKS), "{}", hostname);
+            // SPDLOG_LOGGER_ERROR(spdlog::get(MULTI_SINKS), "{}", hostname);
             continue;
         } else {
             if (addr->ai_family == AF_INET6) {
-                SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
-                        "{} ipv6: {}", hostname, ip);
+                //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
+                        // "{} ipv6: {}", hostname, ip);
             } else if (addr->ai_family == AF_INET) {
-                SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
-                        "{} ipv4: {}", hostname, ip);
+                //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
+                        // "{} ipv4: {}", hostname, ip);
             } else {
-                SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
-                        "{} addr: {}", hostname, ip);
+                //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
+                        // "{} addr: {}", hostname, ip);
             }
 
             if (connect_to_ip(addr->ai_family, ip, port_)) {
@@ -247,7 +247,7 @@ bool tcp_http_client::connect_to_ip(int af, const char *ip, unsigned short port)
     if (SOCKET_ERROR == connect(ip, port))
         return false;
     
-    SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "ip {} port {}", ip, port);
+    //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "ip {} port {}", ip, port);
     return true;
 }
 void tcp_http_client::deatch_http_url(std::string http_url) {

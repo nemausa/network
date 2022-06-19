@@ -15,7 +15,7 @@ bool http_clientc::has_msg() {
         return false;
     int ret = check_response();
     if (ret < 0)
-        SPDLOG_LOGGER_ERROR(spdlog::get(MULTI_SINKS), "check_reponse error");
+        // SPDLOG_LOGGER_ERROR(spdlog::get(MULTI_SINKS), "check_reponse error");
     return ret > 0;
 }
 
@@ -24,7 +24,7 @@ int http_clientc::check_response() {
     if (!temp) {
         return 0;
     }
-    // SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), recv_buffer_.data());
+    // //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), recv_buffer_.data());
     temp += 4;
     header_len_ = temp - recv_buffer_.data();
     temp = recv_buffer_.data();

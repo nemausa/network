@@ -35,6 +35,7 @@
     #include <netinet/tcp.h>
     #include <net/if.h>
     #include <netdb.h>
+    #include <atomic>
 
     #define SOCKET int
     #define INVALID_SOCKET  (SOCKET)(~0)
@@ -51,12 +52,6 @@
 #define RECV_BUFF_SIZE 10240
 #define SEND_BUFF_SIZE 10240
 #endif
-
-#include "spdlog/spdlog.h"
-#include "spdlog/cfg/env.h" // for loading levels from the environment variable
-#include "spdlog/sinks/stdout_sinks.h"
-#include "spdlog/sinks/daily_file_sink.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
 
 #include "message_header.hpp"
 #include "timestamp.hpp"

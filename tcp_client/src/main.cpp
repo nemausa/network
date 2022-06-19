@@ -37,10 +37,10 @@ public:
         login_result *login = (login_result*)header;
         if (is_check_id_) {
             if (login->msg_id != recv_msg_id_) {
-                SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
-                "socket<{}> msg_id<{}> recv_id<{}> {}", 
-                pclient_->sockfd(), login->msg_id, recv_msg_id_, 
-                login->msg_id - recv_msg_id_);
+                //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
+                // "socket<{}> msg_id<{}> recv_id<{}> {}", 
+                // pclient_->sockfd(), login->msg_id, recv_msg_id_, 
+                // login->msg_id - recv_msg_id_);
             }
             ++recv_msg_id_;
         }
@@ -94,16 +94,16 @@ private:
     bool is_check_id_ = false;
 };
 
-std::atomic_int send_count(0);
-std::atomic_int ready_count(0);
-std::atomic_int connect_count(0); 
+std::atomic<int> send_count(0);
+std::atomic<int> ready_count(0);
+std::atomic<int> connect_count(0); 
 
 void work_thread(cell_thread *pthread, int id) {
-    SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "cell_thread<{}> start", id);
+    //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "cell_thread<{}> start", id);
     if (config::instance().has_key("ipv6")) {
-        SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "ipv6");
+        //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "ipv6");
     } else {
-        SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "ipv4");
+        //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "ipv4");
     }
     vector<my_client*> clients(client_num);
     int begin = 0;
@@ -137,9 +137,9 @@ void work_thread(cell_thread *pthread, int id) {
         cell_thread::sleep(0);
     }
 
-    SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
-            "cell_thread<{}> connect<begin={}, end={}, connect_count={}>", 
-            id, begin, end, (int)connect_count);
+    //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
+            // "cell_thread<{}> connect<begin={}, end={}, connect_count={}>", 
+            // id, begin, end, (int)connect_count);
     
     ready_count++;
     // 等待其他线程准备好再发送数据
@@ -190,12 +190,12 @@ void work_thread(cell_thread *pthread, int id) {
         clients[n]->close();
         delete clients[n];
     }
-    SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "cell_thread<{}> exit", id);
+    //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "cell_thread<{}> exit", id);
     --ready_count;
 }
 
 #include <memory>
-#include "spdlog/sinks/stdout_color_sinks.h"
+// #include "spdlog/sinks/stdout_color_sinks.h"
 int main(int argc, char *args[]) {
     config::instance().load("client.conf");
     ip = config::instance().get_string("ip");
@@ -209,28 +209,11 @@ int main(int argc, char *args[]) {
             "send_buffer_size", SEND_BUFF_SIZE);
     recv_buffer_size = config::instance().get_int_default(
             "recv_buffer_size", RECV_BUFF_SIZE);
-    auto console_sink = std::make_shared<spdlog::sinks::stderr_color_sink_mt>();
-    auto console_logger = std::make_shared<spdlog::logger>(CONSOLE_SINK, console_sink); 
-    spdlog::register_logger(console_logger);
-
-    auto file_sink = std::make_shared<spdlog::sinks::daily_file_sink_mt>
-            ("logs/client.txt", 23, 59);
-    auto file_logger = std::make_shared<spdlog::logger>(FILE_SINK, file_sink);
-    spdlog::register_logger(file_logger);
-
-    std::vector<spdlog::sink_ptr> sinks{console_sink, file_sink};
-    auto combined_logger = 
-            std::make_shared<spdlog::logger>(MULTI_SINKS, begin(sinks), end(sinks));
-    //register it if you need to access it globally
-    combined_logger->set_pattern(
-            "[%Y-%m-%d %H:%M:%S.%e] [%-6t] [%^%-6l%$] [%-5n] [%!] [%#]  %v"); 
-    spdlog::register_logger(combined_logger);
-    spdlog::flush_every(std::chrono::seconds(5));
-
+            
 	//启动终端命令线程
 	//用于接收运行时用户输入的指令
 	cell_thread tCmd;
-	tCmd.start(nullptr, [combined_logger](cell_thread* pThread) {
+	tCmd.start(nullptr, [](cell_thread* pThread) {
 		while (true)
 		{
 			char cmdBuf[256] = {};
@@ -238,12 +221,10 @@ int main(int argc, char *args[]) {
 			if (0 == strcmp(cmdBuf, "exit"))
 			{
 				//pThread->Exit();
-				combined_logger->info("exit ");
                 pThread->exit();
 				break;
 			}
 			else {
-				combined_logger->info("undefine");
 			}
 		}
 	});
@@ -261,9 +242,9 @@ int main(int argc, char *args[]) {
     while (tCmd.is_run()) {
         auto t = ts.second();
         if (t >= 1.0) {
-           SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
-                "cell_thread<{}> clients<{}> connect<{}> time<{:02.4f}> send<{}>",
-                thread_num, client_num, (int)connect_count, t, (int)send_count);
+           //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
+                // "cell_thread<{}> clients<{}> connect<{}> time<{:02.4f}> send<{}>",
+                // thread_num, client_num, (int)connect_count, t, (int)send_count);
             send_count = 0;
             ts.update();
         }
@@ -274,6 +255,6 @@ int main(int argc, char *args[]) {
         t->close();
         delete t;
     }
-    combined_logger->info("eixt");
+    // combined_logger->info("eixt");
     return 0;
 }

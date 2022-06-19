@@ -72,10 +72,10 @@ protected:
     int send_buffer_size_;
     int recv_buffer_size_;
     int max_client_;
-    std::atomic_int recv_count_;
-    std::atomic_int message_count_;
-    std::atomic_int client_join_;
-    std::atomic_int client_accept_;
+    std::atomic<int> recv_count_;
+    std::atomic<int> message_count_;
+    std::atomic<int> client_join_;
+    std::atomic<int> client_accept_;
 };
 
 } // namespace io 

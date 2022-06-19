@@ -33,21 +33,21 @@ int network::make_nonblock(SOCKET fd) {
 #ifdef _WIN32
     unsigned long noblock = 1;
     if (ioctlsocket(fd, FIONBIO, &noblock) == SOCKET_ERROR) {
-        SPDLOG_LOGGER_WARN(spdlog::get(MULTI_SINKS), 
-                "fcntl({}, F_GETFL)", (int)fd);
+        // SPDLOG_LOGGER_WARN(spdlog::get(MULTI_SINKS), 
+        //         "fcntl({}, F_GETFL)", (int)fd);
         return -1;
     }
 #else
     int flags;
     if ((flags = fcntl(fd, F_GETFL, NULL)) <0) {
-        SPDLOG_LOGGER_WARN(spdlog::get(MULTI_SINKS), 
-                "fcntl({}, F_GETFL)", (int)fd);
+        // SPDLOG_LOGGER_WARN(spdlog::get(MULTI_SINKS), 
+        //         "fcntl({}, F_GETFL)", (int)fd);
         return -1;
     }
     if (!(flags & O_NONBLOCK)) {
         if (fcntl(fd, F_SETFL, flags | O_NONBLOCK) == -1) {
-            SPDLOG_LOGGER_WARN(spdlog::get(MULTI_SINKS), 
-                    "fcntl({}, FSETFL)", fd);
+            // SPDLOG_LOGGER_WARN(spdlog::get(MULTI_SINKS), 
+            //         "fcntl({}, FSETFL)", fd);
             return -1;
         }
     }
@@ -58,8 +58,8 @@ int network::make_reuseaddr(SOCKET fd) {
     int flag = 1;
     if (SOCKET_ERROR == setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, 
             (const char *)&flag, sizeof(flag))) {
-        SPDLOG_LOGGER_WARN(spdlog::get(MULTI_SINKS), 
-                "setsockopt socket<{}> fail", int(fd));
+        // SPDLOG_LOGGER_WARN(spdlog::get(MULTI_SINKS), 
+        //         "setsockopt socket<{}> fail", int(fd));
         return SOCKET_ERROR;
     }
     return 0;
@@ -84,8 +84,8 @@ int network::destory_socket(SOCKET sockfd) {
     int ret = close(sockfd);
 #endif
     if (ret < 0) {
-        SPDLOG_LOGGER_WARN(spdlog::get(MULTI_SINKS), 
-                "destory sockfd<{}>", int(sockfd));
+        // SPDLOG_LOGGER_WARN(spdlog::get(MULTI_SINKS), 
+        // //         "destory sockfd<{}>", int(sockfd));
     }
     return ret;
 }

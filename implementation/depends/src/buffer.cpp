@@ -62,14 +62,14 @@ int buffer::send_to_socket(SOCKET sockfd) {
     if (last_ > 0 && sockfd != INVALID_SOCKET) {
         ret = send(sockfd, data_, last_, 0);
         if (ret == 0) {
-            SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
-            "send_to_socket closed:sockfd{} size<{}> last<{}> ret<{}>",
-            sockfd, size_, last_, ret);
+            // //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
+            // "send_to_socket closed:sockfd{} size<{}> last<{}> ret<{}>",
+            // sockfd, size_, last_, ret);
             return SOCKET_ERROR; 
         } else if (ret < 0) {
-            SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
-            "send_to_socket:sockfd{} size<{}> last<{}> ret<{}>",
-            sockfd, size_, last_, ret);
+            // //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
+            // "send_to_socket:sockfd{} size<{}> last<{}> ret<{}>",
+            // sockfd, size_, last_, ret);
             return SOCKET_ERROR; 
 
         }
@@ -89,9 +89,9 @@ int buffer::recv_from_socket(SOCKET sockfd) {
         char *szrecv = data_ + last_;
         int len = (int)recv(sockfd, szrecv, size_ - last_, 0);
         if (len <= 0) {
-            SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
-            "recv_from_socket:sockfd{} size<{}> last<{}> len<{}>",
-            sockfd, size_, last_, len);
+            // //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
+            // "recv_from_socket:sockfd{} size<{}> last<{}> len<{}>",
+            // sockfd, size_, last_, len);
             return SOCKET_ERROR;
         }
         last_ += len;
@@ -141,17 +141,17 @@ bool buffer::read_for_iocp(int nrecv) {
         data_[last_] = 0;
         return true;
     }
-    SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
-            "read_for_iocp:socket<{}> size<{}> last<{}> nrecv<{}>", 
-            iodata_.sockfd, size_, last_, nrecv);
+    // //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
+            // "read_for_iocp:socket<{}> size<{}> last<{}> nrecv<{}>", 
+            // iodata_.sockfd, size_, last_, nrecv);
     return false;
 }
 
 bool buffer::write_to_iocp(int nsend) {
     if (last_ < nsend) {
-        SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
-                "write_to_iocp:sockfd<{}> size<{}> last<{}> nsend<{}>", 
-                iodata_.sockfd, size_, last_, nsend);
+        // //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
+                // "write_to_iocp:sockfd<{}> size<{}> last<{}> nsend<{}>", 
+                // iodata_.sockfd, size_, last_, nsend);
         return false;
     }
     if (last_ == nsend) {

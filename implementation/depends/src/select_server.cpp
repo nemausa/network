@@ -43,10 +43,10 @@ bool select_server::do_net_events() {
     }
     if (ret < 0) {
         if (errno == EINTR) {
-            SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "");
+            // //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "");
             return true;
         }
-        SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "");
+        // //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "");
         return false;
     } else if (ret == 0) {
         return true;
@@ -73,8 +73,8 @@ void select_server::read_data() {
                 clients_.erase(iter);
             }
         } else {
-            SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
-                    "error iter != clients_.end()");
+            // //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
+            //         "error iter != clients_.end()");
         }
     }
 #else

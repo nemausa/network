@@ -14,13 +14,13 @@ client::client(SOCKET sockfd, int send_size, int recv_size):
 }
 
 client::~client() {
-    // SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "s={} client{}", service_id_, id_);
+    // //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "s={} client{}", service_id_, id_);
     destory();
 }
 
 void client::destory() {
     if (INVALID_SOCKET != sockfd_) {
-        // SPDLOG_LOGGER_INFO(spdlog::get(FILE_SINK), 
+        // //SPDLOG_LOGGER_INFO(spdlog::get(FILE_SINK), 
         //         "client::destory sid={} id={} socket={}", 
         //         service_id_, id_, (int)sockfd_);
         network::destory_socket(sockfd_);
@@ -91,9 +91,9 @@ bool client::check_heart_time(time_t dt) {
 
     heart_time_ += dt;
     if (heart_time_ >= CLIENT_HEART_DEAD_TIME) {
-        SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
-                "check_heart_time dead: s={}, time={}", 
-                sockfd_, heart_time_);
+        // //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
+        //         "check_heart_time dead: s={}, time={}", 
+        //         sockfd_, heart_time_);
         return true;
     }
     return false;
@@ -102,7 +102,7 @@ bool client::check_heart_time(time_t dt) {
 bool client::check_send_time(time_t dt) {
     send_time_ += dt;
     if (send_time_ >= CLIENT_SEND_BUFF_TIME) {
-        // SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
+        // //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
         // "check_send_time:socket={}, time={}", 
         // sockfd_, send_time_);
         send_data_real();

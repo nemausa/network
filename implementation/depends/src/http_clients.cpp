@@ -25,7 +25,7 @@ int http_clients::check_request() {
     if (!temp) {
         return 0;
     }
-    // SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), recv_buffer_.data());
+    // //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), recv_buffer_.data());
     temp += 4;
     header_len_ = temp - recv_buffer_.data();
     temp = recv_buffer_.data();

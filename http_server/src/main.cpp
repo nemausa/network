@@ -60,7 +60,7 @@ public:
         rewind(file);
 
         if (!p_http_client->can_write(size)) {
-            SPDLOG_LOGGER_WARN(spdlog::get(MULTI_SINKS), "url={}", file_path);
+            // SPDLOG_LOGGER_WARN(spdlog::get(MULTI_SINKS), "url={}", file_path);
             fclose(file);
             return false;
         }
@@ -68,7 +68,7 @@ public:
         char *buff = new char[size];
         auto read_size = fread(buff, 1, size, file);
         if (read_size != size) {
-            SPDLOG_LOGGER_WARN(spdlog::get(MULTI_SINKS), "url={}", file_path);
+            // SPDLOG_LOGGER_WARN(spdlog::get(MULTI_SINKS), "url={}", file_path);
             delete[] buff;
             fclose(file);
             return false;
@@ -98,36 +98,36 @@ int main(int argc, char *args[]) {
     config::instance().load("server.conf");
     const char *ip = config::instance().get_string("ip");
 
-    auto console_sink = std::make_shared<spdlog::sinks::stderr_color_sink_mt>();
-    auto console_logger = std::make_shared<spdlog::logger>(CONSOLE_SINK, console_sink); 
-    spdlog::register_logger(console_logger);
+    // auto console_sink = std::make_shared<spdlog::sinks::stderr_color_sink_mt>();
+    // auto console_logger = std::make_shared<spdlog::logger>(CONSOLE_SINK, console_sink); 
+    // spdlog::register_logger(console_logger);
 
-    auto file_sink = std::make_shared<spdlog::sinks::daily_file_sink_mt>
-            ("logs/server.txt", 23, 59);
-    auto file_logger = std::make_shared<spdlog::logger>(FILE_SINK, file_sink);
-    spdlog::register_logger(file_logger);
+    // auto file_sink = std::make_shared<spdlog::sinks::daily_file_sink_mt>
+    //         ("logs/server.txt", 23, 59);
+    // auto file_logger = std::make_shared<spdlog::logger>(FILE_SINK, file_sink);
+    // spdlog::register_logger(file_logger);
 
-    std::vector<spdlog::sink_ptr> sinks{console_sink, file_sink};
-    auto combined_logger = 
-            std::make_shared<spdlog::logger>(MULTI_SINKS, begin(sinks), end(sinks));
-    //register it if you need to access it globally
-    combined_logger->set_pattern(
-            "[%Y-%m-%d %H:%M:%S.%e] [%-6t] [%^%-6l%$] [%-5n] [%!] [%#]  %v"); 
-    spdlog::register_logger(combined_logger);
-    spdlog::flush_every(std::chrono::seconds(5));
+    // std::vector<spdlog::sink_ptr> sinks{console_sink, file_sink};
+    // auto combined_logger = 
+    //         std::make_shared<spdlog::logger>(MULTI_SINKS, begin(sinks), end(sinks));
+    // //register it if you need to access it globally
+    // combined_logger->set_pattern(
+    //         "[%Y-%m-%d %H:%M:%S.%e] [%-6t] [%^%-6l%$] [%-5n] [%!] [%#]  %v"); 
+    // spdlog::register_logger(combined_logger);
+    // spdlog::flush_every(std::chrono::seconds(5));
 
     int port = config::instance().get_int_default("port", 4567);
     int thread_num = config::instance().get_int_default("thread_num", 1);
 
     if (config::instance().has_key("-p")) {
-        SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "has key -p");
+        // //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "has key -p");
     }
     MyServer server;
     if (config::instance().has_key("ipv6")) {
-        SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "ipv6");
+        // //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "ipv6");
         server.init_socket(AF_INET6);
     } else {
-        SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "ipv4");
+        // //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "ipv4");
         server.init_socket(AF_INET);
     }
 
@@ -145,14 +145,14 @@ int main(int argc, char *args[]) {
         char buf[256] = {};
         scanf("%s", buf);
         if (0 == strcmp(buf, "exit")) {
-            SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "exit thread");
+            // //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "exit thread");
             server.close();
             break;
         } else {
-            SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "undefined commad");
+            // //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "undefined commad");
         }
     }
 
-    SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "exit");
+    // //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "exit");
     return 0;
 }

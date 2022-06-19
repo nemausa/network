@@ -15,14 +15,14 @@ tcp_client::~tcp_client() {
 SOCKET tcp_client::init_socket(int af, int send_size, int recv_size) {
     network::init();
     if (pclient_) {
-        SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
-                "warning close old socket<{}>...", (int)pclient_->sockfd());
+        //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
+                // "warning close old socket<{}>...", (int)pclient_->sockfd());
         close();
     }
     af_ = af;
     SOCKET sock = socket(af_, SOCK_STREAM, IPPROTO_TCP);
     if (INVALID_SOCKET == sock) {
-        SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "create socket failed");
+        //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), "create socket failed");
     } else {
         network::make_reuseaddr(sock);
         pclient_ = make_client(sock, send_size, recv_size); 
@@ -55,12 +55,12 @@ int tcp_client::connect(const char *ip, unsigned short port) {
         inet_pton(AF_INET6, ip, &sin.sin6_addr);
         ret = ::connect(pclient_->sockfd(), (sockaddr*)&sin, sizeof(sockaddr_in6));
     } else {
-        SPDLOG_LOGGER_ERROR(spdlog::get(FILE_SINK), "connect error");
+        // SPDLOG_LOGGER_ERROR(spdlog::get(FILE_SINK), "connect error");
     }
     if (SOCKET_ERROR == ret) {
-        SPDLOG_LOGGER_ERROR(spdlog::get(FILE_SINK), 
-                "socket={} error, connect server<{}:{}> failed", 
-                (int)pclient_->sockfd(), ip, port);
+        // SPDLOG_LOGGER_ERROR(spdlog::get(FILE_SINK), 
+        //         "socket={} error, connect server<{}:{}> failed", 
+        //         (int)pclient_->sockfd(), ip, port);
     } else  {
         is_connect_ = true;
         on_connect();

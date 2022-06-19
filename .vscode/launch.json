@@ -48,7 +48,7 @@
             "name": "client", //名称
             "type": "cppdbg", //调试类型，除使用msvc进行调试外，均为该类型
             "request": "launch",
-            "program": "${workspaceFolder}/bin/client", //指定C/C++程序位置
+            "program": "${workspaceFolder}/bin/tcp_client", //指定C/C++程序位置
             "args": [], //指定运行参数
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}", //指定工作目录

@@ -22,9 +22,9 @@ IF (WIN32)
 	message(status " Windows")
 	set (OS "WIN32")
    	set (OS_CXX_FLAGS "")
-	link_directories(
-		lib/windows
-	)
+	# link_directories(
+	# 	lib/windows
+	# )
 macro(get_WIN32_WINNT version)
     if (WIN32 AND CMAKE_SYSTEM_VERSION)
         set(ver ${CMAKE_SYSTEM_VERSION})   
@@ -38,16 +38,16 @@ get_WIN32_WINNT(ver)
 add_definitions(-D_WIN32_WINNT=${ver})
 ELSEIF (APPLE)
 	message(status " Apple")
-    link_directories(
-        lib/apple
-    )
+    # link_directories(
+    #     lib/apple
+    # )
 ELSEIF (UNIX)
 	message(status " Linux")
     set (OS "LINUX")
     set (OS_CXX_FLAGS "")
-	link_directories(
-		lib/linux
-	)
+	# link_directories(
+	# 	lib/linux
+	# )
 ENDIF ()
 
 include_directories(

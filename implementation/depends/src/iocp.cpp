@@ -20,8 +20,8 @@ iocp::~iocp() {
 bool iocp::create() {
     completion_port_ = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, 0, 0);
     if (NULL == completion_port_) {
-        SPDLOG_LOGGER_ERROR(spdlog::get(CONSOLE_SINK), 
-                "iocp create failed, CreateIoCompletionPort");
+        // SPDLOG_LOGGER_ERROR(spdlog::get(CONSOLE_SINK), 
+        //         "iocp create failed, CreateIoCompletionPort");
         return false;
     }
     return true;
@@ -40,8 +40,8 @@ bool iocp::reg(SOCKET sockfd) {
             (ULONG_PTR)sockfd, 
             0);
     if (!ret) {
-        SPDLOG_LOGGER_ERROR(spdlog::get(CONSOLE_SINK), 
-                "iocp reg sockfd failed, CreateIoCompletionPort");
+        // SPDLOG_LOGGER_ERROR(spdlog::get(CONSOLE_SINK), 
+        //         "iocp reg sockfd failed, CreateIoCompletionPort");
         return false;
     }
     return true;
@@ -53,8 +53,8 @@ bool iocp::reg(SOCKET sockfd, void *ptr) {
             (ULONG_PTR)ptr, 
             0);
     if (!ret) {
-        SPDLOG_LOGGER_ERROR(spdlog::get(CONSOLE_SINK), 
-                "iocp reg sockfd failed, CreateIoCompletionPort");
+        // SPDLOG_LOGGER_ERROR(spdlog::get(CONSOLE_SINK), 
+        //         "iocp reg sockfd failed, CreateIoCompletionPort");
         return false;
     }
     return true;
@@ -62,14 +62,14 @@ bool iocp::reg(SOCKET sockfd, void *ptr) {
 
 bool iocp::post_accept(io_data_base *p_io_data, int af) {
     if (!acceptex_) {
-        SPDLOG_LOGGER_ERROR(spdlog::get(CONSOLE_SINK), 
-                "error, post_accept acceptex_ is null");
+        // SPDLOG_LOGGER_ERROR(spdlog::get(CONSOLE_SINK), 
+        //         "error, post_accept acceptex_ is null");
         return false;
     } 
     p_io_data->io_type = io_type_e::ACCEPT;
     SOCKET csock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (INVALID_SOCKET == csock) {
-        SPDLOG_LOGGER_ERROR(spdlog::get(CONSOLE_SINK), "iocp create sockef failed");
+        // SPDLOG_LOGGER_ERROR(spdlog::get(CONSOLE_SINK), "iocp create sockef failed");
     } else {
         network::make_reuseaddr(csock);
     }
@@ -86,8 +86,8 @@ bool iocp::post_accept(io_data_base *p_io_data, int af) {
             &p_io_data->overlapped)) {
         int err = WSAGetLastError();
         if (ERROR_IO_PENDING != err) {
-            SPDLOG_LOGGER_ERROR(spdlog::get(CONSOLE_SINK), 
-                    "acceptex failed with error {}", err);
+            // SPDLOG_LOGGER_ERROR(spdlog::get(CONSOLE_SINK), 
+            //         "acceptex failed with error {}", err);
             return false;
         } 
     } 
@@ -109,12 +109,12 @@ bool iocp::post_recv(io_data_base *p_io_data) {
         int err = WSAGetLastError();
         if (ERROR_IO_PENDING != err) {
             if (WSAECONNRESET == err || WSAECONNABORTED == err) {
-                SPDLOG_LOGGER_ERROR(spdlog::get(CONSOLE_SINK), 
-                        "WSARecv failed with error {}", err);
+                // SPDLOG_LOGGER_ERROR(spdlog::get(CONSOLE_SINK), 
+                //         "WSARecv failed with error {}", err);
                 return false;
             }
-            SPDLOG_LOGGER_ERROR(spdlog::get(CONSOLE_SINK), 
-                    "WSARecv failed with error {}", err);
+            // SPDLOG_LOGGER_ERROR(spdlog::get(CONSOLE_SINK), 
+            //         "WSARecv failed with error {}", err);
             return false;
         }
     }
@@ -138,8 +138,8 @@ bool iocp::post_send(io_data_base *p_io_data) {
             if (WSAECONNRESET == err) {
                 return false;
             }
-            SPDLOG_LOGGER_ERROR(spdlog::get(CONSOLE_SINK), 
-                    "WSASend failed with error {}", err);
+            // SPDLOG_LOGGER_ERROR(spdlog::get(CONSOLE_SINK), 
+            //         "WSASend failed with error {}", err);
             return false;
         }
     }
@@ -168,8 +168,8 @@ int iocp::wait(io_event &io_event, int timeout) {
         if (ERROR_SEM_TIMEOUT == err) {
             return 1;
         }      
-        SPDLOG_LOGGER_ERROR(spdlog::get(CONSOLE_SINK), 
-                "GetQueuedCompletionStatus error code {}", err);
+        // SPDLOG_LOGGER_ERROR(spdlog::get(CONSOLE_SINK), 
+        //         "GetQueuedCompletionStatus error code {}", err);
         return -1;
     }
     return 1;
@@ -177,13 +177,13 @@ int iocp::wait(io_event &io_event, int timeout) {
 
 bool iocp::load_accept(SOCKET listen_socket) {
     if (INVALID_SOCKET != sock_server_) {
-        SPDLOG_LOGGER_ERROR(spdlog::get(CONSOLE_SINK), 
-                "load_accept sock_server_ != INVALID_SOCKET");
+        // SPDLOG_LOGGER_ERROR(spdlog::get(CONSOLE_SINK), 
+        //         "load_accept sock_server_ != INVALID_SOCKET");
         return false;
     }
     if (acceptex_) {
-        SPDLOG_LOGGER_ERROR(spdlog::get(CONSOLE_SINK), 
-                "load_accept acceptex_ != NULL");
+        // SPDLOG_LOGGER_ERROR(spdlog::get(CONSOLE_SINK), 
+        //         "load_accept acceptex_ != NULL");
         return false;
     }
     sock_server_ = listen_socket;
@@ -197,8 +197,8 @@ bool iocp::load_accept(SOCKET listen_socket) {
             NULL,
             NULL);
     if (result == SOCKET_ERROR) {
-        SPDLOG_LOGGER_ERROR(spdlog::get(CONSOLE_SINK), 
-                "WSAIoctl failed with error: {}", WSAGetLastError());
+        // SPDLOG_LOGGER_ERROR(spdlog::get(CONSOLE_SINK), 
+        //         "WSAIoctl failed with error: {}", WSAGetLastError());
         return false;
     }    
 
@@ -212,8 +212,8 @@ bool iocp::load_accept(SOCKET listen_socket) {
             NULL,
             NULL);
     if (result == SOCKET_ERROR) {
-        SPDLOG_LOGGER_ERROR(spdlog::get(CONSOLE_SINK), 
-                "WSAIoctl failed with error: {}", WSAGetLastError());
+        // SPDLOG_LOGGER_ERROR(spdlog::get(CONSOLE_SINK), 
+        //         "WSAIoctl failed with error: {}", WSAGetLastError());
         return false;
     }    
     return true;
