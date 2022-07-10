@@ -21,3 +21,4 @@ Part of my daily plan for studying network.
 #### 编译release版本，有返回值的必须返回，不然可能访问没有权限访问的默认寄存器
 #### 程序运行添加lib路径
 export LD_LIBRARY_PATH=./lib/unix:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=./lib/osx:$LD_LIBRARY_PATH
