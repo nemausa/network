@@ -27,7 +27,7 @@ IF (WIN32)
 	)
 macro(get_WIN32_WINNT version)
     if (WIN32 AND CMAKE_SYSTEM_VERSION)
-        set(ver ${CMAKE_SYSTEM_VERSION})   
+        set(ver ${CMAKE_SYSTEM_VERSION})
         string(REPLACE "." "" ver ${ver})
         string(REGEX REPLACE "([0-9])" "0\\1" ver ${ver})
         set(${version} "0x${ver}")
@@ -39,7 +39,7 @@ add_definitions(-D_WIN32_WINNT=${ver})
 ELSEIF (APPLE)
 	message(status " Apple")
     link_directories(
-        lib/apple
+        lib/osx
     )
 ELSEIF (UNIX)
 	message(status " Linux")
