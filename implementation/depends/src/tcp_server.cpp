@@ -207,6 +207,14 @@ void tcp_server::time4msg() {
             // "client_count<{}>, recv_count<{}>, message<{}>",
             // servers_.size(), t1, sockfd_, (int)client_accept_, 
             // (int)client_join_, (int)recv_count_, (int)message_count_); 
+            
+        LOG(INFO) << "cell_thread " << servers_.size() 
+                  << " time " << std::setw(10) << t1 
+                  << " socket " << sockfd_ 
+                  << " accept " << std::setw(10) << (int)client_accept_
+                  << " client_count " << std::setw(10) << (int)client_join_
+                  << " recv_count " << std::setw(10) << recv_count_
+                  << " message " << std::setw(10) << (int)message_count_;
         recv_count_  = 0;
         message_count_ = 0;
         time_.update();

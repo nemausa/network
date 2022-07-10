@@ -140,7 +140,10 @@ void work_thread(cell_thread *pthread, int id) {
     //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
             // "cell_thread<{}> connect<begin={}, end={}, connect_count={}>", 
             // id, begin, end, (int)connect_count);
-    
+    LOG(INFO) << "cell_thread " << id 
+              << "connect<begin=" << std::setw(5) << begin
+              << "end = " << std::setw(5) << end
+              << "connect_count=" << std::setw(5) << (int)connect_count;
     ready_count++;
     // 等待其他线程准备好再发送数据
     while (ready_count < thread_num && pthread->is_run()) {
@@ -220,7 +223,6 @@ int main(int argc, char *args[]) {
 			scanf("%s", cmdBuf);
 			if (0 == strcmp(cmdBuf, "exit"))
 			{
-				//pThread->Exit();
                 pThread->exit();
 				break;
 			}
@@ -242,9 +244,11 @@ int main(int argc, char *args[]) {
     while (tCmd.is_run()) {
         auto t = ts.second();
         if (t >= 1.0) {
-           //SPDLOG_LOGGER_INFO(spdlog::get(MULTI_SINKS), 
-                // "cell_thread<{}> clients<{}> connect<{}> time<{:02.4f}> send<{}>",
-                // thread_num, client_num, (int)connect_count, t, (int)send_count);
+            LOG(INFO) << "cell_thread " << thread_num 
+                      << " clients " << std::setw(5) << client_num
+                      << " connect " << std::setw(5) << (int)connect_count 
+                      << " time " << std::setw(10) << t
+                      << " send " << std::setw(10) << (int)send_count;
             send_count = 0;
             ts.update();
         }
@@ -255,6 +259,5 @@ int main(int argc, char *args[]) {
         t->close();
         delete t;
     }
-    // combined_logger->info("eixt");
     return 0;
 }

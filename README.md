@@ -10,6 +10,7 @@ Part of my daily plan for studying network.
 - recv次数大于send次数
 
 #### linux 向外TCP最大連接只能打開28232個端口限制
+- ulimit -n 102400
 - echo "net.ipv4.ip_local_port_range = 1024 65000" >> /etc/sysctl.conf; sysctl -p
 
 #### compile spldlog in windows

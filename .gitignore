@@ -5,6 +5,7 @@ unix
 windows
 third-party
 lib
+log
 
 logs
 .DS_Store
