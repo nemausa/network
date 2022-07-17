@@ -18,11 +18,16 @@
     #define FD_SETSIZE      65535
     #define WIN32_LEAN_AND_MEAN
     #define _WINSOCK_DEPRECATED_NO_WARNINGS
+    #define GLOG_NO_ABBREVIATED_SEVERITIES
     #include <windows.h>
     #include <winsock2.h>
     #include <ws2ipdef.h>
     #include <ws2tcpip.h>
     #include <iphlpapi.h>
+    #include <iostream>
+    #include <iomanip>
+    #include "glog/logging.h"
+    // #pragma comment(lib, "libglog.dll")
 #else
 #ifdef __APPLE__
     #define _DARWIN_UNLIMITED_SELECT
