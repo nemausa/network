@@ -166,15 +166,15 @@ void client::send_to_iocp(int nsend) {
 }
 
 void client::post_recv_complete() {
-    if (!is_post_recv_) {
-        SPDLOG_LOGGER_ERROR(spdlog::get(MULTI_SINKS), "");
-    }
+    // if (!is_post_recv_) {
+    //     SPDLOG_LOGGER_ERROR(spdlog::get(MULTI_SINKS), "");
+    // }
     is_post_recv_ = false;
 }
 
 void client::post_send_complete() {
-    if (!is_post_send_)
-        SPDLOG_LOGGER_ERROR(spdlog::get(MULTI_SINKS), "");
+    // if (!is_post_send_)
+    //     SPDLOG_LOGGER_ERROR(spdlog::get(MULTI_SINKS), "");
     is_post_send_ = false;
 }
 

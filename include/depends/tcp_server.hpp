@@ -15,6 +15,7 @@
 #define EASY_TCP_SERVER
 
 #include <vector>
+#include <atomic>
 
 #include "server.hpp"
 #include "timestamp.hpp"

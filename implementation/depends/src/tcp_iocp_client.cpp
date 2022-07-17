@@ -92,7 +92,7 @@ int tcp_iocp_client::do_iocp_net_events(int microseconds) {
             pclient->send_to_iocp(ioevent_.bytes_trans);
         }
     } else {
-        SPDLOG_LOGGER_WARN(spdlog::get(FILE_SINK), "undefine io type.");
+        // SPDLOG_LOGGER_WARN(spdlog::get(FILE_SINK), "undefine io type.");
     }
     return ret;
 }
