@@ -33,7 +33,7 @@
             },
             "windows": { 
                 "MIMode": "gdb", //指定使用gdb调试
-                "program": "${workspaceFolder}/bin/server.exe", //指定C/C++程序位置
+                "program": "${workspaceFolder}/bin/tcp_server.exe", //指定C/C++程序位置
                 "setupCommands": [
                     {
                         "description": "Enable pretty-printing for gdb",
@@ -72,7 +72,7 @@
             },
             "windows": { 
                 "MIMode": "gdb", //指定使用gdb调试
-                "program": "${workspaceFolder}/bin/client.exe", //指定C/C++程序位置
+                "program": "${workspaceFolder}/bin/tcp_client.exe", //指定C/C++程序位置
                 "setupCommands": [
                     {
                         "description": "Enable pretty-printing for gdb",
@@ -206,7 +206,7 @@
         }
     },
 
-        {
+    {
         "name": "http_server", //名称
         "type": "cppdbg", //调试类型，除使用msvc进行调试外，均为该类型
         "request": "launch",
@@ -245,24 +245,28 @@
             ]
         }
     },
+
     {
-        "name": "http_client", //名称
+        "name": "web_server", //名称
         "type": "cppdbg", //调试类型，除使用msvc进行调试外，均为该类型
         "request": "launch",
-        "program": "${workspaceFolder}/bin/http_client", //指定C/C++程序位置
+        "program": "${workspaceFolder}/bin/websocket_server", //指定C/C++程序位置
         "args": [], //指定运行参数
         "stopAtEntry": false,
         "cwd": "${workspaceFolder}", //指定工作目录
         // "preLaunchTask": "build", //在调试前会先调用build_debug这个task编译构建程序
         "environment": [],
         "externalConsole": false,
-        "osx": { //macOS的特定配置
+        "osx": 
+        { //macOS的特定配置
             // "miDebuggerPath": "/Applications/Xcode.app/Contents/ Developer/usr/bin/lldb-mi", //修改使用的lldb-mi，一般不需要修改
             "MIMode": "lldb" //指定使用lldb进行调试
         },
-        "linux": { //linux的特定配置
+        "linux": 
+        { //linux的特定配置
             "MIMode": "gdb", //指定使用gdb调试
-            "setupCommands": [
+            "setupCommands": 
+            [
                 {
                     "description": "Enable pretty-printing for gdb",
                     "text": "-enable-pretty-printing",
@@ -271,10 +275,12 @@
                 }
             ]
         },
-        "windows": { 
+        "windows": 
+        { 
             "MIMode": "gdb", //指定使用gdb调试
-        "program": "${workspaceFolder}/bin/http_client.exe", //指定C/C++程序位置
-            "setupCommands": [
+            "program": "${workspaceFolder}/bin/websocket_server.exe", //指定C/C++程序位置
+            "setupCommands": 
+            [
                 {
                     "description": "Enable pretty-printing for gdb",
                     "text": "-enable-pretty-printing",
@@ -283,6 +289,7 @@
                 }
             ]
         }
+    },
     
     ]
 }
