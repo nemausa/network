@@ -1,0 +1,28 @@
+{
+	"version": "2.0.0",
+	"tasks": 
+    [
+        {
+            "type": "shell",
+            "label": "CMake: build",
+            "problemMatcher": [],
+            "detail": "CMake template test task",
+            "windows":
+            {
+                "command": "${workspaceFolder}/cmake_build.bat exit",
+            },
+            "linux":
+            {
+                "command": "${workspaceFolder}/cmake_build.sh exit",
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": 
+            { 
+                "panel": "shared" //默认为“shared“表示共享，改成new之后每个进程创建新的端口
+            }
+        }
+    ]
+}

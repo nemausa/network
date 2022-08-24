@@ -5,24 +5,25 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "server", //名称
+            "name": "${workspaceFolderBasename}", //名称
             "type": "cppdbg", //调试类型，除使用msvc进行调试外，均为该类型
             "request": "launch",
-            "program": "${workspaceFolder}/bin/server", //指定C/C++程序位置
-            // "args": [], //指定运行参数
+            "program": "${workspaceFolder}/bin/${workspaceFolderBasename}.exe", //指定C/C++程序位置
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}", //指定工作目录
-            // "preLaunchTask": "build", //在调试前会先调用build_debug这个task编译构建程序
+            // "command": "${workspaceFolder}/cmake_build.bat ",
+            "preLaunchTask": "CMake: build", //在调试前会先调用build_debug这个task编译构建程序
             "environment": [],
             "externalConsole": false,
-            "osx": { //macOS的特定配置
-                // "miDebuggerPath": "/Applications/Xcode.app/Contents/ Developer/usr/bin/lldb-mi", //修改使用的lldb-mi，一般不需要修改
+            "osx": 
+            { 
                 "MIMode": "lldb" //指定使用lldb进行调试
             },
-            "linux": { //linux的特定配置
+            "linux": 
+            { 
                 "MIMode": "gdb", //指定使用gdb调试
-                
-                "setupCommands": [
+                "setupCommands": 
+                [
                     {
                         "description": "Enable pretty-printing for gdb",
                         "text": "-enable-pretty-printing",
@@ -33,263 +34,17 @@
             },
             "windows": { 
                 "MIMode": "gdb", //指定使用gdb调试
-                "program": "${workspaceFolder}/bin/tcp_server.exe", //指定C/C++程序位置
-                "setupCommands": [
+                "program": "${workspaceFolder}/bin/${workspaceFolderBasename}.exe", //指定C/C++程序位置
+                "setupCommands": 
+                [
                     {
                         "description": "Enable pretty-printing for gdb",
                         "text": "-enable-pretty-printing",
                         "ignoreFailures": true
-                        
                     }
                 ]
             }
-        },
-        {
-            "name": "tcp_client", //名称
-            "type": "cppdbg", //调试类型，除使用msvc进行调试外，均为该类型
-            "request": "launch",
-            "program": "${workspaceFolder}/bin/tcp_client", //指定C/C++程序位置
-            "args": [], //指定运行参数
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}", //指定工作目录
-            // "preLaunchTask": "build", //在调试前会先调用build_debug这个task编译构建程序
-            "environment": [],
-            "externalConsole": false,
-            "osx": { //macOS的特定配置
-                // "miDebuggerPath": "/Applications/Xcode.app/Contents/ Developer/usr/bin/lldb-mi", //修改使用的lldb-mi，一般不需要修改
-                "MIMode": "lldb" //指定使用lldb进行调试
-            },
-            "linux": { //linux的特定配置
-                "MIMode": "gdb", //指定使用gdb调试
-                "setupCommands": [
-                    {
-                        "description": "Enable pretty-printing for gdb",
-                        "text": "-enable-pretty-printing",
-                        "ignoreFailures": true
-                        
-                    }
-                ]
-            },
-            "windows": { 
-                "MIMode": "gdb", //指定使用gdb调试
-                "program": "${workspaceFolder}/bin/tcp_client.exe", //指定C/C++程序位置
-                "setupCommands": [
-                    {
-                        "description": "Enable pretty-printing for gdb",
-                        "text": "-enable-pretty-printing",
-                        "ignoreFailures": true
-                        
-                    }
-                ]
-            }
-        },
-        // 调试Pool
-        {
-            "name": "pool", //名称
-            "type": "cppdbg", //调试类型，除使用msvc进行调试外，均为该类型
-            "request": "launch",
-            "program": "${workspaceFolder}/bin/pool", //指定C/C++程序位置
-            "args": [], //指定运行参数
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}", //指定工作目录
-            // "preLaunchTask": "build", //在调试前会先调用build_debug这个task编译构建程序
-            "environment": [],
-            "externalConsole": false,
-            "osx": { //macOS的特定配置
-                // "miDebuggerPath": "/Applications/Xcode.app/Contents/ Developer/usr/bin/lldb-mi", //修改使用的lldb-mi，一般不需要修改
-                "MIMode": "lldb" //指定使用lldb进行调试
-            },
-            "linux": { //linux的特定配置
-                "MIMode": "gdb", //指定使用gdb调试
-                "setupCommands": [
-                    {
-                        "description": "Enable pretty-printing for gdb",
-                        "text": "-enable-pretty-printing",
-                        "ignoreFailures": true
-                        
-                    }
-                ]
-            },
-            "windows": { 
-                "MIMode": "gdb", //指定使用gdb调试
-            "program": "${workspaceFolder}/bin/pool.exe", //指定C/C++程序位置
-                "setupCommands": [
-                    {
-                        "description": "Enable pretty-printing for gdb",
-                        "text": "-enable-pretty-printing",
-                        "ignoreFailures": true
-                        
-                    }
-                ]
-            }
-        },
-
-          // 调试epoll
-          {
-            "name": "epoll", //名称
-            "type": "cppdbg", //调试类型，除使用msvc进行调试外，均为该类型
-            "request": "launch",
-            "program": "${workspaceFolder}/bin/epoll", //指定C/C++程序位置
-            "args": [], //指定运行参数
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}", //指定工作目录
-            // "preLaunchTask": "build", //在调试前会先调用build_debug这个task编译构建程序
-            "environment": [],
-            "externalConsole": false,
-            "osx": { //macOS的特定配置
-                // "miDebuggerPath": "/Applications/Xcode.app/Contents/ Developer/usr/bin/lldb-mi", //修改使用的lldb-mi，一般不需要修改
-                "MIMode": "lldb" //指定使用lldb进行调试
-            },
-            "linux": { //linux的特定配置
-                "MIMode": "gdb", //指定使用gdb调试
-                "setupCommands": [
-                    {
-                        "description": "Enable pretty-printing for gdb",
-                        "text": "-enable-pretty-printing",
-                        "ignoreFailures": true
-                        
-                    }
-                ]
-            },
-            "windows": { 
-                "MIMode": "gdb", //指定使用gdb调试
-            "program": "${workspaceFolder}/bin/epoll.exe", //指定C/C++程序位置
-                "setupCommands": [
-                    {
-                        "description": "Enable pretty-printing for gdb",
-                        "text": "-enable-pretty-printing",
-                        "ignoreFailures": true
-                        
-                    }
-                ]
-            }
-        },
-
-        // 调试epoll
-        {
-        "name": "iocp", //名称
-        "type": "cppdbg", //调试类型，除使用msvc进行调试外，均为该类型
-        "request": "launch",
-        "program": "${workspaceFolder}/bin/iocp", //指定C/C++程序位置
-        "args": [], //指定运行参数
-        "stopAtEntry": false,
-        "cwd": "${workspaceFolder}", //指定工作目录
-        // "preLaunchTask": "build", //在调试前会先调用build_debug这个task编译构建程序
-        "environment": [],
-        "externalConsole": false,
-        "osx": { //macOS的特定配置
-            // "miDebuggerPath": "/Applications/Xcode.app/Contents/ Developer/usr/bin/lldb-mi", //修改使用的lldb-mi，一般不需要修改
-            "MIMode": "lldb" //指定使用lldb进行调试
-        },
-        "linux": { //linux的特定配置
-            "MIMode": "gdb", //指定使用gdb调试
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                        
-                }
-            ]
-        },
-        "windows": { 
-            "MIMode": "gdb", //指定使用gdb调试
-        "program": "${workspaceFolder}/bin/iocp.exe", //指定C/C++程序位置
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                        
-                }
-            ]
         }
-    },
-
-    {
-        "name": "http_server", //名称
-        "type": "cppdbg", //调试类型，除使用msvc进行调试外，均为该类型
-        "request": "launch",
-        "program": "${workspaceFolder}/bin/http_server", //指定C/C++程序位置
-        "args": [], //指定运行参数
-        "stopAtEntry": false,
-        "cwd": "${workspaceFolder}", //指定工作目录
-        // "preLaunchTask": "build", //在调试前会先调用build_debug这个task编译构建程序
-        "environment": [],
-        "externalConsole": false,
-        "osx": { //macOS的特定配置
-            // "miDebuggerPath": "/Applications/Xcode.app/Contents/ Developer/usr/bin/lldb-mi", //修改使用的lldb-mi，一般不需要修改
-            "MIMode": "lldb" //指定使用lldb进行调试
-        },
-        "linux": { //linux的特定配置
-            "MIMode": "gdb", //指定使用gdb调试
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                        
-                }
-            ]
-        },
-        "windows": { 
-            "MIMode": "gdb", //指定使用gdb调试
-        "program": "${workspaceFolder}/bin/http_server.exe", //指定C/C++程序位置
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                        
-                }
-            ]
-        }
-    },
-
-    {
-        "name": "web_server", //名称
-        "type": "cppdbg", //调试类型，除使用msvc进行调试外，均为该类型
-        "request": "launch",
-        "program": "${workspaceFolder}/bin/websocket_server", //指定C/C++程序位置
-        "args": [], //指定运行参数
-        "stopAtEntry": false,
-        "cwd": "${workspaceFolder}", //指定工作目录
-        // "preLaunchTask": "build", //在调试前会先调用build_debug这个task编译构建程序
-        "environment": [],
-        "externalConsole": false,
-        "osx": 
-        { //macOS的特定配置
-            // "miDebuggerPath": "/Applications/Xcode.app/Contents/ Developer/usr/bin/lldb-mi", //修改使用的lldb-mi，一般不需要修改
-            "MIMode": "lldb" //指定使用lldb进行调试
-        },
-        "linux": 
-        { //linux的特定配置
-            "MIMode": "gdb", //指定使用gdb调试
-            "setupCommands": 
-            [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                        
-                }
-            ]
-        },
-        "windows": 
-        { 
-            "MIMode": "gdb", //指定使用gdb调试
-            "program": "${workspaceFolder}/bin/websocket_server.exe", //指定C/C++程序位置
-            "setupCommands": 
-            [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                        
-                }
-            ]
-        }
-    },
     
     ]
 }
