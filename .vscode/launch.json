@@ -8,7 +8,7 @@
             "name": "${workspaceFolderBasename}", //名称
             "type": "cppdbg", //调试类型，除使用msvc进行调试外，均为该类型
             "request": "launch",
-            "program": "${workspaceFolder}/bin/${workspaceFolderBasename}.exe", //指定C/C++程序位置
+            "program": "${workspaceFolder}/bin/${workspaceFolderBasename}", //指定C/C++程序位置
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}", //指定工作目录
             // "command": "${workspaceFolder}/cmake_build.bat ",
