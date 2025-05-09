@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>websocket-client</title>
+</head>
+
+<body>
+    <!--操作界面-->
+    <div align="center">
+        <!--websocket基础测试-->
+        <input type="text" id="server_url" />
+        <button onclick="onclick_btn_connect()">连接</button>
+        <button onclick="onclick_btn_close()">关闭</button>
+        <button onclick="onclick_btn_runGate()">切换</button>
+    </div>
+    <!--注册账号-->
+    <div align="center">
+            -------------注册----------<br>
+            账号<input type="text" id="username" /><br>
+            密码<input type="text" id="password" /><br>
+            昵称<input type="text" id="nickname" /><br>
+            性别
+            <input type="radio" id="sex1" value="1" name="sex" checked="checked">
+            <input type="radio" id="sex0" value="0" name="sex">
+            <br>
+            <button onclick="onclick_btn_register()">注册</button>
+            <button onclick="onclick_btn_change_pw()">改密</button>
+            <button onclick="onclick_btn_login()">登录</button>
+            <br><br>
+            token<input type="text" id="token" />
+            <button onclick="onclick_btn_login_by_token()">token登录</button>
+            <br><br>
+            ------------会话组---------<br>
+            group_id<input type="text" id="group_id" /><br>
+            group_key<input type="text" id="group_key" /><br>
+            group_say<input type="text" id="group_say" /><br>
+            <br>
+            <button onclick="onclick_btn_group_create()">创建</button>
+            <button onclick="onclick_btn_group_join()">加入</button>
+            <button onclick="onclick_btn_group_exit()">退出</button>
+            <button onclick="onclick_btn_group_say()">说话</button>
+            <br><br>
+            <textarea id="msgbox" style="resize:none;" rows="20" cols="40" >
+            </textarea>
+    </div>
+    <br>
+    
+    <script type="text/javascript">
+        //屏幕宽度自适应
+        var phoneWidth =  parseInt(window.screen.width);
+        var phoneScale = phoneWidth/320;
+        var ua = navigator.userAgent;
+        if (/Android (\d+\.\d+)/.test(ua)){
+            var version = parseFloat(RegExp.$1);
+            if(version>2.3){
+                document.write('<meta name="viewport" content="width=320, minimum-scale = '+phoneScale+', maximum-scale = '+phoneScale+', target-densitydpi=device-dpi">');
+            }else{
+                document.write('<meta name="viewport" content="width=320, target-densitydpi=device-dpi">');
+            }
+        } else {
+            document.write('<meta name="viewport" content="width=320, user-scalable=no, target-densitydpi=device-dpi">');
+        }
+        //信息编号
+        var msgIndex = 0;
+        //输出信息到文本区域
+        function add_log_msg(msg)
+        {
+            var msgbox = document.getElementById("msgbox");
+            //为当前信息添加编号
+            msg = ++msgIndex+":"+msg;
+            //输出信息到控制台
+            console.log(msg);
+            //添加信息到textarea
+            msgbox.value = msgbox.value+"\n"+msg;
+            //滚到最底部
+            msgbox.scrollTop=msgbox.scrollHeight;
+        }
+    </script>
+    <!--业务对象-->
+    <script>
+        msg_type_req  = 1;
+        msg_type_resp = 2;
+        msg_type_push = 3;
+
+        class UserClient
+        {
+            constructor()
+            {
+                //连接协议对象
+                this.websocket = null;
+                //请求消息id
+                //每次发送的请求对应一个数字id
+                //每个id对应一个回调函数
+                this.msgId = 0;
+                //消息回调函数表<k=id,v=callback>
+                this.msg_callback = {};
+                //消息回调函数表<k=cmd,v=callback>
+                this.push_callback = {};
+                //心跳定时任务的id
+                this.intervalId = null;
+            }
+            //建立连接
+            connect(server_url,callback)
+            {
+                add_log_msg("server_url:" + server_url);
+                var self = this;
+                try {
+                    this.websocket = new WebSocket(server_url);
+                } catch (e) {
+                    add_log_msg("new WebSocket error:" + e);
+                    return;
+                }
+
+                this.websocket.onopen = function(){
+                    add_log_msg("websocket.onopen");
+                    if(callback)
+                        callback(self);
+
+                    self.intervalId = setInterval(function()
+                    {
+                        self.request("cs_msg_heart", null);
+                    },5000);
+                }
+
+                this.websocket.onclose = function(){
+                    add_log_msg("websocket.onclose");
+                }
+
+                this.websocket.onerror = function(evt){
+                    add_log_msg("websocket.onerror: " + evt.data);
+                }
+
+                this.websocket.onmessage = function(evt){
+                    //add_log_msg("websocket.onmessage: " + evt.data);
+                    try {
+                        //收到的json字符串转换为json对象
+                        var jsonObj = JSON.parse(evt.data);
+                        if(jsonObj.type == msg_type_resp)
+                        {
+                            //查找msgId有没有对应的回调函数
+                            if(self.msg_callback.hasOwnProperty(jsonObj.msgId))
+                            {
+                                var call = self.msg_callback[jsonObj.msgId];
+                                call(jsonObj);
+                                delete(self.msg_callback[jsonObj.msgId]);
+                            }
+                        }else if(jsonObj.type == msg_type_push)
+                        {
+                            //查找cmd有没有对应的回调函数
+                            if(self.push_callback.hasOwnProperty(jsonObj.cmd))
+                            {
+                                var call = self.push_callback[jsonObj.cmd];
+                                call(jsonObj);
+                            }
+                        }
+                    } catch (e) {
+                        add_log_msg("websocket.onmessage: " + e);
+                        return;
+                    }
+                }
+            }
+            //发起请求
+            request(cmdStr, jsonData, callback)
+            {
+                if (this.websocket.readyState != WebSocket.OPEN) {
+                    add_log_msg("send failed. websocket not open. please check.");
+                    return;
+                }
+                var jsonObj = {
+                    cmd:cmdStr,
+                    type:msg_type_req,
+                    msgId:++this.msgId,
+                    time:Date.now(),
+                    data:jsonData
+                }
+                this.msg_callback[this.msgId] = callback;
+                var jsonstr = JSON.stringify(jsonObj);
+                //if(cmdStr != "cs_msg_heart")
+                //    add_log_msg(jsonstr);
+                this.websocket.send(jsonstr);
+            }
+            //关闭连接
+            close()
+            {
+                clearInterval(this.intervalId);
+
+                if(this.websocket)
+                    this.websocket.close();
+            }
+
+            reg_msg_call(cmdStr, callback)
+			{
+				this.push_callback[cmdStr] = callback;
+			}
+        }
+    </script>
+    <!--业务逻辑-->
+    <script>
+        var server_url = document.getElementById("server_url");
+        server_url.value = 'ws://127.0.0.1:5000';
+        
+        var user = new UserClient();
+
+        user.reg_msg_call("sc_msg_logout",function(msg){
+            add_log_msg("账号已登出："+msg.data);
+        });
+
+        user.reg_msg_call("sc_msg_group_join",function(msg){
+            add_log_msg("会话组<"+msg.data.group_id+">加入新成员："+msg.data.clientId);
+        });
+
+        user.reg_msg_call("sc_msg_group_exit",function(msg){
+            add_log_msg("会话组<"+msg.data.group_id+">成员退出："+msg.data.clientId);
+        });
+
+        user.reg_msg_call("sc_msg_group_say",function(msg){
+            add_log_msg("会话组<"+msg.data.group_id+">成员<"+msg.data.clientId+">说："+msg.data.say);
+        });
+
+        function onclick_btn_connect() {
+            var server_url = document.getElementById("server_url").value;
+            user.connect(server_url,function(self){
+                self.request("cs_reg_client",
+                {
+                    cckey:"ccmm00@123456"
+                }
+                ,function(msg){
+                    if(0 == msg.state)
+                        add_log_msg("认证客户端成功："+msg.data);
+                    else
+                        add_log_msg("认证客户端失败："+msg.data);
+                });
+            });
+        }
+
+        function onclick_btn_close() {
+            user.close();
+        }
+        
+        function onclick_btn_runGate() {
+            if(!user.token)
+            {
+                add_log_msg("请先登录！");
+                return;
+            }
+            //var token = document.getElementById("token").value;
+            //1.获取新业务网关的地址（LinkServer/LoginGate/RunGate）
+            user.request("cs_get_run_gate",
+                {
+                    //token:token
+                }
+                ,function(msg){
+                    if(0 != msg.state)
+                    {
+                        add_log_msg("获取业务网关地址失败："+msg.data);
+                        return;
+                    }
+                    add_log_msg("获取业务网关地址成功："+msg.data);
+                    //2.关闭原网络连接
+                    user.close();
+                    //3.连接新业务网关LinkServer
+                    user.connect(msg.data,function(self){
+                        //5.认证客户端
+                        self.request("cs_reg_client",
+                        {
+                            cckey:"ccmm00@123456"
+                        }
+                        ,function(msg){
+                            if(0 != msg.state){
+                                add_log_msg("认证客户端失败："+msg.data);
+                                return;
+                            }
+                            add_log_msg("认证客户端成功："+msg.data);
+                            //6.通过token认证已登录
+                            user.request("cs_msg_login_by_token",
+                            {
+                                token:user.token
+                            }
+                            ,function(msg){
+                                if(0 != msg.state)
+                                {
+                                    add_log_msg("登录失败："+msg.data);
+                                    return;
+                                }
+                                add_log_msg("登录成功："+msg.data.token);
+                                user.token = msg.data.token;
+                            });
+                        });
+                    });
+                });
+        }
+
+        function onclick_btn_register() {
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+            var nickname = document.getElementById("nickname").value;
+            var sex = document.getElementById("sex1").checked ? 1:0;
+            user.request("cs_msg_register",
+                {
+                    username:username,
+                    password:password,
+                    nickname:nickname,
+                    sex:sex
+                }
+                ,function(msg){
+                    if(0 == msg.state)
+                        add_log_msg("注册成功："+msg.data.userId);
+                    else
+                        add_log_msg("注册失败："+msg.data);
+                });
+        }
+
+        function onclick_btn_change_pw() {
+            var username = document.getElementById("username").value;
+            var password_old = document.getElementById("password").value;
+            var password_new = document.getElementById("nickname").value;
+            user.request("cs_msg_change_pw",
+                {
+                    username:username,
+                    password_old:password_old,
+                    password_new:password_new
+                }
+                ,function(msg){
+                    if(0 == msg.state)
+                        add_log_msg("修改成功："+msg.data);
+                    else
+                        add_log_msg("修改失败："+msg.data);
+                });
+        }
+
+        function onclick_btn_login() {
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+            user.request("cs_msg_login",
+                {
+                    username:username,
+                    password:password
+                }
+                ,function(msg){
+                    if(0 == msg.state){
+                        add_log_msg("登录成功："+msg.data.token);
+                        user.token = msg.data.token;
+                        onclick_btn_runGate();
+                    }
+                    else{
+                        add_log_msg("登录失败："+msg.data);
+                    }
+                });
+        }
+
+        function onclick_btn_login_by_token() {
+            var token = document.getElementById("token").value;
+            user.request("cs_msg_login_by_token",
+                {
+                    token:token
+                }
+                ,function(msg){
+                    if(0 == msg.state){
+                        add_log_msg("登录成功："+msg.data.token);
+                        user.token = msg.data.token;
+                    }
+                    else{
+                        add_log_msg("登录失败："+msg.data);
+                    }
+                });
+        }
+
+        function onclick_btn_group_create() {
+            var group_id = document.getElementById("group_id").value;
+            var group_key = document.getElementById("group_key").value;
+            user.request("cs_msg_group_create",
+                {
+                    group_id:Number(group_id),
+                    group_key:Number(group_key)
+                }
+                ,function(msg){
+                    if(0 == msg.state)
+                        add_log_msg("创建成功："+msg.data.group_id);
+                    else
+                        add_log_msg("创建失败："+msg.data);
+                });
+        }
+
+        function onclick_btn_group_join() {
+            var group_id = document.getElementById("group_id").value;
+            var group_key = document.getElementById("group_key").value;
+            user.request("cs_msg_group_join",
+                {
+                    group_id:Number(group_id),
+                    group_key:Number(group_key)
+                }
+                ,function(msg){
+                    if(0 == msg.state)
+                        add_log_msg("加入成功："+msg.data.group_id);
+                    else
+                        add_log_msg("加入失败："+msg.data);
+                });
+        }
+
+        function onclick_btn_group_exit() {
+            var group_id = document.getElementById("group_id").value;
+            var group_key = document.getElementById("group_key").value;
+            user.request("cs_msg_group_exit",
+                {
+                    group_id:Number(group_id),
+                    group_key:Number(group_key)
+                }
+                ,function(msg){
+                    if(0 == msg.state)
+                        add_log_msg("退出成功："+msg.data.group_id);
+                    else
+                        add_log_msg("退出失败："+msg.data);
+                });
+        }
+
+        function onclick_btn_group_say() {
+            var group_id = document.getElementById("group_id").value;
+            var group_key = document.getElementById("group_key").value;
+            var say = document.getElementById("group_say").value;
+            user.request("cs_msg_group_say",
+                {
+                    group_id:Number(group_id),
+                    group_key:Number(group_key),
+                    say:say
+                }
+                ,function(msg){
+                    if(0 == msg.state)
+                        add_log_msg("发言成功："+msg.data.group_id);
+                    else
+                        add_log_msg("发言失败："+msg.data);
+                });
+        }
+        
+        
+    </script>
+</body>
+</html>

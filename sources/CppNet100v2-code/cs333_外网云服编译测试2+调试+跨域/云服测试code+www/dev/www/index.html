@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>HomePage</title>
+</head>
+<body>
+    <button onclick="onGET()">GET</button>
+    <button onclick="onPOST()">POST</button>
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script>
+        var cc = 0;
+        function onGET(evt) {
+            console.log(++cc,"onGET");
+            var n = cc
+            $.get('http://www.dosfu.com:4567/add',{ a: 15, b: 7 },function(data, status){
+                console.log(n,"get status=", status, "data=", data);
+                onGET();
+            });
+            return false;
+        }
+        //------------------
+        function onPOST(evt) {
+            console.log(++cc,"onPOST");
+            var n = cc
+            $.post('http://www.dosfu.com:4567/add',{ a: 15, b: 7 },function(data, status){
+                console.log(n,"post status=", status, "data=", data);
+                onPOST();
+            });
+            return false;
+        }
+    </script>
+</body>
+</html>

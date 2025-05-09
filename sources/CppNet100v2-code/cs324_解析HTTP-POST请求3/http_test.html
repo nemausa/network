@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>http-client</title>
+</head>
+<body>
+    <button onclick="onGET()">GET</button>
+    <button onclick="onPOST()">POST</button>
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script>
+        function onGET(evt) {
+            $.get('http://192.168.31.227:4567/add?c=25&n=22',{ a: 15, b: 7,c:"ahah" },function(data,status){
+                console.log("data=",data,"status=",status);
+            });
+        }
+        //------------------
+        function onPOST(evt) {
+            $.post('http://192.168.31.227:4567/sub?c=5&n=2',{ a: 15, b: 7,c:"ahah" },function(data,status){
+                console.log("data=",data,"status=",status);
+            });
+            //$.post('http://192.168.31.227:4567/add',{ a: 15, b: 7 });
+            //$.post('http://192.168.31.227:4567/add',{ a: 15, b: 7 });
+            //$.post('http://192.168.31.227:4567/add',{ a: 15, b: 7 });
+        }
+    </script>
+</body>
+</html>

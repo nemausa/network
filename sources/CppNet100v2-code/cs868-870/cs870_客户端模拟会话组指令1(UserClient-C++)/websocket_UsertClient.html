@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>websocket-client</title>
+</head>
+<body>
+	<button onclick="_createWebSocket()">connect</button>
+    <button onclick="_send('hello web')">send</button>
+    <button onclick="_close()">close</button>
+    <script>
+
+        function add_log_msg(msg)
+        {
+            console.log(msg);
+        }
+        
+        class UserClient
+        {
+            constructor()
+            {
+                //连接协议对象
+                this.websocket = null;
+                //请求消息id
+                //每次发送的请求对应一个数字id
+                //每个id对应一个回调函数
+                this.msgId = 0;
+                //消息回调函数表<k=id,v=callback>
+                this.msg_callback = {};
+                //心跳定时任务的id
+                this.intervalId = null;
+            }
+            //建立连接
+            connect(server_url,callback)
+            {
+                var self = this;
+                try {
+                    this.websocket = new WebSocket(server_url);
+                } catch (e) {
+                    add_log_msg("new WebSocket error:" + e);
+                    return;
+                }
+
+                this.websocket.onopen = function(){
+                    add_log_msg("websocket.onopen");
+                    if(callback)
+                        callback(self);
+
+                    self.intervalId = setInterval(function()
+                    {
+                        self.request("cs_msg_heart", null);
+                    },5000);
+                }
+
+                this.websocket.onclose = function(){
+                    add_log_msg("websocket.onclose");
+                }
+
+                this.websocket.onerror = function(evt){
+                    add_log_msg("websocket.onerror: " + evt.data);
+                }
+
+                this.websocket.onmessage = function(evt){
+                    add_log_msg("websocket.onmessage: " + evt.data);
+
+                    try {
+                        //收到的json字符串转换为json对象
+                        var jsonObj = JSON.parse(evt.data);
+                        //查找msgId有没有对应的回调函数
+                        if(self.msg_callback.hasOwnProperty(jsonObj.msgId))
+                        {
+                            var call = self.msg_callback[jsonObj.msgId];
+                            call(jsonObj);
+                            delete(self.msg_callback[jsonObj.msgId]);
+                        }
+                    } catch (e) {
+                        add_log_msg("websocket.onmessage: " + e);
+                        return;
+                    }
+                }
+            }
+            //发起请求
+            request(cmdStr, jsonData, callback)
+            {
+                if (this.websocket.readyState != WebSocket.OPEN) {
+                    add_log_msg("send failed. websocket not open. please check.");
+                    return;
+                }
+                var jsonObj = {
+                    cmd:cmdStr,
+                    is_req:true,
+                    msgId:++this.msgId,
+                    time:Date.now(),
+                    data:jsonData
+                }
+                this.msg_callback[this.msgId] = callback;
+                var jsonstr = JSON.stringify(jsonObj);
+                if(cmdStr != "cs_msg_heart")
+                    add_log_msg(jsonstr);
+                this.websocket.send(jsonstr);
+            }
+            //关闭连接
+            close()
+            {
+                clearInterval(this.intervalId);
+
+                if(this.websocket)
+                    this.websocket.close();
+            }
+            //注册账号
+            register(username, password,nickname,sex)
+            {
+                this.request("cs_msg_register",
+                {
+                    username:username,
+                    password:password,
+                    nickname:nickname,
+                    sex:sex
+                }
+                ,function(msg){
+                    if(0 == msg.state)
+                        add_log_msg("注册成功："+msg.data.userId);
+                    else
+                        add_log_msg("注册失败："+msg.data);
+                });
+            }
+        }
+    </script>
+    <script>
+        /*
+        var client = new UserClient();
+        function _createWebSocket() {
+            client.connect("ws://127.0.0.1:4567");
+        }
+
+        function _send(msg) {
+            client.register("test001", "abc1234");
+        }
+
+        function _close() {
+            client.close();
+        }
+        */
+
+        var users = new Array();
+        var count = 100;
+        function _createWebSocket() {
+            for(var n = 0; n < count; n++)
+            {
+                users[n] =  new UserClient();
+                users[n].username = "user00"+n;
+                users[n].password = "abc1234";
+                users[n].nickname = "mmmm00"+n;
+                users[n].sex = n%2;
+                users[n].connect("ws://192.168.88.133:4567");
+            }
+        }
+
+        function _send(msg) {
+            for(var n = 0; n < count; n++)
+            {
+                users[n].register(users[n].username, users[n].password,users[n].nickname,users[n].sex);
+            }
+        }
+
+        function _close() {
+            for(var n = 0; n < count; n++)
+            {
+                users[n].close();
+            }
+        }
+
+    </script>
+</body>
+</html>
